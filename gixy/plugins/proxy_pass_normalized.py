@@ -26,10 +26,13 @@ class proxy_pass_normalized(Plugin):
 
     def audit(self, directive):
         proxy_pass_args = directive.args
-
         rewrite_fail = False
+        parent = directive.parent
 
         if not proxy_pass_args:
+            return
+
+        if not parent or parent.name != 'location' or parent.modifier == '=':
             return
 
         if proxy_pass_args[0].startswith("$") and '/' not in proxy_pass_args[0]:
