@@ -91,7 +91,7 @@ class MoreSetHeadersDirective(Directive):
     nginx_name = "more_set_headers"
 
     def get_headers(self):
-        # See headers more documentation: https://github.com/openresty/headers-more-nginx-module#description
+        # See headers more documentation: https://nginx-extras.getpagespeed.com/modules/headers-more/#description
         result = {}
         skip_next = False
         for arg in self.args:
