@@ -16,7 +16,7 @@ if not version:
     raise RuntimeError("Cannot find version information")
 
 install_requires = [
-    "pyparsing>=1.5.5,<=2.4.7",
+    "crossplane>=0.5.8",
     'cached-property>=1.2.0;python_version<"3.8"',
     'argparse>=1.4.0;python_version<"3.2"',
     "six>=1.1.0",
