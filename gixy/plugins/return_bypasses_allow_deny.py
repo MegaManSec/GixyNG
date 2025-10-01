@@ -2,7 +2,7 @@ import gixy
 from gixy.plugins.plugin import Plugin
 
 
-class return_with_allow_deny(Plugin):
+class return_bypasses_allow_deny(Plugin):
     """
     Insecure example:
         location / {
@@ -11,9 +11,9 @@ class return_with_allow_deny(Plugin):
             return 200 "hi";
         }
     """
-    summary = "The return directive does not obey allow or deny directives, and always takes precedence."
+    summary = "Return directive bypasses allow/deny restrictions in the same context."
     severity = gixy.severity.MEDIUM
-    description = "The return directive is executed before the allow or deny directivres take any affect. You may want to use a named location with the try_files directive instead."
+    description = "The return directive is executed before allow/deny take effect in the same context. Consider using a named location and try_files, or restructure access control."
     help_url = "https://joshua.hu/nginx-return-allow-deny"
     directives = ["allow", "deny"]
 
@@ -26,5 +26,7 @@ class return_with_allow_deny(Plugin):
         if return_directive:
             self.add_issue(
                 directive=[directive] + return_directive,
-                reason="The allow and deny directives do not restrict access to pages returned with 'return'.",
+                reason="allow/deny do not restrict access to responses produced by return in the same scope.",
             )
+
+
