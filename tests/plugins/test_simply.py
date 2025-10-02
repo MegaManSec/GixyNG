@@ -67,12 +67,20 @@ def parse_plugin_options(config_path):
 
 
 def yoda_provider(plugin, plugin_options=None):
+    # Allow tests to opt-in to following includes via special option
+    allow_includes = False
+    cleaned_plugin_options = None
+    if plugin_options:
+        cleaned_plugin_options = dict(plugin_options)
+        if "__allow_includes" in cleaned_plugin_options:
+            allow_includes = bool(cleaned_plugin_options.pop("__allow_includes"))
+
     config = Config(
-        allow_includes=False,
+        allow_includes=allow_includes,
         plugins=[plugin]
     )
-    if plugin_options:
-        config.set_for(plugin, plugin_options)
+    if cleaned_plugin_options:
+        config.set_for(plugin, cleaned_plugin_options)
     return Gixy(config=config)
 
 
@@ -102,6 +110,7 @@ def test_configuration(plugin, config_path, test_config):
 
 @pytest.mark.parametrize('plugin,config_path,test_config', all_config_fp_cases)
 def test_configuration_fp(plugin, config_path, test_config):
-    with yoda_provider(plugin) as yoda:
+    plugin_options = parse_plugin_options(config_path)
+    with yoda_provider(plugin, plugin_options) as yoda:
         yoda.audit(config_path, open(config_path, mode='r'))
         assert len([x for x in yoda.results]) == 0, 'False positive configuration must not trigger any plugins'
