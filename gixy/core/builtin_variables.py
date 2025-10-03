@@ -293,7 +293,6 @@ def _parse_dropin_file(file_path):
     where value follows _normalize_value_token rules.
     """
     result = {}
-    assign_re = re.compile(r"^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*(.*)$")
     try:
         with open(file_path, "r") as fh:
             for raw_line in fh:
@@ -301,11 +300,23 @@ def _parse_dropin_file(file_path):
                 if not line or line.startswith("#") or line.startswith(";"):
                     continue
 
-                m = assign_re.match(line)
-                if not m:
+                # Fast-path parse: find first whitespace after a valid identifier
+                i = 0
+                n = len(line)
+                # identifier start
+                c0 = line[0]
+                if not (c0.isalpha() or c0 == "_"):
                     LOG.info("Skip malformed custom variable line in %s: %r", file_path, raw_line.rstrip("\n"))
                     continue
-                name, value_token = m.group(1), m.group(2).strip()
+                i = 1
+                while i < n and (line[i].isalnum() or line[i] == "_"):
+                    i += 1
+                name = line[:i]
+                # skip spaces between name and value
+                j = i
+                while j < n and line[j].isspace():
+                    j += 1
+                value_token = line[j:]
                 # Allow optional separator characters between name and value
                 # If the line used name = value or name: value, drop the first char
                 if value_token[:1] in ("=", ":"):
