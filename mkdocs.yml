@@ -33,6 +33,7 @@ nav:
     - Version Disclosure: en/plugins/version_disclosure.md
     - Hash without default: en/plugins/hash_without_default.md
     - Return bypasses allow/deny: en/plugins/return_bypasses_allow_deny.md
+    - Missing default_server on shared listen: en/plugins/default_server_flag.md
   - 'Blog': 'https://www.getpagespeed.com/posts'
 markdown_extensions:
   - admonition
