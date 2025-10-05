@@ -26,7 +26,7 @@ if ($http_origin ~* ((^https://www\.yandex\.ru)|(^https://ya\.ru)$)) {
 ## What can I do?
 
   - fix your regex or toss it away :)
-  - if you use regex validation for `Referer` request header, then, possibly (not 100%), you could use [ngx_http_referer_module](http://nginx.org/en/docs/http/ngx_http_referer_module.htmll);
+  - if you use regex validation for `Referer` request header, then, possibly (not 100%), you could use [ngx_http_referer_module](https://nginx.org/en/docs/http/ngx_http_referer_module.htmll);
   - often it's better to avoid regex entirely for `Origin` and use a `map` allowlist:
 
 ```nginx

@@ -6,7 +6,7 @@ It's possible when an attacker controls the address of a proxied server (second 
 
 ## How can I find it?
 There are two types of errors that make a server vulnerable:
-  - lack of the [internal](http://nginx.org/en/docs/http/ngx_http_core_module.html#internal) directive. It is used to point out a location that can be used for internal requests only;
+  - lack of the [internal](https://nginx.org/en/docs/http/ngx_http_core_module.html#internal) directive. It is used to point out a location that can be used for internal requests only;
   - unsafe internal redirection.
 
 ### Lack of the internal directive

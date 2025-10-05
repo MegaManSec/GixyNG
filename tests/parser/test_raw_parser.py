@@ -223,7 +223,7 @@ location @foo {
 
 def test_if():
     config = r"""
-# http://nginx.org/ru/docs/http/ngx_http_rewrite_module.html#if
+# https://nginx.org/ru/docs/http/ngx_http_rewrite_module.html#if
 
 if ($http_user_agent ~ MSIE) {
     rewrite ^(.*)$ /msie/$1 break;
@@ -266,7 +266,7 @@ if ($foo = "BAR") { rewrite ^(.*)$ /bar; }
         """
 
     expected = [
-        ["http://nginx.org/ru/docs/http/ngx_http_rewrite_module.html#if"],
+        ["https://nginx.org/ru/docs/http/ngx_http_rewrite_module.html#if"],
         [
             "if",
             ["$http_user_agent", "~", "MSIE"],
@@ -293,7 +293,7 @@ if ($foo = "BAR") { rewrite ^(.*)$ /bar; }
 
 def test_hash_block_map():
     config = """
-# http://nginx.org/ru/docs/http/ngx_http_map_module.html
+# https://nginx.org/ru/docs/http/ngx_http_map_module.html
 
 map $http_host $name {
     hostnames;
@@ -315,7 +315,7 @@ map $http_user_agent $mobile {
         """
 
     expected = [
-        ["http://nginx.org/ru/docs/http/ngx_http_map_module.html"],
+        ["https://nginx.org/ru/docs/http/ngx_http_map_module.html"],
         [
             "map",
             ["$http_host", "$name"],
@@ -345,7 +345,7 @@ map $http_user_agent $mobile {
 
 def test_upstream():
     config = """
-# http://nginx.org/ru/docs/http/ngx_http_upstream_module.html
+# https://nginx.org/ru/docs/http/ngx_http_upstream_module.html
 
 upstream backend {
     server backend1.example.com       weight=5;
@@ -364,7 +364,7 @@ server {
         """
 
     expected = [
-        ["http://nginx.org/ru/docs/http/ngx_http_upstream_module.html"],
+        ["https://nginx.org/ru/docs/http/ngx_http_upstream_module.html"],
         [
             "upstream",
             ["backend"],
@@ -384,14 +384,14 @@ server {
 
 def test_issue_8():
     config = """
-# http://nginx.org/ru/docs/http/ngx_http_upstream_module.html
+# https://nginx.org/ru/docs/http/ngx_http_upstream_module.html
 if ($http_referer ~* (\.(ru|ua|by|kz)/(pages/music|partners/|page-no-rights\.xml)) ) {
     set $temp A;
 }
         """
 
     expected = [
-        ["http://nginx.org/ru/docs/http/ngx_http_upstream_module.html"],
+        ["https://nginx.org/ru/docs/http/ngx_http_upstream_module.html"],
         [
             "if",
             [
@@ -599,12 +599,12 @@ add_header X-Test "Windows-1251";
 
 def test_env_with_escaped_semicolons():
     """Test that env directive with escaped semicolons parses correctly.
-    
+
     This is a regression test for the issue where env directives with
     escaped semicolons (used in LUA_PATH and similar environment variables)
     would fail to parse. The backslashes escape the semicolons so they're
     not treated as statement terminators.
-    
+
     Example: env LUA_PATH=\;\;\;/path/to/lua
     The \; sequences should be preserved as literal semicolons in the value.
     """
@@ -612,8 +612,14 @@ def test_env_with_escaped_semicolons():
 env LUA_CPATH=\;\;\;/nix/store/7bn0dr50s3cg2pvcl2d6k3apbpgxj0fk-lua5.2-luasocket-3.1.0-1/lib/lua/5.2/?.so;"""
 
     expected = [
-        ['env', 'LUA_PATH=\\;\\;\\;/nix/store/7bn0dr50s3cg2pvcl2d6k3apbpgxj0fk-lua5.2-luasocket-3.1.0-1/share/lua/5.2/?.lua'],
-        ['env', 'LUA_CPATH=\\;\\;\\;/nix/store/7bn0dr50s3cg2pvcl2d6k3apbpgxj0fk-lua5.2-luasocket-3.1.0-1/lib/lua/5.2/?.so']
+        [
+            "env",
+            "LUA_PATH=\\;\\;\\;/nix/store/7bn0dr50s3cg2pvcl2d6k3apbpgxj0fk-lua5.2-luasocket-3.1.0-1/share/lua/5.2/?.lua",
+        ],
+        [
+            "env",
+            "LUA_CPATH=\\;\\;\\;/nix/store/7bn0dr50s3cg2pvcl2d6k3apbpgxj0fk-lua5.2-luasocket-3.1.0-1/lib/lua/5.2/?.so",
+        ],
     ]
 
     assert_config(config, expected)

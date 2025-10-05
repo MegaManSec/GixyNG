@@ -1,6 +1,6 @@
 # [valid_referrers] none in valid_referers
 
-Модуль [ngx_http_referer_module](http://nginx.org/ru/docs/http/ngx_http_referer_module.html) позволяет блокировать доступ к сервису для запросов с неверными значениями заголовка запроса `Referer`.
+Модуль [ngx_http_referer_module](https://nginx.org/ru/docs/http/ngx_http_referer_module.html) позволяет блокировать доступ к сервису для запросов с неверными значениями заголовка запроса `Referer`.
 Зачастую используется для условного выставления заголовка `X-Frame-Options` (защита от ClickJacking), но могут быть и иные случаи.
 
 Типичные проблемы при конфигурировании этого модуля:
@@ -11,7 +11,7 @@
 > На текущий момент, Gixy умеет определять только использование `none` в качестве валидного реферера.
 
 ## Чем плох none?
-Согласно [документации](http://nginx.org/ru/docs/http/ngx_http_referer_module.html#valid_referers):
+Согласно [документации](https://nginx.org/ru/docs/http/ngx_http_referer_module.html#valid_referers):
 > `none` - поле “Referer” в заголовке запроса отсутствует;
 
 Однако, важно помнить, что любой ресурс может заставить браузер пользователя выполнить запрос без заголовка запроса `Referer`, к примеру:
