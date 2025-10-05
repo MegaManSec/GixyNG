@@ -128,3 +128,30 @@ def test_push_failed_with_regexp_py35_gixy_10():
         get_context().add_var(name, Variable(name=name, value=group))
 
     push_context(Root())
+
+
+def test_clear_index_vars_preserves_context_scoped_backrefs():
+    # Simulate map regex capture $1 being stored with context key
+    ctx = push_context(Root())
+    # Add a plain indexed var (no ctx) and a context-scoped one
+    plain = Variable(1, value='plain')
+    ctx.add_var(1, plain)
+    scoped = Variable(1, value=Regexp('(.*)'), ctx='~^1:/redhat/latest/(.*)$')
+    ctx.add_var(1, scoped)
+
+    assert 1 in ctx.variables['index'] or (1) in ctx.variables['index']
+    assert (scoped.ctx, 1) in ctx.variables['index']
+
+    # Clearing should drop plain indexed vars but preserve context-scoped ones
+    ctx.clear_index_vars()
+    assert 1 not in ctx.variables['index']
+    assert (scoped.ctx, 1) in ctx.variables['index']
+
+
+def test_clear_index_vars_clears_plain_indexed():
+    ctx = push_context(Root())
+    plain = Variable(1, value='plain')
+    ctx.add_var(1, plain)
+    assert 1 in ctx.variables['index']
+    ctx.clear_index_vars()
+    assert 1 not in ctx.variables['index']

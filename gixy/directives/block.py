@@ -73,9 +73,9 @@ class Block(Directive):
                 yield from child.find_children_directives(name)
 
     def find_all_contexts_of_type(self, context_type):
-        """Find all contexts of a specific type (e.g., 'server', 'location') in this scope"""
+        """Find all block contexts of a specific type (e.g., 'server', 'location') in this scope"""
         for child in self.children:
-            if child.name == context_type:
+            if child.is_block and child.name == context_type:
                 yield child
             if child.is_block:
                 yield from child.find_all_contexts_of_type(context_type)

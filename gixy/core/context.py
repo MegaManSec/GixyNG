@@ -43,7 +43,10 @@ class Context(object):
         return self
 
     def clear_index_vars(self):
-        self.variables['index'] = {}
+        # Preserve context-scoped (tuple-keyed) indexed vars, e.g. map regex backrefs
+        self.variables['index'] = {
+            k: v for k, v in self.variables['index'].items() if isinstance(k, tuple)
+        }
         return self
 
     def add_var(self, name, var):

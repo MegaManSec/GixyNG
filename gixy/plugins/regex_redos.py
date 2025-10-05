@@ -1,4 +1,9 @@
-import requests
+try:
+    import requests
+    _REQUESTS_AVAILABLE = True
+except Exception:
+    requests = None  # requests is optional; plugin will auto-skip without it
+    _REQUESTS_AVAILABLE = False
 import gixy
 from gixy.plugins.plugin import Plugin
 
@@ -51,6 +56,9 @@ class regex_redos(Plugin):
         self.redos_server = self.config.get('url')
 
     def audit(self, directive):
+        # If requests is not available, skip.
+        if not _REQUESTS_AVAILABLE:
+            return
         # If we have no ReDoS check URL, skip.
         if not self.redos_server:
             return
@@ -73,7 +81,7 @@ class regex_redos(Plugin):
                 headers={"Content-Type": "application/json"},
                 timeout=60
             )
-        except requests.RequestException:
+        except Exception:
             self.add_issue(directive=directive, reason=fail_reason, severity=self.unknown_severity)
             return
 
