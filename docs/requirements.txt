@@ -2,3 +2,5 @@ mkdocs
 mkdocs-material
 markdown-include
 pymdown-extensions
+mkdocs-static-i18n
+jieba

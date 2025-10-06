@@ -12,27 +12,45 @@ theme:
     - navigation.expand
 plugins:
   - search
+  - i18n:
+      languages:
+        - locale: en
+          name: English
+          default: true
+          build: true
+        - locale: ru
+          name: Русский
+        - locale: zh
+          name: 中文
+      docs_structure: folder
+      reconfigure_material: true
+      fallback_to_default: true
 nav:
-  - Overview: index.md
-  - Configuration: en/configuration.md
-  - Variables drop-ins: en/variables-dropins.md
+  - index.md
+  - configuration.md
+  - variables-dropins.md
   - Plugins:
-    - Server Side Request Forgery: en/plugins/ssrf.md
-    - HTTP Splitting: en/plugins/httpsplitting.md
-    - Problems with referrer/origin validation: en/plugins/origins.md
-    - Redefining of response headers by "add_header" directive: en/plugins/addheaderredefinition.md
-    - Request's Host header forgery: en/plugins/hostspoofing.md
-    - none in valid_referers: en/plugins/validreferers.md
-    - Multiline response headers: en/plugins/addheadermultiline.md
-    - Path traversal via misconfigured alias: en/plugins/aliastraversal.md
-    - If is evil when used in location context: en/plugins/if_is_evil.md
-    - Allow specified without deny: en/plugins/allow_without_deny.md
-    - Setting Content-Type via add_header: en/plugins/add_header_content_type.md
-    - Using external DNS nameservers: en/plugins/resolver_external.md
-    - Unsafe path decoding with proxy_pass: en/plugins/proxy_pass_normalized.md
-    - Version Disclosure: en/plugins/version_disclosure.md
-    - Return bypasses allow/deny: en/plugins/return_bypasses_allow_deny.md
-    - Missing default_server on shared listen: en/plugins/default_server_flag.md
+    - plugins/ssrf.md
+    - plugins/httpsplitting.md
+    - plugins/origins.md
+    - plugins/addheaderredefinition.md
+    - plugins/hostspoofing.md
+    - plugins/validreferers.md
+    - plugins/addheadermultiline.md
+    - plugins/aliastraversal.md
+    - plugins/if_is_evil.md
+    - plugins/allow_without_deny.md
+    - plugins/add_header_content_type.md
+    - plugins/resolver_external.md
+    - plugins/proxy_pass_normalized.md
+    - plugins/version_disclosure.md
+    - plugins/return_bypasses_allow_deny.md
+    - plugins/default_server_flag.md
+    - plugins/error_log_off.md
+    - plugins/hash_without_default.md
+    - plugins/unanchored_regex.md
+    - plugins/regex_redos.md
+    - plugins/worker_rlimit_nofile_vs_connections.md
   - 'NGINX Extras RPMs': 'https://nginx-extras.getpagespeed.com/'
   - 'Blog': 'https://www.getpagespeed.com/posts'
 markdown_extensions:
@@ -44,9 +62,13 @@ markdown_extensions:
   - pymdownx.tabbed
   - pymdownx.tasklist
   - pymdownx.snippets:
-      base_path: docs
+      base_path:
+        - docs
+        - docs_includes
       check_paths: true
   - toc:
       permalink: "¤"
+extra_javascript:
+  - extra/redirect-en.js
 extra:
   generator: false
