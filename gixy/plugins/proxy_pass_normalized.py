@@ -31,13 +31,23 @@ class proxy_pass_normalized(Plugin):
         if not parent:
             return
 
+        # Only analyze HTTP context: inside location, or inside if/limit_except within location.
+        # This avoids false positives for the stream module, where proxy_pass has different semantics.
+        effective_location = None
         if parent.name == 'location':
-            if parent.modifier == '=':
-                return
+            effective_location = parent
         elif parent.name in ['limit_except', 'if']:
             grandparent = parent.parent
-            if not grandparent or grandparent.name != 'location' or grandparent.modifier == '=':
-                return
+            if grandparent and grandparent.name == 'location':
+                effective_location = grandparent
+
+        if not effective_location:
+            # Not in HTTP location context -> skip
+            return
+
+        # Skip exact-match locations where normalization concerns do not apply
+        if effective_location.modifier == '=':
+            return
 
         proxy_pass_args = directive.args
 
@@ -59,8 +69,8 @@ class proxy_pass_normalized(Plugin):
 
         for rewrite in directive.find_directives_in_scope("rewrite"):
             if (
-                getattr(rewrite, "pattern", None) == "^"
-                and getattr(rewrite, "replace", None) == "$request_uri"
+                rewrite.pattern == "^"
+                and rewrite.replace == "$request_uri"
             ):
                 if path:
                     # Check for $uri or any numbered variable in the path.

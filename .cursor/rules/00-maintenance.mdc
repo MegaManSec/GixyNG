@@ -11,3 +11,7 @@ alwaysApply: true
 - For PRs: summarize rule updates in the description; new features MUST update or add rules alongside tests.
 - Prefer nested rules (`.cursor/rules` in subdirectories) for module-specific guidance; they’ll auto-attach when those files are in context.
 
+- Cursor rules must use the `.mdc` extension (not `.md`).
+  - Migrate any legacy `.md` rule files to `.mdc`.
+  - Keep rules concise, focused, and colocated near relevant modules when helpful.
+
