@@ -205,13 +205,19 @@ class IfBlock(Block):
             result = []
             for name, group in regexp.groups.items():
                 result.append(
-                    Variable(name=name, value=group, boundary=None, provider=self)
+                    Variable(name=name, value=group, boundary=group, provider=self)
                 )
             return result
         return []
 
     @property
     def provide_variables(self):
+        # NOTE: keep this as an instance-level property (not a class flag) on purpose.
+        # Other directives (e.g. location, rewrite) advertise capability at class-level,
+        # but for IfBlock the test suite relies on reflecting the current condition:
+        # provide_variables must be False for non-regex if, and True only when a regex
+        # operator (~, ~*, !~, !~*) is used. This preserves the "this instance provides
+        # variables now" semantics and avoids breaking existing expectations.
         # Only if-conditions with regex operators can provide backrefs
         return self.operand in ("~", "~*", "!~", "!~*") and bool(self.value)
 
