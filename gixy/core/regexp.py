@@ -26,7 +26,10 @@ def _build_reverse_list(original):
 FIX_NAMED_GROUPS_RE = re.compile(r"(?<!\\)\(\?[<'](\w+)[>']")
 
 CATEGORIES = {
-    # Note: ASCII only, unicode not supported
+    # Note: ASCII-only character classes. While NGINX configs can contain unicode
+    # strings, NGINX's PCRE regex engine typically uses ASCII semantics for \w, \d, \s
+    # unless explicitly compiled with unicode support. This conservative approach is
+    # correct for security analysis since URLs are ASCII (unicode gets percent-encoded).
     sre_parse.CATEGORY_SPACE: sre_parse.WHITESPACE,
     sre_parse.CATEGORY_NOT_SPACE: _build_reverse_list(sre_parse.WHITESPACE),
     sre_parse.CATEGORY_DIGIT: sre_parse.DIGITS,
