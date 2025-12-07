@@ -1,7 +1,0 @@
----
-description: Testing standards (Always)
-globs:
-alwaysApply: true
----
-
-- All non-trivial changes MUST include tests.

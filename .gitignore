@@ -64,3 +64,6 @@ venv/
 venv3/
 .idea/
 =0.5.8
+
+# Cursor rules stored in private dotfiles
+.cursor/rules
