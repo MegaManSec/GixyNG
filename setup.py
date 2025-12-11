@@ -50,6 +50,7 @@ setup(
     extras_require={
         "tests": install_requires + tests_requires,
         "rich": ["rich>=13.0.0"],  # Optional: beautiful terminal output
+        "redos": ["requests>=2.20.0"],  # Optional: ReDoS checks via external API
     },
     entry_points={
         "console_scripts": ["gixy=gixy.cli.main:main"],
