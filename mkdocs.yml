@@ -1,7 +1,7 @@
 site_name: Gixy docs
 site_description: "Automatic documentation from sources, for Gixy."
-site_url: https://gixy.getpagespeed.com/
-repo_url: https://github.com/dvershinin/gixy
+site_url: https://gixy.io/
+repo_url: https://github.com/MegaManSec/gixy
 theme:
   name: "material"
   palette:
@@ -18,10 +18,6 @@ plugins:
           name: English
           default: true
           build: true
-        - locale: ru
-          name: Русский
-        - locale: zh
-          name: 中文
       docs_structure: folder
       reconfigure_material: true
       fallback_to_default: true
@@ -30,30 +26,30 @@ nav:
   - configuration.md
   - variables-dropins.md
   - Plugins:
-    - plugins/ssrf.md
-    - plugins/httpsplitting.md
-    - plugins/origins.md
-    - plugins/addheaderredefinition.md
-    - plugins/hostspoofing.md
-    - plugins/validreferers.md
-    - plugins/addheadermultiline.md
-    - plugins/aliastraversal.md
-    - plugins/if_is_evil.md
-    - plugins/allow_without_deny.md
     - plugins/add_header_content_type.md
-    - plugins/resolver_external.md
-    - plugins/proxy_pass_normalized.md
-    - plugins/version_disclosure.md
-    - plugins/return_bypasses_allow_deny.md
+    - plugins/addheadermultiline.md
+    - plugins/addheaderredefinition.md
+    - plugins/aliastraversal.md
+    - plugins/allow_without_deny.md
     - plugins/default_server_flag.md
     - plugins/error_log_off.md
     - plugins/hash_without_default.md
-    - plugins/unanchored_regex.md
-    - plugins/regex_redos.md
-    - plugins/worker_rlimit_nofile_vs_connections.md
+    - plugins/hostspoofing.md
+    - plugins/httpsplitting.md
+    - plugins/if_is_evil.md
+    - plugins/invalid_regex.md
     - plugins/low_keepalive_requests.md
-  - 'NGINX Extras RPMs': 'https://nginx-extras.getpagespeed.com/'
-  - 'Blog': 'https://www.getpagespeed.com/posts'
+    - plugins/origins.md
+    - plugins/proxy_pass_normalized.md
+    - plugins/regex_redos.md
+    - plugins/resolver_external.md
+    - plugins/return_bypasses_allow_deny.md
+    - plugins/ssrf.md
+    - plugins/try_files_is_evil_too.md
+    - plugins/unanchored_regex.md
+    - plugins/validreferers.md
+    - plugins/version_disclosure.md
+    - plugins/worker_rlimit_nofile_vs_connections.md
 markdown_extensions:
   - admonition
   - markdown_include.include

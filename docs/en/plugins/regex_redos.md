@@ -1,6 +1,16 @@
-# [regex_redos] Regular expressions may cause ReDoS
+# Regular Expression Denial of Service (ReDoS)
 
-Some regular expressions can exhibit catastrophic backtracking. Attackers can send carefully crafted inputs that make the regex engine consume excessive CPU, resulting in a denial of service.
+ReDoS (Regular Expression Denial of Service) occurs when a regex pattern with certain structures causes catastrophic backtracking on specially crafted input, consuming excessive CPU time.
+
+## Why this matters
+
+nginx uses PCRE regular expressions in several directives where user-controlled input is matched:
+- `location ~ pattern` - matches request URI
+- `if ($var ~ pattern)` - matches variables like `$http_referer`, `$request_uri`
+- `rewrite pattern replacement` - matches request URI
+- `server_name ~pattern` - matches Host header
+
+An attacker who can craft input matching a vulnerable regex can cause nginx workers to hang, leading to denial of service with minimal attack resources.
 
 ## Insecure example
 
@@ -26,8 +36,9 @@ location ~ ^/a+$ {
 }
 ```
 
-## Why it matters
+## References
 
-Ambiguous regexes in locations and other directives can be exploited remotely. Keep patterns simple and well-anchored, and avoid constructs known to trigger backtracking explosions.
+- [OWASP: Regular expression Denial of Service](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS)
+- [Cloudflare: Details of the Cloudflare outage on July 2, 2019](https://blog.cloudflare.com/details-of-the-cloudflare-outage-on-july-2-2019/) - a famous ReDoS incident
 
 --8<-- "en/snippets/nginx-extras-cta.md"
