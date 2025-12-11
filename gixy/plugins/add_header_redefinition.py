@@ -47,6 +47,7 @@ class add_header_redefinition(Plugin):
         self.secure_headers = [
             'cache-control',
             'content-security-policy',
+            'content-security-policy-report-only',
             'cross-origin-embedder-policy',
             'cross-origin-opener-policy',
             'cross-origin-resource-policy',
@@ -56,6 +57,7 @@ class add_header_redefinition(Plugin):
             'x-content-type-options',
             'x-frame-options',
             'x-xss-protection',
+            'x-permitted-cross-domain-policies',
             'expect-ct',
             'pragma',
             'expires',
