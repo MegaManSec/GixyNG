@@ -122,8 +122,8 @@ return 301 /$1/$2;
     assert not directive.self_context
     assert directive.provide_variables
     assert directive.variable == '$var'
-    assert directive.operand is '~*'
-    assert directive.value is '(a)(b)'
+    assert directive.operand == '~*'
+    assert directive.value == '(a)(b)'
     assert len(directive.variables) == 2
 
 
