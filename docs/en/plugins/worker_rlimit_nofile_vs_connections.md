@@ -11,7 +11,7 @@ Why are additional FDs necessary?
 * **Proxy Server Mode**:
     * One FD for the connection to the client.
     * One FD for the connection to the upstream server.
-    * Potentially a third FD for temporarily storing the upstream server’s response.
+    * Potentially a third FD for temporarily storing the upstream server's response.
 * **Caching Server Mode**:
     * NGINX behaves like a web server when serving cached responses (using FDs similarly as above).
     * It acts like a proxy server when the cache is empty or the cached content has expired.

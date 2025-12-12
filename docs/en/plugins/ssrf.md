@@ -41,8 +41,8 @@ location ~* ^/internal-proxy/(?<proxy_proto>https?)/(?<proxy_host>.*?)/(?<proxy_
 According to Nginx docs, internal requests are the following:
 
 >  - requests are redirected by the **error_page**, index, random_index, and **try_files** directives;
->  - requests redirected by the “X-Accel-Redirect” response header field from an upstream server;
->  - sub-requests formed by the “include virtual” command of the `ngx_http_ssi_module` module and by the ngx_http_addition_module module directives;
+>  - requests redirected by the "X-Accel-Redirect" response header field from an upstream server;
+>  - sub-requests formed by the "include virtual" command of the `ngx_http_ssi_module` module and by the ngx_http_addition_module module directives;
 >  - requests changed by the **rewrite** directive
 
 Accordingly, any unsafe rewrite allows an attacker to make an internal request and control a proxied server's address.

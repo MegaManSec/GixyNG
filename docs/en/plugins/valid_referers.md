@@ -15,7 +15,7 @@ Typical problems with this module's config:
 
 According to [docs](https://nginx.org/ru/docs/http/ngx_http_referer_module.html#valid_referers):
 
-> `none` - the “Referer” field is missing in the request header;
+> `none` - the "Referer" field is missing in the request header;
 
 Still, it's important to remember that any resource can make user's browser to make a request without a `Referer` request header. For example:
 

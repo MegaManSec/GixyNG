@@ -2,7 +2,7 @@
 
 A common misconception is that using the directive `error_log off` disables error logging.
 Unlike the `access_log` directive, `error_log` does not accept an `off` parameter.
-If you add `error_log` off to your configuration, NGINX will create a log file named “off” in the default configuration directory (typically `/etc/nginx`).
+If you add `error_log` off to your configuration, NGINX will create a log file named "off" in the default configuration directory (typically `/etc/nginx`).
 
 Disabling the error log is generally not advised, as it provides crucial information
 for troubleshooting NGINX issues. However, if disk space is extremely limited and

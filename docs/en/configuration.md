@@ -48,7 +48,7 @@ The same effect can be achieved without sections by combining the plugin name an
 - **Output format**: `format = console|text|json` (same as `-f/--format`)
 - **Write report to file**: `output = /path/to/report.txt` (same as `-o/--output`)
 - **Disable include processing**: `disable-includes = true` (same as `--disable-includes`)
-- **Custom variables directories**: `vars-dirs = [/etc/gixy/vars, ~/.config/gixy/vars]` (see “Custom variables drop-ins”)
+- **Custom variables directories**: `vars-dirs = [/etc/gixy/vars, ~/.config/gixy/vars]` (see "Custom variables drop-ins")
 
 ## Full example
 
