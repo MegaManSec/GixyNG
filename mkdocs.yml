@@ -39,6 +39,7 @@ nav:
   - "NGINX Security Scanner": index.md
   - "Configuration & Usage": configuration.md
   - "Variables & Drop-ins": variables-dropins.md
+  - "Gixy-ng vs nginx -t": nginx-configuration-checker.md
   - Plugins:
     - plugins/add_header_content_type.md
     - plugins/add_header_multiline.md
