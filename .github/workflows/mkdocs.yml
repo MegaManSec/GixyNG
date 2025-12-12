@@ -21,8 +21,8 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install MkDocs
-        run: pip install mkdocs
+      - name: Install mkdocs and so
+        run: pip install -r docs/requirements.txt
 
       - name: Deploy with MkDocs
         run: mkdocs gh-deploy --force
