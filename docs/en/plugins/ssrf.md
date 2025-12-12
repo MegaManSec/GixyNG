@@ -5,12 +5,16 @@ It's possible when an attacker controls the address of a proxied server (second 
 
 
 ## How can I find it?
+
 There are two types of errors that make a server vulnerable:
+
   - lack of the [internal](https://nginx.org/en/docs/http/ngx_http_core_module.html#internal) directive. It is used to point out a location that can be used for internal requests only;
   - unsafe internal redirection.
 
 ### Lack of the internal directive
+
 Classical misconfiguration, based on lack of the `internal` directive, that makes SSRF possible:
+
 ```nginx
 location ~ /proxy/(.*)/(.*)/(.*)$ {
     proxy_pass $1://$2/$3;
@@ -20,9 +24,11 @@ location ~ /proxy/(.*)/(.*)/(.*)$ {
 An attacker has complete control over the proxied address, that makes sending requests on behalf of Nginx possible.
 
 ### Unsafe internal redirection
+
 Let's say you have internal location in your config and that location uses some request data as proxied server's address.
 
 E.g.:
+
 ```nginx
 location ~* ^/internal-proxy/(?<proxy_proto>https?)/(?<proxy_host>.*?)/(?<proxy_path>.*)$ {
     internal;
@@ -33,6 +39,7 @@ location ~* ^/internal-proxy/(?<proxy_proto>https?)/(?<proxy_host>.*?)/(?<proxy_
 ```
 
 According to Nginx docs, internal requests are the following:
+
 >  - requests are redirected by the **error_page**, index, random_index, and **try_files** directives;
 >  - requests redirected by the “X-Accel-Redirect” response header field from an upstream server;
 >  - sub-requests formed by the “include virtual” command of the `ngx_http_ssi_module` module and by the ngx_http_addition_module module directives;
@@ -53,9 +60,11 @@ location ~* ^/internal-proxy/(?<proxy_proto>https?)/(?<proxy_host>.*?)/(?<proxy_
 ```
 
 ## What can I do?
+
 There are several rules you better follow when writing such configurations:
-  - use only "internal locations" for proxying;
-  - if possible, forbid user data transmission;
-  - protect proxied server's address:
-    * if the quantity of proxied hosts is limited (when you have S3 or smth), you better hardcode them and choose them with `map` or do it some other way;
-    * if you can't list all possible hosts to proxy, you should sign the address.
+
+- use only "internal locations" for proxying;
+- if possible, forbid user data transmission;
+- protect proxied server's address:
+  - if the quantity of proxied hosts is limited (when you have S3 or smth), you better hardcode them and choose them with `map` or do it some other way;
+  - if you can't list all possible hosts to proxy, you should sign the address.

@@ -225,10 +225,12 @@ Disclaimer: Gixy-ng is well tested only on GNU/Linux, other OSs may have some is
 ## Contributing
 
 Contributions to Gixy-ng are always welcome! You can help us in different ways:
-  * Open an issue with suggestions for improvements and errors you're facing;
-  * Fork this repository and submit a pull request;
-  * Improve the documentation.
+
+- Open an issue with suggestions for improvements and errors you're facing in the [GitHub repository](https://github.com/MegaManSec/gixy-ng);
+- Fork this repository and submit a pull request;
+- Improve the documentation.
 
 Code guidelines:
-  * Python code style should follow [pep8](https://www.python.org/dev/peps/pep-0008/) standards whenever possible;
-  * Pull requests with new plugins must have unit tests for them.
+
+- Python code style should follow [pep8](https://www.python.org/dev/peps/pep-0008/) standards whenever possible;
+- Pull requests with new plugins must have unit tests for them.
