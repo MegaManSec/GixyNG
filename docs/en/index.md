@@ -1,12 +1,11 @@
 GIXY
 ====
 
-
-[![Mozilla Public License 2.0](https://img.shields.io/badge/license-MPLv2.0-brightgreen?style=flat-square)](https://github.com/dvershinin/gixy/blob/master/LICENSE)
-[![Python tests](https://github.com/dvershinin/gixy/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/dvershinin/gixy/actions/workflows/pythonpackage.yml)
-[![Your feedback is greatly appreciated](https://img.shields.io/maintenance/yes/2025.svg?style=flat-square)](https://github.com/dvershinin/gixy/issues/new)
-[![GitHub issues](https://img.shields.io/github/issues/dvershinin/gixy.svg?style=flat-square)](https://github.com/dvershinin/gixy/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/dvershinin/gixy.svg?style=flat-square)](https://github.com/dvershinin/gixy/pulls)
+[![Mozilla Public License 2.0](https://img.shields.io/badge/license-MPLv2.0-brightgreen?style=flat-square)](https://github.com/megamansec/gixy-ng/blob/master/LICENSE)
+[![Python tests](https://github.com/megamansec/gixy-ng/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/megamansec/gixy-ng/actions/workflows/pythonpackage.yml)
+[![Your feedback is greatly appreciated](https://img.shields.io/maintenance/yes/2025.svg?style=flat-square)](https://github.com/megamansec/gixy-ng/issues/new)
+[![GitHub issues](https://img.shields.io/github/issues/megamansec/gixy-ng.svg?style=flat-square)](https://github.com/megamansec/gixy-ng/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/megamansec/gixy-ng.svg?style=flat-square)](https://github.com/megamansec/gixy-ng/pulls)
 
 # Overview
 <img align="right" width="192" height="192" src="docs/gixy.jpg">
@@ -47,7 +46,7 @@ Right now Gixy can find:
 *   [[version_disclosure] Using insecure values for server_tokens](plugins/version_disclosure.md)
 *   [[worker_rlimit_nofile_vs_connections] `worker_rlimit_nofile` must be at least twice `worker_connections`](plugins/worker_rlimit_nofile_vs_connections.md)
 
-You can find things that Gixy is learning to detect at [Issues labeled with "new plugin"](https://github.com/dvershinin/gixy/issues?q=is%3Aissue+is%3Aopen+label%3A%22new+plugin%22)
+You can find things that Gixy is learning to detect at [Issues labeled with "new plugin"](https://github.com/megamansec/gixy-ng/issues?q=is%3Aissue+is%3Aopen+label%3A%22new+plugin%22)
 
 # Installation
 
@@ -77,7 +76,7 @@ $ gixy /etc/nginx/nginx.conf
 
 Problem: [http_splitting] Possible HTTP-Splitting vulnerability.
 Description: Using variables that can contain "\n" may lead to http injection.
-Additional info: https://github.com/dvershinin/gixy/blob/master/docs/en/plugins/httpsplitting.md
+Additional info: https://github.com/megamansec/gixy-ng/blob/master/docs/en/plugins/httpsplitting.md
 Reason: At least variable "$action" can contain "\n"
 Pseudo config:
 include /etc/nginx/sites/default.conf;
@@ -157,7 +156,7 @@ with the Gixy container as a volume.
 $  docker run --rm --name nginx -d -v /etc/nginx
 nginx:alpinef68f2833e986ae69c0a5375f9980dc7a70684a6c233a9535c2a837189f14e905
 
-$  docker run --rm --volumes-from nginx dvershinin/gixy /etc/nginx/nginx.conf
+$  docker run --rm --volumes-from nginx megamansec/gixy-ng /etc/nginx/nginx.conf
 
 ==================== Results ===================
 No issues found.
