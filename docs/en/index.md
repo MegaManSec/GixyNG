@@ -1,11 +1,5 @@
 # Gixy-ng: NGINX Security Scanner & Configuration Checker for Security Audits
 
-[![Mozilla Public License 2.0](https://img.shields.io/badge/license-MPLv2.0-brightgreen?style=flat-square)](https://github.com/megamansec/gixy-ng/blob/master/LICENSE)
-[![Python tests](https://github.com/megamansec/gixy-ng/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/megamansec/gixy-ng/actions/workflows/pythonpackage.yml)
-[![Your feedback is greatly appreciated](https://img.shields.io/maintenance/yes/2025.svg?style=flat-square)](https://github.com/megamansec/gixy-ng/issues/new)
-[![GitHub issues](https://img.shields.io/github/issues/megamansec/gixy-ng.svg?style=flat-square)](https://github.com/megamansec/gixy-ng/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/megamansec/gixy-ng.svg?style=flat-square)](https://github.com/megamansec/gixy-ng/pulls)
-
 ## Overview
 <img align="right" width="192" height="192" src="https://gixy.io/imgs/gixy.jpg">
 

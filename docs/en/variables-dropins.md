@@ -1,8 +1,10 @@
-### Custom variables drop-ins
+# Variables & Drop-ins
+
+## Custom variables drop-ins
 
 Some third-party NGINX modules define additional variables (e.g. `$brotli_ratio`). By default, Gixy warns when it cannot resolve a variable. You can teach Gixy about extra variables via simple drop-in files.
 
-#### Enabling drop-ins
+## Enabling drop-ins
 
 Provide one or more directories containing variable definitions using either CLI or config:
 
@@ -11,7 +13,7 @@ Provide one or more directories containing variable definitions using either CLI
 
 All files with `.cfg` or `.conf` extensions inside those directories are read.
 
-#### File format
+## File format
 
 Each non-empty, non-comment line defines one variable as `name value`. Supported value forms:
 
@@ -33,7 +35,7 @@ foo_uri  r'/[^\s]*',
 
 Prefix variables are supported using names ending with `_` (like built-ins), e.g. `http_` will match `$http_foo`.
 
-#### Notes
+## Notes
 
 - Drop-in variables override built-ins when names collide.
 - Only variables referenced during analysis are instantiated.

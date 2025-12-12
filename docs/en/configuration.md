@@ -1,4 +1,6 @@
-### Configuration (gixy.cfg)
+# Configuration & Usage
+
+## Configuration (gixy.cfg)
 
 Gixy reads configuration from the following locations (first found wins):
 
@@ -11,7 +13,7 @@ Configuration files use simple `key = value` pairs, optional sections, and suppo
 
 Note: the severity filter is CLI-only via `-l` repeats (e.g. `-l`, `-ll`, `-lll`). It is not read from the config file.
 
-### Managing plugins
+## Managing plugins
 
 - **Run only selected plugins**: set `tests` to a comma-separated list of plugin class names.
 - **Skip specific plugins**: set `skips` to a comma-separated list of plugin class names.
@@ -26,7 +28,7 @@ tests = if_is_evil, http_splitting
 skips = origins, version_disclosure
 ```
 
-### Plugin-specific options
+## Plugin-specific options
 
 Plugin options can be provided as sectioned keys where the section name is the plugin class name written with hyphens (underscores replaced by hyphens). Keys inside sections also use hyphens. Examples:
 
@@ -41,14 +43,14 @@ url = ^/api/.*
 
 The same effect can be achieved without sections by combining the plugin name and option with a dash, e.g. `origins-domains = ...`, but sections are easier to organize.
 
-### Other useful options
+## Other useful options
 
 - **Output format**: `format = console|text|json` (same as `-f/--format`)
 - **Write report to file**: `output = /path/to/report.txt` (same as `-o/--output`)
 - **Disable include processing**: `disable-includes = true` (same as `--disable-includes`)
 - **Custom variables directories**: `vars-dirs = [/etc/gixy/vars, ~/.config/gixy/vars]` (see “Custom variables drop-ins”)
 
-### Full example
+## Full example
 
 ```ini
 # gixy.cfg
