@@ -8,7 +8,7 @@ GIXY
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/megamansec/gixy-ng.svg?style=flat-square)](https://github.com/megamansec/gixy-ng/pulls)
 
 # Overview
-<img align="right" width="192" height="192" src="docs/gixy.jpg">
+<img align="right" width="192" height="192" src="/gixy.jpg">
 
 Gixy is a tool to analyze NGINX configuration.
 The main goal of Gixy is to prevent security misconfiguration and automate flaw detection.
@@ -76,7 +76,7 @@ $ gixy /etc/nginx/nginx.conf
 
 Problem: [http_splitting] Possible HTTP-Splitting vulnerability.
 Description: Using variables that can contain "\n" may lead to http injection.
-Additional info: https://github.com/megamansec/gixy-ng/blob/master/docs/en/plugins/httpsplitting.md
+Additional info: https://gixy.io/plugins/http_splitting/
 Reason: At least variable "$action" can contain "\n"
 Pseudo config:
 include /etc/nginx/sites/default.conf;
