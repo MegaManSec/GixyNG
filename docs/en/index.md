@@ -9,7 +9,7 @@ GIXY
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/dvershinin/gixy.svg?style=flat-square)](https://github.com/dvershinin/gixy/pulls)
 
 # Overview
-<img align="right" width="192" height="192" src="docs/gixy.png">
+<img align="right" width="192" height="192" src="docs/gixy.jpg">
 
 Gixy is a tool to analyze NGINX configuration.
 The main goal of Gixy is to prevent security misconfiguration and automate flaw detection.
