@@ -20,4 +20,4 @@ E.g.:
   - by setting up the [Referrer Policy](https://www.w3.org/TR/referrer-policy/);
   - a request with opaque origin, `data:` scheme, for example.
 
-So, by using `none` as a valid referer, you nullify any attempts in refferer validation.
+So, by using `none` as a valid referer, you nullify any attempts in referer validation.

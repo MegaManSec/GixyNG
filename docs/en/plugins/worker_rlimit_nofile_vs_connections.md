@@ -1,6 +1,6 @@
-## [worker_rlimit_nofile_vs_connections] worker_rlimit_nofile must be at least twice `worker_connections`
+# [worker_rlimit_nofile_vs_connections] worker_rlimit_nofile must be at least twice `worker_connections`
 
-A frequent configuration error is not raising the file descriptor (FD) limit to at least double the `worker_connections` value. To resolve this, configure the `worker_rlimit_nofile directive` in the main configuration context,
+A frequent configuration error is not raising the file descriptor (FD) limit to at least double the `worker_connections` value. To resolve this, configure the `worker_rlimit_nofile` directive in the main configuration context,
 and ensure it is at least twice the value of `worker_connections`.
 
 Why are additional FDs necessary?

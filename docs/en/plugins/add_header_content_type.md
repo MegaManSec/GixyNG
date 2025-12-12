@@ -1,4 +1,4 @@
-# Using `add_header` for setting `Content-Type`
+# [add_header_content_type] Using `add_header` for setting `Content-Type`
 
 ## Bad example
 

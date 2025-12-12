@@ -1,4 +1,4 @@
-# Low `keepalive_requests` value
+# [low_keepalive_requests] Low `keepalive_requests` value
 
 The `keepalive_requests` directive sets the maximum number of requests that can be served through one keep-alive connection. After the maximum number of requests are made, the connection is closed.
 

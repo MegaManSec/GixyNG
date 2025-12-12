@@ -1,9 +1,11 @@
-site_name: Gixy docs
-site_description: "Automatic documentation from sources, for Gixy."
+site_name: "gixy-ng: NGINX security scanner & config checker"
+site_description: "gixy-ng is a maintained fork of Gixy: an NGINX security scanner and configuration checker that finds security misconfigurations in nginx.conf."
 site_url: https://gixy.io/
-repo_url: https://github.com/MegaManSec/gixy
+repo_url: https://github.com/MegaManSec/gixy-ng
 theme:
   name: "material"
+  language: en
+  custom_dir: docs/overrides
   palette:
     scheme: slate
     primary: teal
@@ -22,9 +24,9 @@ plugins:
       reconfigure_material: true
       fallback_to_default: true
 nav:
-  - index.md
-  - configuration.md
-  - variables-dropins.md
+  - "NGINX security scanner": index.md
+  - "Configuration & usage": configuration.md
+  - "Variables & drop-ins": variables-dropins.md
   - Plugins:
     - plugins/add_header_content_type.md
     - plugins/add_header_multiline.md

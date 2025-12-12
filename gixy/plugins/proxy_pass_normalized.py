@@ -14,7 +14,7 @@ class proxy_pass_normalized(Plugin):
         proxy_pass http://backend/foo/bar;
     """
 
-    summary = "Detect path after host in proxy_pass (potential URL decoding issue)"
+    summary = "Detect path after host in proxy_pass (potential URL decoding issue)."
     severity = gixy.severity.MEDIUM
     description = "A path (beginning with a slash) after the host in proxy_pass leads to the path being decoded and normalized before proxying downstream, leading to unexpected behavior related to encoded slashes like %2F..%2F. Likewise, the usage of 'rewrite ^ $request_uri;' without using '$1' or '$uri' (or another captured group) in the path of proxy_pass leads to double-encoding of paths."
     help_url = "https://gixy.io/plugins/proxy_pass_normalized/"

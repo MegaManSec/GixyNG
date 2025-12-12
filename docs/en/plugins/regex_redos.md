@@ -1,4 +1,4 @@
-# Regular Expression Denial of Service (ReDoS)
+# [regex_redos] Regular Expression Denial of Service (ReDoS)
 
 ReDoS (Regular Expression Denial of Service) occurs when a regex pattern with certain structures causes catastrophic backtracking on specially crafted input, consuming excessive CPU time.
 

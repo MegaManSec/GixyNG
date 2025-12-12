@@ -6,7 +6,7 @@ class version_disclosure(Plugin):
     """
     Syntax for the directive: server_tokens off;
     """
-    summary = 'Do not enable server_tokens on or server_tokens build'
+    summary = 'Detect unsafe or missing server_tokens settings that expose NGINX version.'
     severity = gixy.severity.HIGH
     description = ("Using server_tokens on; or server_tokens build;  allows an "
                    "attacker to learn the version of NGINX you are running, which can "
@@ -31,21 +31,21 @@ class version_disclosure(Plugin):
             if child.name == 'http':
                 http_block = child
                 break
-        
+
         if not http_block:
             return
-        
+
         # Check if server_tokens is set at http level
         http_server_tokens = http_block.some('server_tokens')
         if http_server_tokens and http_server_tokens.args[0] == 'off':
             # server_tokens is properly set at http level, no need to check further
             return
-        
+
         # Check each server block for server_tokens
         for server_block in http_block.find_all_contexts_of_type('server'):
             server_tokens = server_block.some('server_tokens')
             server_level_issue = False
-            
+
             if not server_tokens:
                 # Missing server_tokens directive in this server block
                 self.add_issue(
@@ -57,12 +57,12 @@ class version_disclosure(Plugin):
             elif server_tokens.args[0] in ['on', 'build']:
                 # This case is already handled by the regular audit method
                 server_level_issue = True
-            
+
             # Only check location blocks if server level is properly configured
             if not server_level_issue:
                 for location_block in server_block.find_all_contexts_of_type('location'):
                     location_tokens = location_block.some('server_tokens')
-                    
+
                     if not location_tokens:
                         # Check if server_tokens is inherited from server or http level
                         inherited_tokens = None
@@ -70,7 +70,7 @@ class version_disclosure(Plugin):
                             inherited_tokens = server_tokens
                         elif http_server_tokens:
                             inherited_tokens = http_server_tokens
-                        
+
                         # Only report if there's no safe inherited value
                         if not inherited_tokens or inherited_tokens.args[0] in ['on', 'build']:
                             self.add_issue(

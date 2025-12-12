@@ -13,9 +13,9 @@ class unanchored_regex(Plugin):
         }
     """
 
-    summary = "Regular expressions without anchors can be slow"
+    summary = "Regular expressions without anchors can be slow."
     severity = gixy.severity.LOW
-    description = "Regular expressions without anchors can be slow"
+    description = "Regular expressions without anchors can be slow."
     help_url = "https://gixy.io/plugins/unanchored_regex/"
     directives = ["location"]
 

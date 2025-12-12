@@ -9,7 +9,10 @@ class valid_referers(Plugin):
     """
     summary = 'Used "none" as valid referer.'
     severity = gixy.severity.HIGH
-    description = 'Never trust undefined referer.'
+    description = (
+        'Using "none" in valid_referers treats requests with no Referer as trusted, '
+        'effectively disabling referer-based access control and clickjacking protection.'
+    )
     help_url = 'https://gixy.io/plugins/valid_referers/'
     directives = ['valid_referers']
 

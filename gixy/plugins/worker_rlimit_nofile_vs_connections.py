@@ -11,16 +11,10 @@ class worker_rlimit_nofile_vs_connections(Plugin):
         worker_rlimit_nofile 1024;  # should be higher than worker_connections
     """
 
-    summary = (
-        "The worker_rlimit_nofile should be at least twice than worker_connections."
-    )
+    summary = "worker_rlimit_nofile should be at least twice worker_connections."
     severity = gixy.severity.MEDIUM
-    description = (
-        "The worker_rlimit_nofile should be at least twice than worker_connections."
-    )
-    help_url = (
-        "https://gixy.io/plugins/worker_rlimit_nofile_vs_connections/"
-    )
+    description = "worker_rlimit_nofile should be at least twice the worker_connections value."
+    help_url = "https://gixy.io/plugins/worker_rlimit_nofile_vs_connections/"
     directives = ["worker_connections"]
 
     def audit(self, directive):

@@ -4,8 +4,8 @@ from gixy.plugins.plugin import Plugin
 
 class allow_without_deny(Plugin):
     """
-    Bad example: add_header Content-Type text/plain;
-    Good example: default_type text/plain;
+    Warn when an 'allow' directive appears in a context without a corresponding
+    'deny all;' (or equivalent restriction) in the same context.
     """
     summary = 'Found allow directive(s) without deny in the same context.'
     severity = gixy.severity.HIGH

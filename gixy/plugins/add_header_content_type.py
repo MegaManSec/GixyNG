@@ -11,7 +11,7 @@ class add_header_content_type(Plugin):
 
     summary = "Found add_header usage for setting Content-Type."
     severity = gixy.severity.LOW
-    description = 'Target Content-Type in NGINX should not be set via "add_header"'
+    description = 'Target Content-Type in NGINX should not be set via "add_header".'
     help_url = "https://gixy.io/plugins/add_header_content_type/"
     directives = ["add_header"]
 
@@ -21,12 +21,12 @@ class add_header_content_type(Plugin):
             # This is a valid pattern to override backend Content-Type
             if self._has_hide_header_content_type(directive):
                 return
-            
+
             reason = 'You probably want "default_type {default_type};" instead of "add_header" or "more_set_headers"'.format(
                 default_type=directive.value
             )
             self.add_issue(directive=directive, reason=reason)
-    
+
     def _has_hide_header_content_type(self, directive: AddHeaderDirective):
         """Check if *_hide_header Content-Type exists in the same scope or parent scopes"""
         # List of nginx directives that can hide headers from backend
@@ -37,7 +37,7 @@ class add_header_content_type(Plugin):
             'scgi_hide_header',
             'grpc_hide_header'
         ]
-        
+
         # Check in the same block (parent)
         if directive.parent:
             for hide_directive in hide_header_directives:
@@ -46,7 +46,7 @@ class add_header_content_type(Plugin):
                     # hide_header has one argument: the header name
                     if hh.args and hh.args[0].lower() == 'content-type':
                         return True
-        
+
         # Also check in parent scopes (server, http, etc.) because *_hide_header is inherited
         for parent in directive.parents:
             for hide_directive in hide_header_directives:
@@ -54,5 +54,5 @@ class add_header_content_type(Plugin):
                 for hh in hide_headers:
                     if hh.args and hh.args[0].lower() == 'content-type':
                         return True
-        
+
         return False

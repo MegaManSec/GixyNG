@@ -1,4 +1,4 @@
-## return_bypasses_allow_deny
+# [return_bypasses_allow_deny] Return bypasses `allow` and `deny` directives
 
 Warns when `return` is used in the same scope as `allow`/`deny`, because `return` takes precedence and can bypass access controls.
 

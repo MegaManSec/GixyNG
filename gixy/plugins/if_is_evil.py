@@ -5,8 +5,11 @@ from gixy.plugins.plugin import Plugin
 class if_is_evil(Plugin):
     """
     Insecure example:
-        location /files {
-            alias /home/;
+        location / {
+            if ($request_method = POST) {
+                add_header X-Debug 1;
+            }
+            proxy_pass http://backend;
         }
     """
     summary = 'If is Evil... when used in location context.'

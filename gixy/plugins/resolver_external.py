@@ -6,7 +6,7 @@ class resolver_external(Plugin):
     """
     Syntax for the directive: resolver 127.0.0.1 [::1]:5353 valid=30s;
     """
-    summary = 'Do not use external nameservers for "resolver"'
+    summary = 'Do not use external nameservers for "resolver".'
     severity = gixy.severity.HIGH
     description = 'Using external nameservers allows someone to send spoofed DNS replies to poison the resolver ' \
                   'cache, causing NGINX to proxy HTTP requests to an arbitrary upstream server.'

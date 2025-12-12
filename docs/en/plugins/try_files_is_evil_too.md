@@ -1,4 +1,4 @@
-# `try_files` without `open_file_cache`
+# [try_files_is_evil_too] `try_files` without `open_file_cache`
 
 The `try_files` directive is commonly used in nginx to check for file existence before falling back to other options. However, without `open_file_cache`, each request triggers multiple `stat()` system calls, which can significantly impact performance.
 

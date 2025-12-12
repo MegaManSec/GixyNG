@@ -1,5 +1,5 @@
-GIXY
-====
+gixy-ng: NGINX security scanner and configuration checker
+=========================================================
 
 [![Mozilla Public License 2.0](https://img.shields.io/badge/license-MPLv2.0-brightgreen?style=flat-square)](https://github.com/megamansec/gixy-ng/blob/master/LICENSE)
 [![Python tests](https://github.com/megamansec/gixy-ng/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/megamansec/gixy-ng/actions/workflows/pythonpackage.yml)
@@ -10,8 +10,14 @@ GIXY
 # Overview
 <img align="right" width="192" height="192" src="/gixy.jpg">
 
-Gixy is a tool to analyze NGINX configuration.
-The main goal of Gixy is to prevent security misconfiguration and automate flaw detection.
+gixy-ng is a maintained fork of the original Gixy NGINX security scanner and configuration checker. It statically analyzes your NGINX configuration to find security misconfigurations and vulnerabilities such as SSRF, HTTP response splitting, host header spoofing, and version disclosure before they reach production.
+
+The main goal of gixy-ng is to automate NGINX configuration security checks and prevent misconfiguration.
+
+## Why you need an NGINX security scanner
+
+Unlike running `nginx -t`, which  only checks syntax, gixy-ng analyzes your configuration not security.
+With gixy-ng, you can perform an automated NGINX configuration security review that can run locally or in CI/CD on every change.
 
 Currently supported Python versions are 3.6 through 3.13.
 
@@ -66,7 +72,7 @@ pip install gixy-ng
 
 # Usage
 
-By default, Gixy will try to analyze NGINX configuration placed in `/etc/nginx/nginx.conf`.
+By default, gixy-ng (the `gixy` CLI) will try to analyze your NGINX configuration placed in `/etc/nginx/nginx.conf`.
 
 But you can always specify the needed path:
 ```
@@ -219,7 +225,7 @@ Total issues:
 
 # Contributing
 
-Contributions to Gixy are always welcome! You can help us in different ways:
+Contributions to gixy-ng are always welcome! You can help us in different ways:
   * Open an issue with suggestions for improvements and errors you're facing;
   * Fork this repository and submit a pull request;
   * Improve the documentation.

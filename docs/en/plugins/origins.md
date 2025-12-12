@@ -50,4 +50,4 @@ map $http_origin $allow_origin {
 add_header Access-Control-Allow-Origin $allow_origin always;
 ```
 
-Gixy also this pattern, and will also analyze regex map keys feeding `Access-Control-Allow-Origin` in the above example.
+Gixy also understands this pattern, and will also analyze regex map keys feeding `Access-Control-Allow-Origin` in the above example.

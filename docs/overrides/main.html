@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "gixy-ng",
+    "applicationCategory": "SecurityApplication",
+    "operatingSystem": "Linux",
+    "description": "gixy-ng is a maintained fork of Gixy: an NGINX security scanner and configuration checker that finds security misconfigurations in nginx.conf.",
+    "url": "https://gixy.io/",
+    "softwareVersion": "0.2.x",
+    "license": "https://www.mozilla.org/MPL/2.0/"
+  }
+  </script>
+{% endblock %}

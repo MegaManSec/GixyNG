@@ -1,4 +1,4 @@
-# Version Disclosure Plugin
+# [version_disclosure] Version Disclosure
 ## Overview
 The `version_disclosure` plugin checks Nginx configurations for settings that expose the Nginx version. This information can be used by attackers to identify specific, known vulnerabilities.
 
