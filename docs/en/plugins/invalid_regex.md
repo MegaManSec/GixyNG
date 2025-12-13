@@ -1,3 +1,8 @@
+---
+title: "Invalid Regex Captures"
+description: "Fix empty variables in NGINX rewrites. Learn how to identify and correct references to non-existent regex capture groups."
+---
+
 # [invalid_regex] Using a nonexistent regex capture group
 
 When using regular expressions with capturing groups in NGINX directives like `rewrite` or within `if` conditions, you can reference these captured groups using `$1`, `$2`, etc. in replacement strings or subsequent directives. However, if you reference a capture group that doesn't exist in the regex pattern, NGINX will treat it as an empty string, which can lead to unexpected behavior.
@@ -14,6 +19,7 @@ You should check:
 ### Example 1: Non-capturing inline modifier
 
 **Problematic configuration:**
+
 ```nginx
 server {
     location / {
@@ -26,6 +32,7 @@ server {
 **Issue:** The pattern `(?i)/` uses `(?i)` to enable case-insensitive matching, but it doesn't create a capturing group. The `$1` reference will be empty.
 
 **Fix:**
+
 ```nginx
 server {
     location / {
@@ -38,6 +45,7 @@ server {
 ### Example 2: Missing capture groups
 
 **Problematic configuration:**
+
 ```nginx
 server {
     location / {
@@ -49,6 +57,7 @@ server {
 **Issue:** The pattern `^/path` has no capturing groups, so `$1` will be empty.
 
 **Fix:**
+
 ```nginx
 server {
     location / {
@@ -63,6 +72,7 @@ server {
 ### Example 3: Referencing wrong group number
 
 **Problematic configuration:**
+
 ```nginx
 server {
     location / {
@@ -75,6 +85,7 @@ server {
 **Issue:** The pattern only has one capturing group `(.*)`, but the replacement references both `$1` and `$2`. The `$2` will be empty.
 
 **Fix:**
+
 ```nginx
 server {
     location / {
@@ -89,6 +100,7 @@ server {
 ### Example 4: Set in if block
 
 **Problematic configuration:**
+
 ```nginx
 server {
     location / {
@@ -102,6 +114,7 @@ server {
 **Issue:** The regex pattern in the `if` condition has no capturing groups, so `$1` is undefined.
 
 **Fix:**
+
 ```nginx
 server {
     location / {

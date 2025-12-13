@@ -1,3 +1,8 @@
+---
+title: "Referer Check Bypass"
+description: "Why 'valid_referers none' defeats the purpose of referer checking. Understand how easily attackers can bypass referer validation by stripping the header."
+---
+
 # [valid_referers] none in valid_referers
 
 Module [ngx_http_referer_module](https://nginx.org/en/docs/http/ngx_http_referer_module.html) allows to block the access to service for requests with wrong `Referer` value.

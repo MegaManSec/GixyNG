@@ -1,7 +1,8 @@
-site_name: "Gixy-ng: NGINX Configuration Checker"
-site_description: "Gixy-ng is an open source NGINX security scanner and configuration checker. Run automated NGINX configuration security audits, find performance misconfigurations in nginx.conf, and harden your NGINX servers."
+site_name: "GixyNG: NGINX Configuration Security & Hardening Checker"
+site_long_name: "GixyNG: NGINX Security, Hardening & Configuration Compliance Scanner"
+site_description: "GixyNG is an open source NGINX security, hardening, and configuration compliance scanner. Run automated NGINX configuration security audits and compliance checks, find performance misconfigurations in nginx.conf, and harden your NGINX servers."
 site_url: https://gixy.io/
-repo_url: https://github.com/MegaManSec/gixy-ng
+repo_url: https://github.com/MegaManSec/GixyNG
 theme:
   name: "material"
   language: en
@@ -26,7 +27,7 @@ plugins:
       reconfigure_material: true
       fallback_to_default: true
   - llmstxt:
-      markdown_description: The Gixy-ng security scanner and configuration checker statically analyzes NGINX configurations to find security and performance issues before they reach production.
+      markdown_description: The GixyNG security scanner and configuration checker statically analyzes NGINX configurations to find security issues, performance issues, and hardening opportunities before they reach production.
       full_output: llms-full.txt
       sections:
         Overview and usage:
@@ -37,9 +38,9 @@ plugins:
           - en/plugins/*.md: Scanning plugin
 nav:
   - "NGINX Security Scanner": index.md
-  - "Configuration & Usage": configuration.md
-  - "Variables & Drop-ins": variables-dropins.md
-  - "Gixy-ng vs nginx -t": nginx-configuration-checker.md
+  - "Configuration & Usage Guide": configuration.md
+  - "Custom Variables & Drop-ins": variables-dropins.md
+  - "GixyNG vs nginx -t": nginx-configuration-checker.md
   - Plugins:
     - plugins/add_header_content_type.md
     - plugins/add_header_multiline.md
@@ -83,3 +84,5 @@ extra_javascript:
   - extra/redirect-en.js
 extra:
   generator: false
+extra_css:
+  - extra.css

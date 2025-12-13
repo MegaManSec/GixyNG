@@ -1,3 +1,8 @@
+---
+title: "Low Keepalive Requests"
+description: "Optimize NGINX for HTTP/2. Why the default keepalive_requests value was raised to 1000 and why low values hurt performance."
+---
+
 # [low_keepalive_requests] Low `keepalive_requests` value
 
 The `keepalive_requests` directive sets the maximum number of requests that can be served through one keep-alive connection. After the maximum number of requests are made, the connection is closed.

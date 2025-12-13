@@ -1,3 +1,8 @@
+---
+title: "Server Side Request Forgery"
+description: "Detect SSRF vulnerabilities in NGINX. Fix unsafe internal redirects and variable-controlled proxy_pass directives that expose internal networks."
+---
+
 # [ssrf] Server Side Request Forgery
 
 Server Side Request Forgery - attack that forces a server to perform arbitrary requests (from Nginx in our case).
@@ -48,6 +53,7 @@ According to Nginx docs, internal requests are the following:
 Accordingly, any unsafe rewrite allows an attacker to make an internal request and control a proxied server's address.
 
 Misconfiguration example:
+
 ```nginx
 rewrite ^/(.*)/some$ /$1/ last;
 

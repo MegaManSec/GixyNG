@@ -1,3 +1,8 @@
+---
+title: "Uncached try_files"
+description: "Improve NGINX performance. Using try_files without open_file_cache causes excessive syscalls. Learn how to configure caching correctly."
+---
+
 # [try_files_is_evil_too] `try_files` without `open_file_cache`
 
 The `try_files` directive is commonly used in nginx to check for file existence before falling back to other options. However, without `open_file_cache`, each request triggers multiple `stat()` system calls, which can significantly impact performance.

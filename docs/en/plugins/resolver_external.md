@@ -1,3 +1,8 @@
+---
+title: "External DNS Resolvers"
+description: "Avoid DNS spoofing risks by using local resolvers. Why pointing NGINX directly to public DNS (8.8.8.8) is a security risk for internal proxies."
+---
+
 # [resolver_external] Using external DNS nameservers
 
 Using public DNS servers directly in the `resolver` directive can make nginx vulnerable to DNS cache poisoning and off-path response injection. Spoofed DNS replies may poison nginx's cache and cause it to proxy requests to attacker-controlled hosts.

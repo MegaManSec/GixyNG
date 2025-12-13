@@ -1,4 +1,9 @@
-# Configuration & Usage
+---
+title: "Configuration & Usage Guide"
+description: "Learn how to configure GixyNG, manage plugins, use CLI options, and set up custom variable drop-ins for your NGINX security scans."
+---
+
+# Configuration & Usage Guide
 
 ## Configuration (gixy.cfg)
 

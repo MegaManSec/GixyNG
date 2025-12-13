@@ -1,19 +1,23 @@
-# Gixy-ng: NGINX Security Scanner & Configuration Checker for Security Audits
+---
+#title: "" # Deliberately left blank
+description: "Open source NGINX security, hardening, and configuration compliance scanner for automating nginx.conf security audits, compliance checks, and hardening against misconfigurations."
+---
+
+# GixyNG: NGINX Security Scanner & Configuration Checker for Security Audits
 
 ## Overview
-<img align="right" width="192" height="192" src="https://gixy.io/imgs/gixy.jpg">
 
-Gixy-ng is an open source NGINX security scanner and configuration checker. It statically analyzes your NGINX configuration for security issues and misconfigurations before they reach production. Use Gixy-ng to run an automated NGINX configuration security audit and harden your nginx.conf against SSRF, HTTP response splitting, host header spoofing, version disclosure, and other vulnerabilities, as well as misconfigurations which lead to degraded performance and slow nginx servers.
+<img width="192" height="192" alt="GixyNG Mascot Logo" style="float: right;" src="https://gixy.io/imgs/gixy.jpg">
 
-The main goal of Gixy-ng is to automate NGINX configuration security checks and prevent misconfiguration.
+GixyNG is an open source NGINX security scanner and configuration checker that analyzes your NGINX configuration for security issues, misconfigurations, and missed hardening opportunities, before they reach production. You can use GixyNG to run automated NGINX configuration security audits, and harden your nginx.conf against SSRF, HTTP response splitting, host header spoofing, version disclosure, and other vulnerabilities, as well as misconfigurations which lead to degraded performance and slow nginx servers.
 
 ### What is Gixy?
 
-Gixy is a popular NGINX configuration analyzer originally developed by Yandex. Gixy-ng is a maintained fork of Gixy that adds new checks, performance improvements, and support for modern Python and NGINX versions. If you are looking for an NGINX config scanner that is actively maintained, use Gixy-ng.
+_Gixy_ is an older NGINX configuration analyzer originally developed by Yandex. GixyNG is a maintained fork of Gixy that adds new checks, performance improvements, hardening suggestions, and support for modern Python and NGINX versions. If you are looking for an NGINX config scanner that is actively maintained and actually works now, use GixyNG.
 
 ## What it can do
 
-Gixy-ng can can find various nginx configuration security issues, as well as nginx configuration performance issues, based on your `nginx.conf` and other nginx configuration files. The following plugins are supported to detect these misconfigurations
+GixyNG can can find various nginx configuration security issues, as well as nginx configuration performance issues, based on your `nginx.conf` and other nginx configuration files. The following plugins are supported to detect these misconfigurations
 
 *   [[add_header_content_type] Setting Content-Type via add_header](plugins/add_header_content_type.md)
 *   [[add_header_multiline] Multiline response headers](plugins/add_header_multiline.md)
@@ -40,7 +44,7 @@ Gixy-ng can can find various nginx configuration security issues, as well as ngi
 *   [[version_disclosure] Using insecure values for server_tokens](plugins/version_disclosure.md)
 *   [[worker_rlimit_nofile_vs_connections] `worker_rlimit_nofile` must be at least twice `worker_connections`](plugins/worker_rlimit_nofile_vs_connections.md)
 
-Something not detected? Please open an [issues labeled with "new plugin"](https://github.com/megamansec/gixy-ng/issues?q=is%3Aissue+is%3Aopen+label%3A%22new+plugin%22).
+Something not detected? Please open an [issues labeled with "new plugin"](https://github.com/megamansec/GixyNG/issues?q=is%3Aissue+is%3Aopen+label%3A%22new+plugin%22).
 
 ## Installation
 
@@ -52,17 +56,18 @@ yum -y install gixy
 ```
 #### Other systems
 
-Gixy is distributed on [PyPI](https://pypi.python.org/pypi/gixy-ng). The best way to install it is with pip:
+Gixy is distributed on [PyPI](https://pypi.python.org/pypi/GixyNG). The best way to install it is with pip:
 
 ```bash
-pip install gixy-ng
+pip install GixyNG
 ```
 
 ## Usage
 
-By default, Gixy-ng (the `gixy` CLI) will try to analyze your NGINX configuration placed in `/etc/nginx/nginx.conf`.
+By default, GixyNG (the `gixy` CLI) will try to analyze your NGINX configuration placed in `/etc/nginx/nginx.conf`.
 
 But you can always specify the needed path:
+
 ```
 $ gixy /etc/nginx/nginx.conf
 
@@ -92,6 +97,7 @@ Total issues:
 ```
 
 Or skip some tests:
+
 ```
 $ gixy --skips http_splitting /etc/nginx/nginx.conf
 
@@ -121,6 +127,7 @@ Some plugins expose options which you can set via CLI flags or config file. CLI 
   - `--add-header-redefinition-headers headers`: Comma-separated allowlist of header names (case-insensitive). When set, only dropped headers from this list will be reported; when unset, all dropped headers are reported. Example: `--add-header-redefinition-headers x-frame-options,content-security-policy`. Default: unset (report all).
 
 Examples (config file):
+
 ```
 [origins]
 domains = example.com, example.org
@@ -137,20 +144,22 @@ echo "resolver 1.1.1.1;" | gixy -
 ```
 
 ### Docker usage
-Gixy-ng is available as a Docker image [from the Docker hub](https://hub.docker.com/r/getpagespeed/gixy/). To
+GixyNG is available as a Docker image [from the Docker hub](https://hub.docker.com/r/getpagespeed/gixy/). To
 use it, mount the configuration that you want to analyse as a volume and provide the path to the
-configuration file when running the Gixy-ng image.
+configuration file when running the GixyNG image.
+
 ```
 $ docker run --rm -v `pwd`/nginx.conf:/etc/nginx/conf/nginx.conf getpagespeed/gixy /etc/nginx/conf/nginx.conf
 ```
 
 If you have an image that already contains your nginx configuration, you can share the configuration
-with the Gixy-ng container as a volume.
+with the GixyNG container as a volume.
+
 ```
 $  docker run --rm --name nginx -d -v /etc/nginx
 nginx:alpinef68f2833e986ae69c0a5375f9980dc7a70684a6c233a9535c2a837189f14e905
 
-$  docker run --rm --volumes-from nginx megamansec/gixy-ng /etc/nginx/nginx.conf
+$  docker run --rm --volumes-from nginx megamansec/GixyNG /etc/nginx/nginx.conf
 
 ==================== Results ===================
 No issues found.
@@ -163,7 +172,9 @@ Total issues:
     High: 0
 
 ```
+
 ### Kubernetes usage
+
 Given you are using the official NGINX ingress controller, not the kubernetes one, you can use this
 https://github.com/nginx/kubernetes-ingress
 
@@ -209,21 +220,21 @@ Total issues:
     High: 4
 ```
 
-## Why Gixy-ng is Essential for NGINX Security and Compliance
+## Why GixyNG is Essential for NGINX Security and Compliance
 
-Unlike running `nginx -t`, which only checks syntax, Gixy-ng analyzes your configuration for security.
-With Gixy-ng, you can perform an automated NGINX configuration security review that can run locally or in CI/CD on every change.
+Unlike running `nginx -t`, which only checks syntax, GixyNG actually analyzes your configuration and detects unhardened instances, vulnerabilities, and vulnerabilities.
+
+With GixyNG, you can perform an automated NGINX configuration security reviewthat can run locally or in CI/CD on every change, whether that be for auditing purposes, compliance, or just general testing.
 
 Currently supported Python versions are 3.6 through 3.13.
 
-Disclaimer: Gixy-ng is well tested only on GNU/Linux, other OSs may have some issues.
-
+Disclaimer: GixyNG is well tested only on GNU/Linux, other OSs may have some issues.
 
 ## Contributing
 
-Contributions to Gixy-ng are always welcome! You can help us in different ways:
+Contributions to GixyNG are always welcome! You can help us in different ways:
 
-- Open an issue with suggestions for improvements and errors you're facing in the [GitHub repository](https://github.com/MegaManSec/gixy-ng);
+- Open an issue with suggestions for improvements and errors you're facing in the [GitHub repository](https://github.com/MegaManSec/GixyNG);
 - Fork this repository and submit a pull request;
 - Improve the documentation.
 

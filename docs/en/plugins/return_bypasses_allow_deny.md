@@ -1,3 +1,8 @@
+---
+title: "Return Bypasses Allow/Deny"
+description: "Security warning: The 'return' directive executes before allow/deny checks. Learn how to structure config to ensure access controls apply."
+---
+
 # [return_bypasses_allow_deny] Return bypasses `allow` and `deny` directives
 
 Warns when `return` is used in the same scope as `allow`/`deny`, because `return` takes precedence and can bypass access controls.

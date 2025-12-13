@@ -1,3 +1,8 @@
+---
+title: "Weak Referer/Origin Regex"
+description: "Secure your CORS and Referer validation. Avoid weak regex patterns for Origin headers and learn how to use a safelist map instead."
+---
+
 # [origins] Problems with referrer/origin validation
 
 It's not unusual to use regex for `Referer` or `Origin` headers validation.
@@ -17,6 +22,7 @@ The most common errors with this configuration are:
 - `--origins-lower-hostname true|false` (Default: `true`): Normalize hostnames to lowercase before validation.
 
 Config file example:
+
 ```
 [origins]
 domains = example.com, example.org
@@ -24,11 +30,13 @@ https-only = true
 ```
 
 ## How can I find it?
-"Eazy"-breezy:
+
+Easy:
   - you have to find all the `if` directives that are in charge of `$http_origin` or `$http_referer` check;
   - make sure your regexes are a-ok.
 
 Misconfiguration example:
+
 ```nginx
 if ($http_origin ~* ((^https://www\.yandex\.ru)|(^https://ya\.ru)$)) {
 	add_header 'Access-Control-Allow-Origin' "$http_origin";

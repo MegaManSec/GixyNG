@@ -1,6 +1,6 @@
 {
-  "name": "Gixy-ng",
-  "short_name": "Gixy-ng",
+  "name": "GixyNG: NGINX Security Scanner & Configuration Checker",
+  "short_name": "GixyNG",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

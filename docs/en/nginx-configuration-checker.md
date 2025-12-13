@@ -1,11 +1,16 @@
-# NGINX Config Checker: Gixy-ng vs nginx -t
+---
+title: "GixyNG vs nginx -t: The Difference"
+description: "Understand the difference between nginx -t (syntax check) and GixyNG (security audit). Learn when to use which gixyNG for safe NGINX deployments."
+---
+
+# NGINX Config Checker: GixyNG vs nginx -t
 
 When people say "NGINX configuration checker", they usually mean one of two things:
 
 - `nginx -t` for syntax validation, or
-- A static analyzer like Gixy-ng, which focuses on security and best practices.
+- A static analyzer like the actively maintained Gixy fork, GixyNG, which focuses on security and best practices and actual runtime behavior.
 
-This page explains how Gixy-ng complements `nginx -t`, and how to use it as your NGINX configuration checker in day to day work.
+This page explains how GixyNG complements `nginx -t`, and how to use it as your NGINX configuration checker in day to day work.
 
 ## What `nginx -t` actually checks
 
@@ -28,11 +33,11 @@ It does **not** mean:
 
 It is a linter for syntax, not a security review.
 
-## What Gixy-ng adds as a configuration checker
+## What GixyNG adds as a configuration checker
 
-Gixy-ng is an **NGINX configuration security checker**. It parses your `nginx.conf` (and all included files) and runs a set of security and correctness checks on top of simple syntax validation.
+GixyNG is an **NGINX configuration security checker**. It parses your `nginx.conf` (and all included files) and runs a set of security and correctness checks on top of simple syntax validation.
 
-Gixy-ng can detect issues such as:
+GixyNG can detect issues such as:
 
 - `ssrf` – server side request forgery risks in `proxy_pass` and similar directives
 - `http_splitting` – HTTP response splitting via unsafe variables in headers
@@ -45,11 +50,11 @@ Gixy-ng can detect issues such as:
 In other words:
 
 - `nginx -t` answers: *Can NGINX load this config?*
-- Gixy-ng answers: *Is this config safe and sane?*
+- GixyNG answers: *Is this config safe and sane?*
 
 ## Quick start as a configuration checker
 
-If you have Gixy-ng installed via `pip install gixy-ng`, a basic check looks like this:​
+If you have GixyNG installed via `pip install gixyng`, a basic check looks like this:​
 
 ```bash
 # Check the default NGINX config (usually /etc/nginx/nginx.conf)
@@ -76,32 +81,32 @@ To skip specific checks that you know are noisy for your environment:
 gixy --skips http_splitting /etc/nginx/nginx.conf
 ```
 
-To focus on more serious problems only (depending on how you wire severity flags in Gixy-ng):
+To focus on more serious problems only (depending on how you wire severity flags in GixyNG):
 
 ```bash
 # Example: only medium and high severity issues
 gixy -ll /etc/nginx/nginx.conf
 ```
 
-## Side by side: `nginx -t` vs Gixy-ng
+## Side by side: `nginx -t` vs GixyNG
 
 | Tool       | Syntax validation | Includes / multi file configs | Security misconfig checks | Best practice checks | CI/CD friendly |
 | ---------- | ----------------- | ----------------------------- | ------------------------- | -------------------- | -------------- |
 | `nginx -t` | Yes               | Yes                           | No                        | No                   | Sort of        |
-| Gixy-ng    | Parses config     | Yes                           | Yes                       | Yes (via plugins)    | Yes            |
+| GixyNG     | Parses config     | Yes                           | Yes                       | Yes (via plugins)    | Yes            |
 
 They are complementary:
 
 * Always run `nginx -t` before reloads to avoid broken configs.
-* Run **Gixy-ng** as your NGINX configuration checker before changes hit production, to catch security and logic issues.
+* Run **GixyNG** as your NGINX configuration checker before changes hit production, to catch security and logic issues.
 
-## Example: treating Gixy-ng as a gatekeeper
+## Example: treating GixyNG as a gatekeeper
 
 A simple manual workflow:
 
 1. Edit your NGINX configuration.
 
-2. Run Gixy-ng:
+2. Run GixyNG:
 
    ```bash
    gixy /etc/nginx/nginx.conf
@@ -115,7 +120,7 @@ A simple manual workflow:
 
 This way:
 
-* Gixy-ng acts as your **NGINX configuration checker** and security auditor.
+* GixyNG acts as your **NGINX configuration checker** and security auditor.
 * `nginx -t` remains the last line of defense against syntax errors.
 
 ## When to use each tool
@@ -125,7 +130,7 @@ Use **`nginx -t`** when:
 * You just edited a configuration file and want to be sure NGINX will start.
 * You are troubleshooting a reload failure.
 
-Use **Gixy-ng** when:
+Use **GixyNG** when:
 
 * You want to perform an **NGINX configuration security audit**.
 * You are onboarding a new application or team and want to catch common misconfigurations.

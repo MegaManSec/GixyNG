@@ -1,3 +1,8 @@
+---
+title: "Custom Variables & Drop-ins"
+description: "How to configure custom variable drop-ins for GixyNG to support third-party NGINX modules and resolve variable-related warnings."
+---
+
 # Variables & Drop-ins
 
 ## Custom variables drop-ins

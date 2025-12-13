@@ -1,3 +1,8 @@
+---
+title: "proxy_path Normalization"
+description: "Prevent path traversal and double-decoding issues in proxy_pass. Understand how NGINX normalizes URIs when a path is specified."
+---
+
 # [proxy_pass_normalized] `proxy_pass` may decode and normalize paths
 
 When `proxy_pass` includes a path (anything after the host), NGINX will decode percent-encodings and normalize the URL path before proxying. This can lead to:

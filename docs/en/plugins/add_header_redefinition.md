@@ -1,3 +1,8 @@
+---
+title: "Header Inheritance Issues"
+description: "Fix missing security headers caused by NGINX add_header inheritance rules. Understand how nested location blocks can accidentally drop headers."
+---
+
 # [add_header_redefinition] Redefining of response headers by "add_header" directive
 
 Unfortunately, many people don't know how the inheritance of directives works. Most often this leads to misuse of the `add_header` directive while trying to add a new response header on the nested level.
@@ -8,6 +13,7 @@ The logic is quite simple: if you set headers at one level (for example, in `ser
 
 It's easy to check:
   - Configuration:
+
 ```nginx
 server {
   listen 80;
@@ -25,7 +31,9 @@ server {
   }
 }
 ```
+
   - Request to location `/` (`X-Frame-Options` header is in server response):
+
 ```http
 GET / HTTP/1.0
 
@@ -39,7 +47,9 @@ X-Frame-Options: DENY
 
 index
 ```
+
   - Request to location `/new-headers` (headers `Cache-Control` and `Pragma` are present, but there's no `X-Frame-Options`):
+
 ```http
 GET /new-headers HTTP/1.0
 
@@ -67,6 +77,7 @@ There are several ways to solve this problem:
 - `--add-header-redefinition-headers headers` (Default: unset): Comma-separated, case-insensitive allowlist of headers to report when dropped. When unset, all dropped parent headers are reported. Example: `--add-header-redefinition-headers x-frame-options,content-security-policy`.
 
 Config file example:
+
 ```
 [add_header_redefinition]
 headers = x-frame-options, content-security-policy

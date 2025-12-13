@@ -1,3 +1,8 @@
+---
+title: "If Is Evil (in Location)"
+description: "Why 'if' inside NGINX location blocks is dangerous. Examples of unpredictable behavior, segfaults, and safe alternatives using try_files or maps."
+---
+
 # [if_is_evil] If is Evil... when used in location context
 
 ## Introduction

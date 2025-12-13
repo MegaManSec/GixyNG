@@ -1,3 +1,8 @@
+---
+title: "Missing default_server Flag"
+description: "Prevent ambiguous request handling by ensuring one server block is explicitly marked as the default_server for every shared listen socket."
+---
+
 # [default_server_flag] Missing default_server on shared listen socket
 
 When two or more `server` blocks share the same `listen` address and port, one

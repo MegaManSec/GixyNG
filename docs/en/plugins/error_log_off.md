@@ -1,3 +1,8 @@
+---
+title: "error_log Set To Off"
+description: "Don't blindly use 'error_log off'. Learn why NGINX creates a file named 'off' and how to properly disable logging using /dev/null."
+---
+
 # [error_log_off] `error_log` set to `off`
 
 A common misconception is that using the directive `error_log off` disables error logging.

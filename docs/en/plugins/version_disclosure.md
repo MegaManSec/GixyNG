@@ -1,3 +1,8 @@
+---
+title: "NGINX Version Disclosure"
+description: "Hide your NGINX version. Detect 'server_tokens on' configurations that leak version info to attackers and help them identify exploits."
+---
+
 # [version_disclosure] Version Disclosure
 
 The `version_disclosure` plugin checks Nginx configurations for settings that expose the Nginx version. This information can be used by attackers to identify specific, known vulnerabilities.

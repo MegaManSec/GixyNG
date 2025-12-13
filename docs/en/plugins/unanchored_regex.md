@@ -1,3 +1,8 @@
+---
+title: "Unanchored Regex Pattern"
+description: "Fix loose regex matching. Unanchored location blocks (e.g. ~ /v1/) can match unexpected URLs. Learn to use ^ and $ anchors for security."
+---
+
 # [unanchored_regex] Regular expression without anchors
 
 In NGINX, when defining location with regular expression, it's recommended to anchor the regex at least to the beginning or end of the string. 

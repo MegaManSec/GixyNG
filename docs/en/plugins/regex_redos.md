@@ -1,3 +1,8 @@
+---
+title: "Regex Denial of Service"
+description: "Protect NGINX from ReDoS attacks. Identify catastrophic backtracking in regex locations and rewrite rules that can hang your server."
+---
+
 # [regex_redos] Regular Expression Denial of Service (ReDoS)
 
 ReDoS (Regular Expression Denial of Service) occurs when a regex pattern with certain structures causes catastrophic backtracking on specially crafted input, consuming excessive CPU time.

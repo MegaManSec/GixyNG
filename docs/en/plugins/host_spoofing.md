@@ -1,3 +1,8 @@
+---
+title: "Host Header Spoofing"
+description: "Prevent Host header forgery in NGINX. Learn why you should use $host instead of $http_host to stop cache poisoning and SSRF attacks."
+---
+
 # [host_spoofing] Request's Host header forgery
 
 Often, an application located behind Nginx needs a correct `Host` header for URL generation (redirects, resources, links in emails etc.).

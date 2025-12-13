@@ -1,4 +1,6 @@
+import pathlib
 import re
+
 from setuptools import setup, find_packages
 
 # FileNotFoundError is not there in Python 2, define it:
@@ -7,9 +9,14 @@ try:
 except NameError:
     FileNotFoundError = IOError
 
-with open("gixy/__init__.py", "r") as fd:
+here = pathlib.Path(__file__).parent
+
+# Extract version from gixy/__init__.py
+with open(here / "gixy" / "__init__.py", "r", encoding="utf-8") as fd:
     version = re.search(
-        r'^version\s*=\s*[\'"]([^\'"]*)[\'"]', fd.read(), re.MULTILINE
+        r'^version\s*=\s*[\'"]([^\'"]*)[\'"]',
+        fd.read(),
+        re.MULTILINE,
     ).group(1)
 
 if not version:
@@ -21,6 +28,7 @@ install_requires = [
     'argparse>=1.4.0;python_version<"3.2"',
     "Jinja2>=2.8",
     "ConfigArgParse>=0.11.0",
+    "publicsuffixlist>=1.0.2.20250428",
 ]
 
 tests_requires = [
@@ -28,41 +36,125 @@ tests_requires = [
     "pytest-xdist",
 ]
 
-# README.md is not present in Docker image setup
+dev_requires = tests_requires + [
+    "coverage>=4.3",
+    "flake8>=3.2",
+    "tox>=2.7.0",
+    "setuptools",
+    "twine",
+]
+
 long_description = None
+readme_path = here / "README.md"
+docs_index_path = here / "docs" / "en" / "index.md"
+
 try:
-    with open("README.md", "r", encoding="utf-8") as fh:
-        long_description = fh.read()
+    text = readme_path.read_text(encoding="utf-8")
+    single_line = text.strip()
+    if single_line.endswith(".md") and "\n" not in single_line:
+        candidate = here / single_line
+        try:
+            long_description = candidate.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            long_description = text
+    else:
+        long_description = text
 except FileNotFoundError:
-    pass
+    try:
+        long_description = docs_index_path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        long_description = None
 
 setup(
-    name="gixy-ng",
+    name="GixyNG",
     version=version,
-    description="NGINX configuration [sec]analyzer",
+
+    description=(
+        "Open source NGINX security scanner and configuration checker for "
+        "automating nginx.conf security audits, finding performance "
+        "misconfigurations, and hardening NGINX servers."
+    ),
+
     long_description=long_description,
     long_description_content_type="text/markdown",
-    keywords="nginx security lint static-analysis",
-    author="Yandex IS Team, GetPageSpeed LLC",
-    author_email="buglloc@yandex.ru, info@getpagespeed.com",
-    url="https://github.com/dvershinin/gixy",
+
+    keywords=[
+        "nginx",
+        "nginx security",
+        "nginx hardening",
+        "nginx configuration",
+        "nginx config",
+        "nginx config scanner",
+        "nginx configuration checker",
+        "nginx config linter",
+        "nginx security scanner",
+        "nginx configuration static analyzer",
+        "nginx.conf security audit",
+        "configuration compliance",
+        "configuration security",
+        "static analysis",
+        "ssrf",
+        "http response splitting",
+        "host header spoofing",
+        "version disclosure",
+        "redos",
+        "gixy",
+        "gixy-ng",
+        "gixyng",
+    ],
+
+    author="Yandex IS Team, MegaManSec",
+    author_email="gixy@joshua.hu",
+
+    url="https://gixy.io/",
+    project_urls={
+        "Homepage": "https://gixy.io/",
+        "Documentation": "https://gixy.io/",
+        "Source": "https://github.com/MegaManSec/GixyNG",
+        "Issue Tracker": "https://github.com/MegaManSec/GixyNG/issues",
+        "Original Gixy": "https://github.com/yandex/gixy",
+    },
+
+    packages=find_packages(exclude=["tests", "tests.*"]),
+    include_package_data=True,
+
     install_requires=install_requires,
     extras_require={
         "tests": install_requires + tests_requires,
-        "redos": ["requests>=2.20.0"],  # Optional: ReDoS checks via external API
+        "dev": install_requires + dev_requires,
+        # Optional: ReDoS checks via external API
+        "redos": ["requests>=2.20.0"],
     },
+
     entry_points={
-        "console_scripts": ["gixy=gixy.cli.main:main"],
+        "console_scripts": [
+            "gixy=gixy.cli.main:main",
+        ],
     },
-    packages=find_packages(exclude=["tests", "tests.*"]),
+
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
+
         "Environment :: Console",
+
         "Intended Audience :: System Administrators",
         "Intended Audience :: Developers",
+        "Intended Audience :: Information Technology",
+
         "Topic :: Security",
+        "Topic :: Security :: Vulnerability Scanners",
+        "Topic :: System :: Systems Administration",
+        "Topic :: Internet :: WWW/HTTP :: Site Management",
         "Topic :: Software Development :: Quality Assurance",
         "Topic :: Software Development :: Testing",
+        "Topic :: Utilities",
+
+        "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+
+        "Operating System :: POSIX :: Linux",
+
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -72,5 +164,6 @@ setup(
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
     ],
-    include_package_data=True,
+
+    python_requires=">=3.6",
 )

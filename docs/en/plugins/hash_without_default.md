@@ -1,3 +1,8 @@
+---
+title: "Map Default Value Missing"
+description: "Security best practice: Always define a safe 'default' value in NGINX map and geo blocks to prevent unhandled keys from bypassing logic."
+---
+
 # [hash_without_default] Missing default in hash blocks (`map`, `geo`)
 
 Hash-like blocks such as `map` and `geo` should define a safe `default` value. Without it, unexpected keys may fall through to an unintended state, potentially bypassing security controls.
