@@ -1,12 +1,32 @@
 ---
 title: "Alias Path Traversal"
-description: "Detect and fix directory traversal vulnerabilities in NGINX alias directives. Ensure your alias locations properly handle trailing slashes."
+description: "Detects alias locations that can be abused for directory traversal when the location and alias trailing slashes do not match."
 ---
 
 # [alias_traversal] Path traversal via misconfigured alias
 
-The [alias](https://nginx.ru/en/docs/http/ngx_http_core_module.html#alias) directive is used to replace path of the specified location.
-For example, with the following configuration:
+## What this check looks for
+
+This plugin flags `alias` directives where the `location` prefix and the alias path are not aligned (most commonly: missing a trailing slash on the `location`).
+
+## Why this is a problem
+
+With a mismatched `location`/`alias` pair, NGINX can build the filesystem path in unexpected ways. Attackers can use crafted paths like `/i../` to escape the intended directory and read files outside of it.
+
+## Bad configuration
+
+```nginx
+# Location does not end with a slash, but alias points to a directory
+location /i {
+    alias /data/w3/images/;
+}
+```
+
+A request to `/i../app/config.py` may map to `/data/w3/app/config.py`, which is outside the intended `/images/` directory.
+
+## Better configuration
+
+If the alias points to a directory, make the location look like a directory too:
 
 ```nginx
 location /i/ {
@@ -14,23 +34,10 @@ location /i/ {
 }
 ```
 
-On request of `/i/top.gif`, the file `/data/w3/images/top.gif` will be sent.
-
-But if the location doesn't end with directory separator (i.e. `/`):
+If you are mapping a single file, use an exact match:
 
 ```nginx
-location /i {
-    alias /data/w3/images/;
+location = /i.gif {
+    alias /data/w3/images/i.gif;
 }
 ```
-
-On request of `/i../app/config.py`, the file `/data/w3/app/config.py` will be sent.
-
-In other words, the incorrect configuration of `alias` could allow an attacker to read file stored outside the target folder.
-
-## What can I do?
-
-It's pretty simple:
-  - you must find all the `alias` directives;
-  - make sure that the parent prefixed location ends with directory separator.
-  - or if you want to map a single file make sure the location starts with a `=`, e.g. `=/i.gif` instead of `/i.gif`.

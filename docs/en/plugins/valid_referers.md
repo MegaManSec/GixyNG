@@ -1,31 +1,46 @@
 ---
 title: "Referer Check Bypass"
-description: "Why 'valid_referers none' defeats the purpose of referer checking. Understand how easily attackers can bypass referer validation by stripping the header."
+description: "Detects use of 'none' in valid_referers. Allowing missing Referer defeats the point of referer validation because attackers can omit the header."
 ---
 
 # [valid_referers] none in valid_referers
 
-Module [ngx_http_referer_module](https://nginx.org/en/docs/http/ngx_http_referer_module.html) allows to block the access to service for requests with wrong `Referer` value.
-It's often used for setting `X-Frame-Options` header (ClickJacking protection), but there may be other cases.
+## What this check looks for
 
-Typical problems with this module's config:
+This plugin warns when `valid_referers` includes the `none` keyword.
 
-- use of `server_names` with bad server name (`server_name` directive);
-- too broad and/or bad regexes;
-- use of `none`.
+## Why this is a problem
 
-> Notice: at the moment, Gixy can only detect the use of `none` as a valid referer.
+`none` means: treat requests with no `Referer` header as valid.
 
-## Why `none` is bad?
+The trouble is that the `Referer` header is optional. Users and browsers can drop it for perfectly normal reasons (HTTPS to HTTP redirects, referrer policy, opaque origins, `data:` URLs), and attackers can omit it deliberately. If you accept `none`, a client can bypass your referer-based control simply by not sending the header.
 
-According to [docs](https://nginx.org/ru/docs/http/ngx_http_referer_module.html#valid_referers):
+## Bad configuration
 
-> `none` - the "Referer" field is missing in the request header;
+```nginx
+valid_referers none server_names *.example.com;
 
-Still, it's important to remember that any resource can make user's browser to make a request without a `Referer` request header. For example:
+if ($invalid_referer) {
+    return 403;
+}
+```
 
-- in case of redirect from HTTPS to HTTP;
-- by setting up the [Referrer Policy](https://www.w3.org/TR/referrer-policy/);
-- a request with opaque origin, `data:` scheme, for example.
+With `none` allowed, a request without `Referer` will not be considered invalid.
 
-So, by using `none` as a valid referer, you nullify any attempts in referer validation.
+## Better configuration
+
+If you rely on referer checking, be strict:
+
+```nginx
+valid_referers server_names *.example.com;
+
+if ($invalid_referer) {
+    return 403;
+}
+```
+
+Then decide what you want to do for missing referers. If missing referers must be allowed for user experience, referer validation is not a reliable security boundary for that endpoint.
+
+## Additional notes
+
+Referer checks are best treated as a friction mechanism (hotlink protection, lightweight clickjacking mitigation), not as any actual security measure.

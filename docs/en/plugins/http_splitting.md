@@ -1,37 +1,28 @@
 ---
 title: "HTTP Response Splitting"
-description: "Detect and fix HTTP Response Splitting (CRLF injection) in NGINX. Identify unsafe variables in add_header and rewrite directives."
+description: "Detects patterns that allow CRLF injection into response headers (HTTP response splitting). Typically caused by unsafe variables in add_header or unbounded regex captures."
 ---
 
-# [http_splitting] HTTP Splitting
+# [http_splitting] HTTP splitting (CRLF injection)
 
-HTTP Splitting - attack that use improper input validation. It usually targets web application located behind Nginx (HTTP Request Splitting) or its users (HTTP Response Splitting).
+## What this check looks for
 
-Vulnerability is created when an attacker can insert newline character `\n` or `\r` into request or into response, created by Nginx.
+This plugin looks for cases where user-controlled input can end up inside response headers, usually through `add_header` (or similar) combined with variables that can contain newline characters.
 
-## How can I find it?
+## Why this is a problem
 
-You should always pay attention to:
+If an attacker can inject `\r\n` into a header value, they can create additional headers or even influence the response body. At a minimum this is a cache poisoning and security header bypass risk, and in the worst case it becomes a response splitting attack against downstream clients.
 
- - variables that are used in directives, responsible for the request creation (for they may contain CRLF), e.g. `rewrite`, `return`, `add_header`, `proxy_set_header` or `proxy_pass`;
- - `$uri` and `$document_uri` variables, and in which directives they are used, because these variables contain decoded URL-encoded value;
- - variables, that are selected from an exclusive range, e.g. `(?P<myvar>[^.]+)`.
-
-
-An example of configuration that contains variable, selected from an exclusive range:
+## Bad configuration
 
 ```nginx
-server {
-    listen 80 default;
-
-    location ~ /v1/((?<action>[^.]*)\.json)?$ {
-        add_header X-Action $action;
-        return 200 "OK";
-    }
+# $action comes from a regex capture and is inserted into a response header
+location ~ /v1/((?<action>[^.]*)\.json)?$ {
+    add_header X-Action $action;
 }
 ```
 
-Exploitation:
+If the capture allows newlines (directly, or via normalization/decoding elsewhere), an attacker can turn one header into many. For example:
 
 ```http
 GET /v1/see%20below%0d%0ax-crlf-header:injected.json HTTP/1.0
@@ -49,14 +40,17 @@ x-crlf-header:injected
 OK
 ```
 
-As you can see, an attacker could add `x-crlf-header: injected` response header. This was possible because:
-  - `add_header` doesn't encode or validate input value on suggestion that author knows about the consequences;
-  - the path value is normalize before location processing;
-  - `$action` value was given from a regexp with an exclusive range: `[^.]*`;
-  - as the result, `$action` value is equal to `see below\r\nx-crlf-header:injected` and on its use the response header was added.
+## Better configuration
 
-## What can I do?
+1) Prefer safer variables (for example `$request_uri` over `$uri` when you need the raw input).
 
-  - try to use safe variables, e.g. `$request_uri` instead of `$uri`;
-  - forbid the use of the new line symbol in the exclusive range by using `/some/(?<action>[^/\s]+)` instead of `/some/(?<action>[^/]+`
-  - it could be a good idea to validate `$uri` (only if you're sure you know what are you getting into).
+2) Constrain captures so they cannot contain whitespace or control characters:
+
+```nginx
+# Disallow slashes and whitespace in the capture
+location ~ ^/some/(?<action>[^/\s]+)$ {
+    add_header X-Action $action;
+}
+```
+
+3) If you must reflect client input, validate it first and keep the allowed character set tight.

@@ -1,31 +1,43 @@
 ---
 title: "Duplicate Content-Type"
-description: "Prevent duplicate Content-Type headers in NGINX. Learn why using add_header for Content-Type is risky and how to use default_type correctly."
+description: "Flags cases where add_header is used to set Content-Type, which can create duplicate Content-Type headers. Prefer default_type, or hide the upstream header first."
 ---
 
-# [add_header_content_type] Using `add_header` for setting `Content-Type`
+# [add_header_content_type] Using add_header to set Content-Type
 
-## Bad example
+## What this check looks for
+
+This plugin looks for configurations that try to set the `Content-Type` response header using `add_header`.
+
+## Why this is a problem
+
+NGINX can end up sending two `Content-Type` headers: one from the upstream, and one you added. Different clients handle duplicates differently, and caches may store an unexpected value. If you are trying to set a fallback MIME type for static content, `default_type` is the right tool.
+
+## Bad configuration
 
 ```nginx
+# Adds a second Content-Type if the upstream already sets one
 add_header Content-Type text/plain;
 ```
 
-This may result in duplicate `Content-Type` headers if your backend sets it.
+If your backend returns `Content-Type: application/json`, the response may contain both headers.
 
-## Good example
+## Better configuration
 
 ```nginx
+# Sets the default MIME type for responses that do not already have one
 default_type text/plain;
 ```
 
-## Exceptions
+`default_type` applies when there is no explicit content type, so you avoid duplicates.
 
-Using `add_header Content-Type` in combination with any `*_hide_header Content-Type` directive is safe and will not trigger this check:
+## Safe exception
+
+If you are intentionally replacing the upstream header, hide it first and then add your own:
 
 ```nginx
 proxy_hide_header Content-Type;
 add_header Content-Type "application/octet-stream";
 ```
 
-This pattern is valid because `*_hide_header` (such as `proxy_hide_header`, `fastcgi_hide_header`, `uwsgi_hide_header`, `scgi_hide_header`, or `grpc_hide_header`) prevents the backend's `Content-Type` from being passed through, and `add_header` then sets a new one, avoiding duplicate headers.
+This pattern removes the upstream `Content-Type` before adding a new one, so the client sees only a single value.

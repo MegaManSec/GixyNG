@@ -1,45 +1,78 @@
 ---
 title: "If Is Evil (in Location)"
-description: "Why 'if' inside NGINX location blocks is dangerous. Examples of unpredictable behavior, segfaults, and safe alternatives using try_files or maps."
+description: "Explains why if inside a location block can behave unpredictably and how to rewrite the config using return, rewrite, map, or separate locations."
 ---
 
-# [if_is_evil] If is Evil... when used in location context
+# [if_is_evil] If is evil when used in location context
 
-## Introduction
+## What this check looks for
 
-Directive [`if`](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#if) has problems **when used in location context**,
-in some cases it doesn't do what you expect but something completely different instead.  In some cases it even segfaults.  It's generally a good idea to avoid it if possible.
+This plugin warns about `if` directives placed inside a `location` block.
 
-The only 100% safe things which may be done inside if in a location context are:
+## Why this is a problem
 
-* [`return ...;`](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#return)
-* [`rewrite ... last;`](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite)
-* [`rewrite ... redirect;`](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite)
-* [`rewrite ... permanent;`](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite)
+`if` belongs to the rewrite module and is evaluated during the rewrite phase. Inside a `location`, mixing `if` with directives from other modules can produce surprising results, including directives being skipped, headers not being set, or in some historical edge cases even crashes. The configuration may look reasonable, but the request processing model is not "run these directives in order".
 
-Anything else may cause unpredictable behavior, including potential SIGSEGV.
+The only operations that are considered consistently safe inside an `if` in a location are:
 
-It is important to note that the behavior of if is not inconsistent, given two identical requests it will not randomly fail on one and work on the other, with proper testing and understanding ifs _can_ be used. The advice to use other directives where available still very much applies, though.
+- `return ...;`
+- `rewrite ... last;`
+- `rewrite ... redirect;`
+- `rewrite ... permanent;`
 
-There are cases where you cannot avoid using an if, for example, if you need to test a variable which has no equivalent directive.
+## Bad configuration
 
 ```nginx
-if ($request_method = POST ) {
-    return 405;
-}
-if ($args ~ post=140){
-    rewrite ^ http://example.com/ permanent;
+location /only-one-if {
+    set $true 1;
+
+    if ($true) {
+        add_header X-First 1;
+    }
+
+    if ($true) {
+        add_header X-Second 1;
+    }
 }
 ```
 
-## What to do instead
+This is a classic foot-gun: you expect both headers, but you will typically only see one, because `add_header` is not "safe" inside this style of `if` usage.
 
-Use the "return ...", "rewrite ... last", "rewrite ... redirect", or "rewrite ... permanent" if it suits your needs.
-You can allocate additional locations and `map` if you want to set variables based on conditions.
+Another common pitfall:
 
-In some cases, it's also possible to move `if`s to server level (where it's safe as only other rewrite module directives are allowed within it).
+```nginx
+location /if-try-files {
+    try_files /file @fallback;
 
-E.g., the following may be used to safely change location which will be used to process request:
+    set $true 1;
+    if ($true) {
+        # nothing
+    }
+}
+```
+
+The presence of `if` can change how the location behaves, and can break things you would not expect to be related.
+
+## Better configuration
+
+If your goal is to return early based on a condition, keep it simple and use `return`:
+
+```nginx
+location / {
+    if ($bad) {
+        return 403;
+    }
+
+    # Normal processing continues here
+}
+```
+
+For anything more complex, move the logic out of `if`:
+
+- use `map` at `http` level to compute a variable,
+- or split behavior into separate locations and use `error_page` with a named location.
+
+Example: choose an alternate handler via a named location:
 
 ```nginx
 location / {
@@ -50,111 +83,14 @@ location / {
         return 418;
     }
 
-    # some configuration
-    ...
+    # normal handling
 }
 
 location @other {
-    # some other configuration
-    ...
+    # alternate handling
 }
 ```
 
-In some cases it may be good idea to use embedded scripting modules ([embedded perl](https://nginx.org/en/docs/http/ngx_http_perl_module.html), or [Lua module](https://docs.nginx.com/nginx/admin-guide/dynamic-modules/lua/)) to do the scripting.
+## Additional notes
 
-## Examples
-
-Here are some examples which explain why if is evil.  Don't try this at home. You were warned.
-
-```nginx
-# Here is collection of unexpectedly buggy configurations to show that
-# if inside location is evil.
-
-# only second header will be present in response
-# not really bug, just how it works
-
-location /only-one-if {
-    set $true 1;
-
-    if ($true) {
-        add_header X-First 1;
-    }
-
-    if ($true) {
-        add_header X-Second 2;
-    }
-
-    return 204;
-}
-
-# request will be sent to backend without uri changed
-# to '/' due to if
-
-location /proxy-pass-uri {
-    proxy_pass http://127.0.0.1:8080/;
-
-    set $true 1;
-
-    if ($true) {
-        # nothing
-    }
-}
-
-# try_files wont work due to if
-
-location /if-try-files {
-     try_files  /file  @fallback;
-
-     set $true 1;
-
-     if ($true) {
-         # nothing
-     }
-}
-
-# nginx will SIGSEGV
-
-location /crash {
-
-    set $true 1;
-
-    if ($true) {
-        # fastcgi_pass here
-        fastcgi_pass  127.0.0.1:9000;
-    }
-
-    if ($true) {
-        # no handler here
-    }
-}
-
-# alias with captures isn't correcly inherited into implicit nested
-# location created by if
-
-location ~* ^/if-and-alias/(?<file>.*) {
-    alias /tmp/$file;
-
-    set $true 1;
-
-    if ($true) {
-        # nothing
-    }
-}
-```
-
-In case you think you found an example which isn't listed here - it's a good idea to report it to the [NGINX development mailing list](http://mailman.nginx.org/mailman/listinfo/nginx-devel).
-
-## Why this happens and still not fixed
-
-Directive "if" is part of rewrite module which evaluates instructions imperatively.  On the other hand, NGINX configuration in general is declarative.  At some point due to users demand an attempt was made to enable some non-rewrite directives inside "if", and this lead to situation we have now.  It mostly works, but... see above.
-
-It looks like the only correct fix would be to disable non-rewrite directives inside if completely.  It would break many configuration out there though, so wasn't done yet.
-
-## If you still want to use if inside location context
-
-If you read all of the above and still want to use if:
-
-* Please make sure you actually do understand how it works.  Some basic idea may be found e.g. [here](http://agentzh.blogspot.com/2011/03/how-nginx-location-if-works.html).
-* Do proper testing.
-
-You were warned.
+If you still want to use `if` inside a location, treat it as a rewrite-only tool. As soon as you are using it to toggle headers, access rules, proxying, or file handling, you are in the territory where configs become fragile. To read more about "If Is Evil", read [this page](https://web.archive.org/web/20220316092522/https://www.nginx.com/resources/wiki/start/topics/depth/ifisevil/) and [this page](https://web.archive.org/web/20240908024013/http://forum.nginx.org/read.php?2,174917).

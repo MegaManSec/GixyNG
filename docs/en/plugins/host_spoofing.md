@@ -1,41 +1,53 @@
 ---
 title: "Host Header Spoofing"
-description: "Prevent Host header forgery in NGINX. Learn why you should use $host instead of $http_host to stop cache poisoning and SSRF attacks."
+description: "Detects unsafe use of the raw Host header ($http_host). Forwarding or trusting it can enable phishing, cache poisoning, and SSRF. Prefer $host and a strict server_name list."
 ---
 
-# [host_spoofing] Request's Host header forgery
+# [host_spoofing] Host header forgery
 
-Often, an application located behind Nginx needs a correct `Host` header for URL generation (redirects, resources, links in emails etc.).
-Spoofing of this header may lead to a variety of problems, from phishing to SSRF.
+## What this check looks for
 
-> Notice: your application may also use the `X-Forwarded-Host` request header for this functionality.
-> In this case you have to ensure the header is set correctly;
+This plugin flags configurations that forward or rely on the raw `Host` request header via `$http_host`, especially when it is passed upstream or used to build redirects/URLs.
 
-## How can I find it?
+## Why this is a problem
 
-Most of the time it's a result of using `$http_host` variable instead of `$host`, which are quite different:
+`$http_host` comes directly from the client. Attackers can spoof it, and many applications use the host value for:
 
-- `$host` - host in this order of precedence: host name from the request line, or host name from the "Host" request header field, or the server name matching a request;
-- `$http_host` - "Host" request header.
+- absolute URL generation (links in emails, redirects),
+- tenant selection,
+- cache keys.
 
-Config sample:
+If the app trusts an attacker-controlled host, you can end up with phishing links, poisoned caches, and in some setups even SSRF-style request routing issues.
+
+## Bad configuration
 
 ```nginx
-location @app {
-  proxy_set_header Host $http_host;
-  # Other proxy params
-  proxy_pass http://backend;
+location / {
+    proxy_set_header Host $http_host;
+    proxy_pass http://backend;
 }
 ```
 
-## What can I do?
+If a client sends `Host: evil.example`, the upstream receives it too.
 
-Luckily, all is quite obvious:
+## Better configuration
 
-- list all the correct server names in `server name` directive;
-- always use `$host` instead of `$http_host`.
+Use `$host`, and make sure your `server_name` is strict:
 
-## Additional info
+```nginx
+server {
+    listen 80 default_server;
+    server_name example.com www.example.com;
 
-- [Host of Troubles Vulnerabilities](https://hostoftroubles.com/)
-- [Practical HTTP Host header attacks](http://www.skeletonscribe.net/2013/05/practical-http-host-header-attacks.html)
+    location / {
+        proxy_set_header Host $host;
+        proxy_pass http://backend;
+    }
+}
+```
+
+`$host` is normalized by NGINX and tied into virtual host selection.
+
+## Additional notes
+
+In general, apply the same rule to any usage of `$http_host`: it should generally be considered untrusted.

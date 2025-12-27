@@ -1,46 +1,60 @@
 ---
 title: "NGINX Version Disclosure"
-description: "Hide your NGINX version. Detect 'server_tokens on' configurations that leak version info to attackers and help them identify exploits."
+description: "Detects unsafe server_tokens values that expose NGINX version info in headers and error pages. Hiding the version reduces passive fingerprinting and targeted exploit selection."
 ---
 
-# [version_disclosure] Version Disclosure
+# [version_disclosure] Version disclosure
 
-The `version_disclosure` plugin checks Nginx configurations for settings that expose the Nginx version. This information can be used by attackers to identify specific, known vulnerabilities.
+## What this check looks for
 
-## Detection Logic
+This plugin checks how `server_tokens` is configured, and warns when it is explicitly unsafe or when it is missing in a context where it will inherit an unsafe default.
 
-The plugin detects two types of issues:
+It flags:
 
-### 1. Explicit Dangerous Values
+- `server_tokens on;`
+- `server_tokens build;`
+- missing `server_tokens off;` in configurations where version disclosure would otherwise occur
 
-Reports configurations where `server_tokens` is explicitly set to expose information:
+## Why this is a problem
 
-- `server_tokens on;` - Exposes full version and OS.
-- `server_tokens build;` - Exposes version and build info.
+By default, NGINX includes its version in the `Server` header and on some error pages. That makes passive fingerprinting easy, and attackers can quickly narrow down known issues for that version.
 
-### 2. Missing `server_tokens` (Full Config Mode)
+Hiding the version does not fix vulnerabilities, but it removes a free signal.
 
-If the configuration contains an `http` block ("Full Config Mode"), the plugin also reports missing `server_tokens` directives. The Nginx default is `server_tokens on;` when the directive is absent.
+## Bad configuration
 
-## Full Config Mode
+```nginx
+http {
+    server_tokens on;
+}
+```
 
-This mode is active when an `http` block is present. The plugin checks the configuration hierarchy:
+Or, more subtly:
 
-1. **HTTP Level**: Checks for `server_tokens off;` (global protection).
-2. **Server Level**: Checks each server block for missing or unsafe settings, respecting inheritance.
+```nginx
+http {
+    # server_tokens not set here (defaults apply)
 
-If `server_tokens off;` is not present at the `http` level, any missing directive in a `server` block is flagged as dangerous because it inherits the default `on` value.
+    server {
+        listen 80;
+        server_name example.com;
+    }
+}
+```
 
-## Why it Matters
+If the default in your build exposes the version, every server block inherits that behavior.
 
-Nginx leaks its version in HTTP headers and error pages by default. This enables attackers to quickly:
+## Better configuration
 
-1. Identify the exact Nginx version.
-2. Find known exploits for that version.
-3. Execute targeted attacks.
+Set it once at the top level:
 
-## Best Practices
+```nginx
+http {
+    server_tokens off;
 
-1. **Set `server_tokens off;`** in the `http` block for global security.
-2. **Never use `server_tokens on;` or `server_tokens build;`**.
-3. **Verify** the `Server` header is suppressed in live responses.
+    server {
+        listen 80;
+        server_name example.com;
+    }
+}
+```

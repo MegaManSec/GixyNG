@@ -1,84 +1,65 @@
 ---
 title: "Header Inheritance Issues"
-description: "Fix missing security headers caused by NGINX add_header inheritance rules. Understand how nested location blocks can accidentally drop headers."
+description: "Detects add_header usage that unintentionally drops headers due to inheritance rules. Adding a header in a nested block replaces all add_header values from the parent level."
 ---
 
-# [add_header_redefinition] Redefining of response headers by "add_header" directive
+# [add_header_redefinition] Redefining response headers with add_header
 
-Unfortunately, many people don't know how the inheritance of directives works. Most often this leads to misuse of the `add_header` directive while trying to add a new response header on the nested level.
-This feature is mentioned in Nginx [docs](https://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header):
-> There could be several `add_header` directives. These directives are inherited from the previous level if and only if there are no `add_header` directives defined on the current level.
+## What this check looks for
 
-The logic is quite simple: if you set headers at one level (for example, in `server` section) and then at a lower level (let's say `location`) you set some other headers, then the first headers will be discarded.
+This plugin looks for nested contexts where `add_header` is used in both places.
 
-It's easy to check:
-  - Configuration:
+## Why this is a problem
+
+`add_header` follows an all-or-nothing inheritance rule: headers from the previous level are inherited only if there are no `add_header` directives at the current level. As soon as you add any header in a nested block, you stop inheriting every header defined above it.
+
+That is how teams end up with security headers on most pages, but missing on "just one location".
+
+## Bad configuration
 
 ```nginx
 server {
-  listen 80;
-  add_header X-Frame-Options "DENY" always;
-  location / {
-      return 200 "index";
-  }
+    add_header X-Frame-Options "DENY";
+    add_header X-Content-Type-Options "nosniff";
 
-  location /new-headers {
-    # Add special cache control
-    add_header Cache-Control "no-cache, no-store, max-age=0, must-revalidate" always;
-    add_header Pragma "no-cache" always;
-
-    return 200 "new-headers";
-  }
+    location /static/ {
+        # Looks harmless, but it drops the two headers above for /static/
+        add_header Cache-Control "public, max-age=86400";
+    }
 }
 ```
 
-  - Request to location `/` (`X-Frame-Options` header is in server response):
+Requests under `/static/` will only get `Cache-Control`, and the security headers vanish.
 
-```http
-GET / HTTP/1.0
+## Better configuration
 
-HTTP/1.1 200 OK
-Server: nginx/1.10.2
-Date: Mon, 09 Jan 2017 19:28:33 GMT
-Content-Type: application/octet-stream
-Content-Length: 5
-Connection: close
-X-Frame-Options: DENY
+Option 1: keep all headers at one level (often `server`), and avoid redefining them in child blocks.
 
-index
+```nginx
+server {
+    add_header X-Frame-Options "DENY";
+    add_header X-Content-Type-Options "nosniff";
+    add_header Cache-Control "public, max-age=86400";
+}
 ```
 
-  - Request to location `/new-headers` (headers `Cache-Control` and `Pragma` are present, but there's no `X-Frame-Options`):
+Option 2: if you really need headers that vary by location, repeat the important ones in the nested block:
 
-```http
-GET /new-headers HTTP/1.0
+```nginx
+server {
+    add_header X-Frame-Options "DENY";
+    add_header X-Content-Type-Options "nosniff";
 
-
-HTTP/1.1 200 OK
-Server: nginx/1.10.2
-Date: Mon, 09 Jan 2017 19:29:46 GMT
-Content-Type: application/octet-stream
-Content-Length: 11
-Connection: close
-Cache-Control: no-cache, no-store, max-age=0, must-revalidate
-Pragma: no-cache
-
-new-headers
+    location /static/ {
+        add_header X-Frame-Options "DENY";
+        add_header X-Content-Type-Options "nosniff";
+        add_header Cache-Control "public, max-age=86400";
+    }
+}
 ```
 
-## What can I do?
+## Additional information
 
-There are several ways to solve this problem:
- - duplicate important headers;
- - set all headers at one level (`server` section is a good choice)
+Recent NGINX versions added `add_header_inherit` to adjust how `add_header` inherits across levels. If you have it available, `add_header_inherit merge;` can help keep a base set of headers while appending per-location headers. The [documentation](https://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header_inherit) states that for `add_header_inherit`:
 
-## CLI and config options
-
-- `--add-header-redefinition-headers headers` (Default: unset): Comma-separated, case-insensitive allowlist of headers to report when dropped. When unset, all dropped parent headers are reported. Example: `--add-header-redefinition-headers x-frame-options,content-security-policy`.
-
-Config file example:
-
-```
-[add_header_redefinition]
-headers = x-frame-options, content-security-policy
-```
+> The inheritance rules themselves are inherited in a standard way. For example, add_header_inherit merge; specified at the top level will be inherited in all nested levels recursively unless redefined later.

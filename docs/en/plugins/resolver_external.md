@@ -1,40 +1,32 @@
 ---
 title: "External DNS Resolvers"
-description: "Avoid DNS spoofing risks by using local resolvers. Why pointing NGINX directly to public DNS (8.8.8.8) is a security risk for internal proxies."
+description: "Detects resolver directives pointing to public DNS servers. Using external resolvers can expose you to spoofing and cache poisoning, especially when proxy_pass uses variables."
 ---
 
 # [resolver_external] Using external DNS nameservers
 
-Using public DNS servers directly in the `resolver` directive can make nginx vulnerable to DNS cache poisoning and off-path response injection. Spoofed DNS replies may poison nginx's cache and cause it to proxy requests to attacker-controlled hosts.
+## What this check looks for
 
-## Insecure example
+This plugin warns when the `resolver` directive points to public IPs (for example 1.1.1.1 or 8.8.8.8) instead of a trusted local resolver.
+
+## Why this is a problem
+
+When NGINX uses DNS at request time, it normally caches results. If an attacker can influence DNS responses, they can poison the cache and redirect traffic to an attacker-controlled host. Using public resolvers directly increases the number of hops and parties involved, which increases the chances of getting a bad answer.
+
+Various vulnerabilities have been [discovered](https://web.archive.org/web/20250317201620/https://blog.zorinaq.com/nginx-resolver-vulns/) in Nginx's dns resolver, with some of them still unfixed.
+
+## Bad configuration
 
 ```nginx
-# Public, external resolvers (unsafe)
+# Public resolvers
 resolver 1.1.1.1 8.8.8.8;
-
-# Variable-based upstream resolution depends on resolver
-set $backend upstream.internal.example;
-location / {
-    proxy_pass http://$backend;
-}
 ```
 
-## Safer alternatives
+## Better configuration
 
-- Run a local, caching resolver and point nginx to loopback only:
+Use a local resolver on loopback that you control (dnsmasq, unbound, systemd-resolved, etc.):
 
 ```nginx
-# Use only local resolvers
 resolver 127.0.0.1 [::1] valid=10s;
 resolver_timeout 5s;
 ```
-
-- Prefer static upstreams (avoid variable-based `proxy_pass`) when feasible
-- Keep `valid` low to reduce cache lifetime; ensure your local resolver is trusted and hardened
-
-## Why it matters
-
-- External resolvers increase the attack surface for response spoofing
-- Poisoned cache entries can silently redirect traffic to arbitrary upstreams
-- A local resolver (e.g., `unbound`, `dnsmasq`) on loopback significantly mitigates this risk

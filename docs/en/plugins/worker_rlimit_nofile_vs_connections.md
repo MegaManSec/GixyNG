@@ -1,24 +1,53 @@
 ---
 title: "Low worker_rlimit_nofile"
-description: "Tune NGINX file descriptors. Ensure worker_rlimit_nofile is at least double worker_connections to prevent 'Too many open files' errors."
+description: "Detects worker_rlimit_nofile values that are too low relative to worker_connections. If the file descriptor limit is not high enough, workers can hit 'Too many open files' under load."
 ---
 
-# [worker_rlimit_nofile_vs_connections] worker_rlimit_nofile must be at least twice `worker_connections`
+# [worker_rlimit_nofile_vs_connections] worker_rlimit_nofile must be at least twice worker_connections
 
-A frequent configuration error is not raising the file descriptor (FD) limit to at least double the `worker_connections` value. To resolve this, configure the `worker_rlimit_nofile` directive in the main configuration context,
-and ensure it is at least twice the value of `worker_connections`.
+## What this check looks for
 
-Why are additional FDs necessary?
+This plugin checks the relationship between `worker_connections` and `worker_rlimit_nofile` and warns when the file descriptor limit is too low.
 
-* **Web Server Mode**:
-    * FD is used for the client connection.
-    * An additional FD is required for each file served, meaning at least two FDs per client—even more if the web page consists of multiple files.
-* **Proxy Server Mode**:
-    * One FD for the connection to the client.
-    * One FD for the connection to the upstream server.
-    * Potentially a third FD for temporarily storing the upstream server's response.
-* **Caching Server Mode**:
-    * NGINX behaves like a web server when serving cached responses (using FDs similarly as above).
-    * It acts like a proxy server when the cache is empty or the cached content has expired.
+## Why this is a problem
 
-By ensuring the FD limit is at least twice the number of `worker_connections`, you accommodate the minimum FD requirements across these different modes of operation.
+NGINX needs file descriptors (FDs) for more than just client connections.
+
+Typical FD usage:
+
+- Web server mode: 1 FD for the client connection, plus at least 1 FD for the file being served. A single page load can involve multiple files.
+- Proxy mode: 1 FD for the client connection and 1 FD for the upstream connection, plus potentially a temporary file.
+- Caching mode: combines both behaviors (serve cached files, and proxy/cache misses).
+
+If the FD limit is too low, workers will start failing with "Too many open files", which shows up as request failures under load.
+
+## Bad configuration
+
+```nginx
+worker_connections 4096;
+# Missing or too-low worker_rlimit_nofile
+```
+
+or:
+
+```nginx
+worker_connections 4096;
+worker_rlimit_nofile 4096;
+```
+
+A 1:1 ratio is often not enough once you account for upstream sockets and files.
+
+## Better configuration
+
+A practical baseline is at least 2x worker_connections:
+
+```nginx
+worker_connections 4096;
+worker_rlimit_nofile 8192;
+```
+
+Adjust upward if you are proxying heavily, caching, or serving lots of static assets.
+
+## Additional notes
+
+Also check the OS-level limits (ulimit, systemd unit limits, container limits). Setting `worker_rlimit_nofile` higher than the process is allowed to use will not help.

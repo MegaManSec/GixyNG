@@ -1,30 +1,57 @@
 ---
 title: "Return Bypasses Allow/Deny"
-description: "Security warning: The 'return' directive executes before allow/deny checks. Learn how to structure config to ensure access controls apply."
+description: "Detects return directives placed alongside allow/deny in the same effective scope. return short-circuits request processing and can make access controls misleading."
 ---
 
-# [return_bypasses_allow_deny] Return bypasses `allow` and `deny` directives
+# [return_bypasses_allow_deny] return bypasses allow and deny
 
-Warns when `return` is used in the same scope as `allow`/`deny`, because `return` takes precedence and can bypass access controls.
+## What this check looks for
 
-- Severity: Medium
-- Directives: `allow`, `deny`
+This plugin warns when `return` appears in the same context as `allow`/`deny`.
 
-### Why it matters
+## Why this is a problem
 
-In nginx, `return` short-circuits request processing and is evaluated before `allow`/`deny` in the same context, potentially exposing content unintentionally.
+`return` runs in the rewrite phase and ends request processing immediately. Access controls (`allow`/`deny`) are evaluated later. That means a `return` placed next to access rules can effectively ignore them, even if the config looks like it should be restricted.
 
-### Insecure
+In other words: the block reads like "allow X, deny everyone else", but the request never actually reaches the access phase: it simply returns unconditionally.
+
+## Bad configuration
 
 ```nginx
-location / {
-  allow 127.0.0.1;
-  deny all;
-  return 200 "hi";
+location /admin/ {
+    allow 127.0.0.1;
+    deny all;
+
+    # This is evaluated before the access rules above
+    return 200 "hi";
 }
 ```
 
-### Safer alternatives
+The response is served to everyone, including clients you intended to deny.
 
-- Use a named location and `try_files` to direct traffic conditionally.
-- Move access control to a higher or matching context where it applies before `return`.
+## Better configuration
+
+If you need to return a response and still enforce allow/deny, move the return into a separate internal handler and put the access rules there:
+
+```nginx
+location /admin/ {
+    # Always internally redirect to a named location
+    error_page 418 = @admin_handler;
+    return 418;
+}
+
+location @admin_handler {
+    allow 127.0.0.1;
+    deny all;
+
+    return 200 "hi";
+}
+```
+
+Named locations cannot be requested directly by clients, so you can safely concentrate the access rules and the response logic there.
+
+## Additional notes
+
+If your goal is simply "block everyone but X", prefer expressing it as access control only (for example return 403/444 for everyone else) rather than combining allow/deny with unconditional returns in the same block.
+
+For more information about this issue, see [this post](https://joshua.hu/nginx-return-allow-deny).

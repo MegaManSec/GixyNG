@@ -1,56 +1,89 @@
 ---
-title: "proxy_path Normalization"
-description: "Prevent path traversal and double-decoding issues in proxy_pass. Understand how NGINX normalizes URIs when a path is specified."
+title: "proxy_pass Path Normalization"
+description: "Detects proxy_pass directives that include a URI path, which triggers NGINX URI decoding and normalization. This can change the upstream path and enable traversal or bypasses in some setups."
 ---
 
-# [proxy_pass_normalized] `proxy_pass` may decode and normalize paths
+# [proxy_pass_normalized] proxy_pass may decode and normalize paths
 
-When `proxy_pass` includes a path (anything after the host), NGINX will decode percent-encodings and normalize the URL path before proxying. This can lead to:
+## What this check looks for
 
-- Decoding of encoded slashes like `%2F..%2F` into `/../`
-- Path normalization side effects
-- Double-encoding pitfalls when combined with certain `rewrite` usages
+This plugin warns when `proxy_pass` includes a path component, for example `proxy_pass http://backend/api/;` rather than just `proxy_pass http://backend;`.
 
-These behaviors may cause upstreams to see different paths than intended, potentially enabling path traversal or bypassing security controls.
+## Why this is a problem
 
-## Insecure examples
+When a path is present in `proxy_pass`, NGINX performs URI processing before proxying. That can include decoding and normalization steps that change what the upstream sees.
 
-```nginx
-location /api/ {
-    # Includes a path component after the host
-    proxy_pass http://backend/api/;  # Normalization/decoding may occur
-}
-```
+Typical failure modes:
 
-Combining with a rewrite that copies the full request URI without using captured groups also risks double-encoding:
+- encoded slashes and dot segments are decoded and normalized (`%2F..%2F` can become `/../`)
+- the upstream receives a different path than your access control logic evaluated
+- combined with rewrites, you can get double-encoding or surprising path joins
 
-```nginx
-location / {
-    rewrite ^ $request_uri;  # copies entire URI
-    proxy_pass http://backend/service;  # path present and no $1 or $uri
-}
-```
+These issues tend to show up as "works in the browser, breaks in production" and in the worst case can turn into traversal/bypass bugs.
 
-## Safer alternatives
-
-- Prefer omitting the path in `proxy_pass`, and let the request path pass through unchanged:
+## Bad configuration
 
 ```nginx
 location /api/ {
-    proxy_pass http://backend;  # No path → upstream receives original path
+    # Path included here triggers normalization/decoding behavior
+    proxy_pass http://backend/;
 }
 ```
 
-- If you must include a path, use a captured group or `$uri` to avoid double-encoding and keep control over the path:
+When a user requests `/api/article/..%2F..%2Fuser-uploads%2Fmalicious-file.txt`, the backend will see `user-uploads/malicious-file.txt`.
+
+## Better configuration
+
+If you do not need a fixed prefix, keep proxy_pass host-only:
 
 ```nginx
-location ~ ^/api/(.*)$ {
-    proxy_pass http://backend/api/$1;  # Uses captured group
+location /api/ {
+    proxy_pass http://backend;
 }
 ```
 
-- Avoid `rewrite ^ $request_uri;` paired with a `proxy_pass` path unless you also include `$1` or `$uri` appropriately.
+If you do need to add or reshape the path, do it explicitly using captures so you control what is forwarded, use `$request_uri`, and use `return`:
 
-## Why it matters
 
-Normalizing and decoding can alter how the upstream interprets requests, especially for security-sensitive routing. By removing the path from `proxy_pass` or carefully controlling it with variables, you reduce unexpected behavior.
+```nginx
+location /api/ {
+  rewrite ^ $request_uri;
+  rewrite ^/api(/.*) $1 break;
+  return 400; # extremely important!
+  proxy_pass http://backend/$1;
+}
+```
+
+## Another bad configuration
+
+Make sure you do not go from one bad configuration, to another. This is also a bad configuration:
+
+```nginx
+location /1/ {
+  rewrite ^ $request_uri;
+  rewrite ^/1(/.*) $1 break;
+  return 400;
+  proxy_pass http://127.0.0.1:8080/
+}
+```
+
+When a user requests `/1/%2F`, the backend server will see `/%252F`.
+
+## Another better configuration
+
+Here is another example of a good configuration:
+
+```nginx
+location /1/ {
+  rewrite ^ $request_uri;
+  rewrite ^/1(/.*) /special/location$1/folder/ break;
+  return 400; # extremely important!
+  proxy_pass http://127.0.0.1:8080/$1;
+}
+```
+
+A request made to `/1/2` will be the the backend server as `/special/location/1/2/folder`.
+
+## Additional notes
+
+Be careful combining `rewrite` with a `proxy_pass` that already has a path. If you are changing the URI, keep it explicit, test with encoded input, and verify what the upstream actually receives. More information can be found in [this post](https://joshua.hu/proxy-pass-nginx-decoding-normalizing-url-path-dangerous).

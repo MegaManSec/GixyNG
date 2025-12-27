@@ -1,134 +1,60 @@
 ---
 title: "Invalid Regex Captures"
-description: "Fix empty variables in NGINX rewrites. Learn how to identify and correct references to non-existent regex capture groups."
+description: "Detects references to non-existent regex capture groups (for example $2 when the pattern has only one group). NGINX treats missing captures as empty strings, which can silently break rewrites and logic."
 ---
 
 # [invalid_regex] Using a nonexistent regex capture group
 
-When using regular expressions with capturing groups in NGINX directives like `rewrite` or within `if` conditions, you can reference these captured groups using `$1`, `$2`, etc. in replacement strings or subsequent directives. However, if you reference a capture group that doesn't exist in the regex pattern, NGINX will treat it as an empty string, which can lead to unexpected behavior.
+## What this check looks for
 
-## How can I find it?
+This plugin looks for places where a configuration references `$1`, `$2`, and so on, but the regex being used does not actually define that capture group.
 
-You should check:
-- `rewrite` directives where the replacement string references capture groups (e.g., `$1`, `$2`) that don't exist in the regex pattern
-- `set` directives inside `if` blocks that reference capture groups from the `if` condition's regex pattern
-- Non-capturing groups like `(?:...)` or inline modifiers like `(?i)` which don't create numbered capture groups
+Common places this shows up:
 
-## Examples
+- `rewrite` replacement strings
+- `set` inside an `if ($var ~ regex)` block
+- patterns that use non-capturing groups like `(?:...)` or inline modifiers like `(?i)` and then expect numbered captures
 
-### Example 1: Non-capturing inline modifier
+## Why this is a problem
 
-**Problematic configuration:**
+NGINX does not throw an error when you reference a missing group. It just substitutes an empty string. That turns into subtle bugs: broken redirects, unexpected paths, or conditions that never match the way you think they do.
 
-```nginx
-server {
-    location / {
-        # (?i) is a case-insensitive flag, NOT a capturing group
-        rewrite "(?i)/" $1 break;
-    }
-}
-```
+## Bad configuration
 
-**Issue:** The pattern `(?i)/` uses `(?i)` to enable case-insensitive matching, but it doesn't create a capturing group. The `$1` reference will be empty.
-
-**Fix:**
+### Case 1: modifier without a capture
 
 ```nginx
-server {
-    location / {
-        # Add parentheses to create a capturing group
-        rewrite "(?i)/(.*)" /$1 break;
-    }
-}
+rewrite "(?i)/path" /$1 break;
 ```
 
-### Example 2: Missing capture groups
+`(?i)` changes matching behavior, but it does not create a capture. There is no `$1`, so the replacement becomes `/`.
 
-**Problematic configuration:**
+### Case 2: no captures at all
 
 ```nginx
-server {
-    location / {
-        rewrite "^/path" $1 redirect;
-    }
-}
+rewrite "^/path" /$1 redirect;
 ```
 
-**Issue:** The pattern `^/path` has no capturing groups, so `$1` will be empty.
+The pattern has zero capture groups, so `$1` is always empty.
 
-**Fix:**
+## Better configuration
+
+Either remove the unnecessary capture reference:
 
 ```nginx
-server {
-    location / {
-        # Either remove the unnecessary $1 reference
-        rewrite "^/path" /newpath redirect;
-        # Or add a capturing group if needed
-        rewrite "^/path/(.*)$" /newpath/$1 redirect;
-    }
-}
+rewrite "^/path" /newpath redirect;
 ```
 
-### Example 3: Referencing wrong group number
-
-**Problematic configuration:**
+Or add a capture group if you actually need part of the input:
 
 ```nginx
-server {
-    location / {
-        # Pattern has only 1 capturing group, but references $2
-        rewrite "^/(.*)$" /$1/$2 break;
-    }
-}
+rewrite "^/path/(.*)$" /newpath/$1 redirect;
 ```
 
-**Issue:** The pattern only has one capturing group `(.*)`, but the replacement references both `$1` and `$2`. The `$2` will be empty.
-
-**Fix:**
+Same idea inside an `if`:
 
 ```nginx
-server {
-    location / {
-        # Add a second capturing group if needed
-        rewrite "^/([^/]+)/(.*)$" /$2/$1 break;
-        # Or remove the invalid reference
-        rewrite "^/(.*)$" /prefix/$1 break;
-    }
+if ($uri ~ "^/path/(.*)$") {
+    set $x $1;
 }
 ```
-
-### Example 4: Set in if block
-
-**Problematic configuration:**
-
-```nginx
-server {
-    location / {
-        if ($uri ~ "^/path") {
-            set $x $1;  # $1 doesn't exist
-        }
-    }
-}
-```
-
-**Issue:** The regex pattern in the `if` condition has no capturing groups, so `$1` is undefined.
-
-**Fix:**
-
-```nginx
-server {
-    location / {
-        if ($uri ~ "^/path/(.*)$") {
-            set $x $1;  # Now $1 contains the captured value
-        }
-    }
-}
-```
-
-## What can I do?
-
-1. **Add capturing groups to your regex pattern** if you need to reference parts of the matched string
-2. **Remove unnecessary capture group references** if you don't actually need them
-3. **Use the correct group numbers** - remember that group numbering starts at 1, and `$0` is not available in NGINX
-4. **Remember that non-capturing groups don't create references** - patterns like `(?:...)`, `(?i)`, `(?=...)` don't create numbered groups
-5. **Test your regex patterns** to ensure they capture what you expect

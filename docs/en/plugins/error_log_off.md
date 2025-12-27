@@ -1,25 +1,37 @@
 ---
 title: "error_log Set To Off"
-description: "Don't blindly use 'error_log off'. Learn why NGINX creates a file named 'off' and how to properly disable logging using /dev/null."
+description: "Detects 'error_log off', which does not disable error logging. NGINX treats it as a filename called 'off'. Use /dev/null with an appropriate log level if you truly need to suppress logs."
 ---
 
-# [error_log_off] `error_log` set to `off`
+# [error_log_off] error_log set to off
 
-A common misconception is that using the directive `error_log off` disables error logging.
-Unlike the `access_log` directive, `error_log` does not accept an `off` parameter.
-If you add `error_log` off to your configuration, NGINX will create a log file named "off" in the default configuration directory (typically `/etc/nginx`).
+## What this check looks for
 
-Disabling the error log is generally not advised, as it provides crucial information
-for troubleshooting NGINX issues. However, if disk space is extremely limited and
-there's a risk that logging could fill up the available space, you might opt to
-disable error logging. To do so, add the following directive in the main configuration
-context:
+This plugin flags `error_log off;`.
+
+## Why this is a problem
+
+Unlike `access_log`, the `error_log` directive does not support an `off` parameter. When you write `error_log off;`, NGINX interprets `off` as a path and creates a log file named `off` in the default config directory (often `/etc/nginx`).
+
+That is confusing at best, and at worst it can fill a filesystem you did not expect to be writing to.
+
+## Bad configuration
 
 ```nginx
+error_log off;
+```
+
+This does not turn logging off; it just changes the log destination to a file named `off`.
+
+## Better configuration
+
+In general, keep error logging enabled. If you have a very specific reason to suppress it, redirect to `/dev/null` and set a strict level:
+
+```nginx
+# Disable error logging as much as possible
 error_log /dev/null emerg;
 ```
 
-Keep in mind that this setting takes effect only after NGINX reads and validates
-the configuration file. Therefore, during startup or when reloading the configuration,
-NGINX may still log errors to the default error log location (usually `/var/log/nginx/error.log`)
-until validation is complete. To change the default log directory permanently, use the `--error-log-path` (or `-e`) option when starting NGINX.
+## Additional notes
+
+NGINX still needs to validate the config during startup/reload. Errors during that phase can be written to the default error log path until the config is fully read. If you need to change the startup log path, use the `-e` / `--error-log-path` option when launching NGINX.

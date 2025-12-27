@@ -1,38 +1,42 @@
 ---
 title: "Low Keepalive Requests"
-description: "Optimize NGINX for HTTP/2. Why the default keepalive_requests value was raised to 1000 and why low values hurt performance."
+description: "Detects keepalive_requests values that are likely too low for modern traffic patterns (especially HTTP/2). Low values force frequent connection churn and can cause client-side failures under load."
 ---
 
-# [low_keepalive_requests] Low `keepalive_requests` value
+# [low_keepalive_requests] Low keepalive_requests value
 
-The `keepalive_requests` directive sets the maximum number of requests that can be served through one keep-alive connection. After the maximum number of requests are made, the connection is closed.
+## What this check looks for
 
-## Why this matters
+This plugin warns when `keepalive_requests` is set to an unusually low number.
 
-Prior to nginx 1.19.10, the default value was 100. This was raised to 1000 because low values can cause problems:
+## Why this is a problem
 
-- **HTTP/2 multiplexing**: Modern browsers open fewer connections but send many requests over each one. A low `keepalive_requests` value forces frequent connection resets.
-- **Client disconnections**: Some clients may experience failed requests when connections are closed prematurely.
-- **Performance overhead**: Establishing new connections has overhead (TCP handshake, TLS negotiation). Keeping connections alive longer improves performance.
+`keepalive_requests` controls how many requests a client can send over a single keep-alive connection before NGINX closes it.
 
-## Bad example
+Low values create avoidable connection churn:
+
+- With HTTP/2, browsers tend to use fewer connections and multiplex many requests. Closing a connection early forces unnecessary reconnects.
+- Some clients will see failed or retried requests when the server closes a busy connection at the wrong time.
+- Extra TLS handshakes and TCP setup cost CPU and latency.
+
+In newer NGINX versions, the default is 1000. Older versions historically used 100.
+
+## Bad configuration
 
 ```nginx
 keepalive_requests 100;
 ```
 
-This forces connection closure after only 100 requests, which can cause issues with HTTP/2 clients.
+This is often too low for modern browsers and HTTP/2 workloads.
 
-## Good example
+## Better configuration
 
 ```nginx
 keepalive_requests 1000;
 ```
 
-Or simply omit the directive to use nginx's default (1000 since nginx 1.19.10).
+If your NGINX already defaults to 1000, you can also omit the directive and keep the defaults.
 
-## References
+## Additional notes
 
-- [nginx documentation: keepalive_requests](https://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_requests)
-- [nginx ticket #2155: Increase default keepalive_requests](https://trac.nginx.org/nginx/ticket/2155)
-- [Debugging failures of HTTP/2 in Burp, mitmproxy, and browsers](https://joshua.hu/http2-burp-proxy-mitmproxy-nginx-failing-load-resources-chromium#nginx-keepalive_requests)
+The "right" number depends on your traffic and timeouts, but the takeaway is simple: avoid values that force constant reconnecting. If you are tuning performance, look at `keepalive_timeout` and (for upstream keepalive) the `keepalive` directive in `upstream` blocks as well. For more information about when this error can show up, read [this post](https://joshua.hu/http2-burp-proxy-mitmproxy-nginx-failing-load-resources-chromium).

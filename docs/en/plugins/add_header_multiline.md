@@ -1,62 +1,57 @@
 ---
 title: "Multiline Response Headers"
-description: "Avoid deprecated multiline response headers in NGINX. Learn how to split long headers like Content-Security-Policy using variable nesting."
+description: "Detects response headers written across multiple lines. Multiline headers are deprecated and can break clients; use variables to keep long values readable without inserting newlines."
 ---
 
 # [add_header_multiline] Multiline response headers
 
-You should avoid using multiline response headers, because:
+## What this check looks for
 
-- they are deprecated (see [RFC 7230](https://tools.ietf.org/html/rfc7230#section-3.2.4));
-- some HTTP-clients and web browser never supported them (e.g. IE/Edge/etc.).
+This plugin flags response headers that contain a literal newline in the header value. The usual culprits are `add_header`, `more_set_headers`, or string values that span multiple lines for readability.
 
-## How can I find it?
+## Why this is a problem
 
-Misconfiguration example:
+Multiline headers are deprecated and not reliably supported by clients. Some browsers and HTTP stacks will reject or truncate the response, and some intermediaries can mis-parse the header stream. In practice, this turns into hard-to-debug compatibility issues.
+
+## Bad configuration
 
 ```nginx
-# https://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header
-add_header Content-Security-Policy "
-    default-src: 'none';
-    script-src data: https://yastatic.net;
-    style-src data: https://yastatic.net;
-    img-src data: https://yastatic.net;
-    font-src data: https://yastatic.net;";
-
-# https://github.com/openresty/headers-more-nginx-module?tab=readme-ov-file#more_set_headers
-more_set_headers -t 'text/html text/plain'
-    'X-Foo: Bar
-        multiline';
+# Multiline header value (contains a newline)
+more_set_headers 'X-Foo: Bar
+  multiline';
 ```
 
-## What can I do?
+Even if it "works" in a quick test, it is not safe to rely on.
 
-Use variable nesting to split long headers across multiple lines in your config file while keeping the actual header value on a single line:
+## Better configuration
+
+Keep the configuration readable, but make the actual header value a single line by composing it with variables.
+
+Option 1: build the value from separate pieces:
 
 ```nginx
-# Split a long CSP header across multiple lines using variables
 set $csp_default "default-src 'self'";
-set $csp_script "script-src 'self' https://cdn.example.com";
-set $csp_style "style-src 'self' https://cdn.example.com";
-set $csp_img "img-src 'self' data: https://cdn.example.com";
-set $csp_font "font-src 'self' https://cdn.example.com";
+set $csp_script  "script-src 'self' https://cdn.example.com";
+set $csp_style   "style-src 'self' https://cdn.example.com";
+set $csp_img     "img-src 'self' data: https://cdn.example.com";
+set $csp_font    "font-src 'self' https://cdn.example.com";
 
 set $csp "${csp_default}; ${csp_script}; ${csp_style}; ${csp_img}; ${csp_font}";
 add_header Content-Security-Policy $csp;
 ```
 
-Or use progressive concatenation:
+Option 2: progressive concatenation:
 
 ```nginx
 set $csp "default-src 'self'; ";
 set $csp "${csp}script-src 'self' https://cdn.example.com; ";
 set $csp "${csp}style-src 'self' https://cdn.example.com; ";
-set $csp "${csp}img-src 'self' data:; ";
+set $csp "${csp}img-src 'self' data: https://cdn.example.com; ";
 set $csp "${csp}font-src 'self'";
 
 add_header Content-Security-Policy $csp;
 ```
 
-This keeps your config readable while producing a valid single-line header.
+## Additional notes
 
-See also: [ServerFault: How to split nginx config across multiple lines](https://serverfault.com/questions/780075/how-to-split-the-nginx-config-across-multiple-lines)
+If you are templating configs, watch for accidental newlines inside quoted strings. They look harmless in a text editor, but they still become literal newline characters in the header value.

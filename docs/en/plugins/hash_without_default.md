@@ -1,44 +1,88 @@
 ---
 title: "Map Default Value Missing"
-description: "Security best practice: Always define a safe 'default' value in NGINX map and geo blocks to prevent unhandled keys from bypassing logic."
+description: "Detects hash/geo blocks that omit a default. Missing defaults can cause unexpected fall-through behavior that weakens access control, routing, and rate-limit logic."
 ---
 
-# [hash_without_default] Missing default in hash blocks (`map`, `geo`)
+# [hash_without_default] Missing default in hash blocks (map, geo)
 
-Hash-like blocks such as `map` and `geo` should define a safe `default` value. Without it, unexpected keys may fall through to an unintended state, potentially bypassing security controls.
+## What this check looks for
 
-## Insecure examples
+This plugin checks hash-like blocks such as `map` and `geo` and warns when they do not define a `default` value.
+
+### Map special-case
+
+For `map`, the check intentionally ignores a very common pattern:
+
+- If a `map` has exactly one mapping entry and no explicit `default`, it is often meant to return an empty string for all other inputs.
+- This is frequently used with `limit_req` / `limit_conn`, where an empty key disables limits.
+- Requiring an explicit `default` in that case would add noise.
+
+So, the plugin only warns for `map` when there are **two or more mapping entries** and **no explicit `default`**.
+
+## Why this is a problem
+
+A `map` or `geo` without a default can leave "unmatched" inputs in a surprising state. Depending on how you use the variable later, that can mean:
+
+- falling back to an unintended value,
+- skipping security or routing logic,
+- or accidentally allowing a request that should have been denied.
+
+For `map`, this risk grows as the number of explicit mappings increases (because more cases are being handled, but unmatched inputs still have no defined behavior).
+
+## Bad configuration
 
 ```nginx
-# No default → unknown keys inherit nothing/surprising behavior
-map $request_uri $allowed {
-    /admin 0;
+map $request_uri $is_admin {
+    /admin 1;
+    /admin/ 1;
+    # no default
 }
 
-# No default in geo
+# Later:
+if ($is_admin) {
+    allow 10.0.0.0/8;
+}
+```
+
+If `$request_uri` does not match, `$is_admin` may be empty and the surrounding logic may not behave the way you expect.
+
+## Better configuration
+
+Pick an explicit default that matches least privilege:
+
+```nginx
+map $request_uri $is_admin {
+    default 0;   # not admin unless matched
+    /admin  1;
+    /admin/ 1;
+}
+```
+
+Same idea for `geo`:
+
+```nginx
 geo $block_client {
+    default 0;        # not blocked unless matched
     192.0.2.0/24 1;
 }
 ```
 
-## Safer alternatives
+## Intentional empty default pattern (map)
+
+Sometimes, an implicit empty result is the goal. A common example is selectively enabling rate limits:
 
 ```nginx
-# Provide a safe default
-map $request_uri $allowed {
-    default 1;      # deny by default
-    /admin 0;       # allow only if set explicitly by later logic
-}
-
-# Provide a safe default in geo
-geo $block_client {
-    default 0;      # not blocked by default
-    192.0.2.0/24 1; # block these
+# Only requests matching /api get a non-empty key (limits apply).
+# Everything else gets an empty key (limits disabled).
+map $request_uri $limit_key {
+    ~^/api $binary_remote_addr;
 }
 ```
 
-Choose defaults that align with least privilege (deny by default when controlling access).
+This is why the plugin does not warn on `map` blocks with a single mapping entry and no explicit `default`.
 
-## Why it matters
+## Additional notes
 
-Explicit defaults make behavior predictable and prevent accidental allow/deny gaps when new keys appear or inputs vary unexpectedly.
+* If the variable controls an allow/deny decision, prefer deny-by-default and add allow rules narrowly.
+* For routing decisions, choose a safe fallback upstream and keep it explicit.
+* If you rely on the "empty disables behavior" pattern (for example, rate limiting keys), keep the `map` minimal and document the intent.

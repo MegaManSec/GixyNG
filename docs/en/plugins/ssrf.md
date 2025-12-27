@@ -1,76 +1,72 @@
 ---
 title: "Server Side Request Forgery"
-description: "Detect SSRF vulnerabilities in NGINX. Fix unsafe internal redirects and variable-controlled proxy_pass directives that expose internal networks."
+description: "Detects SSRF-prone proxy_pass patterns where user input controls the upstream scheme/host/path. This can allow attackers to make NGINX reach internal services."
 ---
 
 # [ssrf] Server Side Request Forgery
 
-Server Side Request Forgery - attack that forces a server to perform arbitrary requests (from Nginx in our case).
-It's possible when an attacker controls the address of a proxied server (second argument of the `proxy_pass` directive).
+## What this check looks for
 
+This plugin looks for `proxy_pass` usage where the upstream address is built from variables that can be influenced by the client (scheme, host, port, or path). That is the classic NGINX SSRF shape.
 
-## How can I find it?
+## Why this is a problem
 
-There are two types of errors that make a server vulnerable:
+If an attacker can control where NGINX sends a request, they can:
 
-  - lack of the [internal](https://nginx.org/en/docs/http/ngx_http_core_module.html#internal) directive. It is used to point out a location that can be used for internal requests only;
-  - unsafe internal redirection.
+- scan internal networks,
+- reach metadata services,
+- hit admin panels that are not exposed publicly,
+- and in some cases pivot into more serious compromises.
 
-### Lack of the internal directive
+This is especially dangerous when the proxy location is intended to be "internal" but can be reached via rewrites, error_page, try_files, or other internal redirects.
 
-Classical misconfiguration, based on lack of the `internal` directive, that makes SSRF possible:
-
-```nginx
-location ~ /proxy/(.*)/(.*)/(.*)$ {
-    proxy_pass $1://$2/$3;
-}
-```
-
-An attacker has complete control over the proxied address, that makes sending requests on behalf of Nginx possible.
-
-### Unsafe internal redirection
-
-Let's say you have internal location in your config and that location uses some request data as proxied server's address.
-
-E.g.:
+## Bad configuration
 
 ```nginx
 location ~* ^/internal-proxy/(?<proxy_proto>https?)/(?<proxy_host>.*?)/(?<proxy_path>.*)$ {
     internal;
 
-    proxy_pass $proxy_proto://$proxy_host/$proxy_path ;
+    proxy_pass $proxy_proto://$proxy_host/$proxy_path;
     proxy_set_header Host $proxy_host;
 }
 ```
 
-According to Nginx docs, internal requests are the following:
+Marking a location `internal` helps, but it does not automatically make the whole setup safe if other directives can route a request into it.
 
->  - requests are redirected by the **error_page**, index, random_index, and **try_files** directives;
->  - requests redirected by the "X-Accel-Redirect" response header field from an upstream server;
->  - sub-requests formed by the "include virtual" command of the `ngx_http_ssi_module` module and by the ngx_http_addition_module module directives;
->  - requests changed by the **rewrite** directive
-
-Accordingly, any unsafe rewrite allows an attacker to make an internal request and control a proxied server's address.
-
-Misconfiguration example:
+A common mistake is combining an unsafe rewrite with the internal proxy:
 
 ```nginx
 rewrite ^/(.*)/some$ /$1/ last;
 
 location ~* ^/internal-proxy/(?<proxy_proto>https?)/(?<proxy_host>.*?)/(?<proxy_path>.*)$ {
     internal;
-
-    proxy_pass $proxy_proto://$proxy_host/$proxy_path ;
-    proxy_set_header Host $proxy_host;
+    proxy_pass $proxy_proto://$proxy_host/$proxy_path;
 }
 ```
 
-## What can I do?
+## Better configuration
 
-There are several rules you better follow when writing such configurations:
+If the set of upstream hosts is small, hardcode them and select with a `map`:
 
-- use only "internal locations" for proxying;
-- if possible, forbid user data transmission;
-- protect proxied server's address:
-  - if the quantity of proxied hosts is limited (when you have S3 or smth), you better hardcode them and choose them with `map` or do it some other way;
-  - if you can't list all possible hosts to proxy, you should sign the address.
+```nginx
+map $arg_target $upstream_host {
+    default "";
+    one "backend1.internal";
+    two "backend2.internal";
+}
+
+server {
+    location /proxy/ {
+        if ($upstream_host = "") { return 400; }
+
+        proxy_pass http://$upstream_host;
+        proxy_set_header Host $upstream_host;
+    }
+}
+```
+
+If you cannot enumerate hosts, treat the upstream address as a signed token (HMAC) rather than raw client input, and verify it before proxying.
+
+## Additional notes
+
+Variable-based proxying is not inherently insecure, but the moment the variable is derived from user input, you need a tight allowlist and a plan for internal redirect paths (`rewrite`, `error_page`, `try_files`, X-Accel-Redirect, and subrequests).

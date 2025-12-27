@@ -1,59 +1,45 @@
 ---
 title: "Uncached try_files"
-description: "Improve NGINX performance. Using try_files without open_file_cache causes excessive syscalls. Learn how to configure caching correctly."
+description: "Detects try_files usage without open_file_cache. Without caching, try_files can generate a high volume of stat() syscalls and become a bottleneck under load."
 ---
 
-# [try_files_is_evil_too] `try_files` without `open_file_cache`
+# [try_files_is_evil_too] try_files without open_file_cache
 
-The `try_files` directive is commonly used in nginx to check for file existence before falling back to other options. However, without `open_file_cache`, each request triggers multiple `stat()` system calls, which can significantly impact performance.
+## What this check looks for
 
-## Why this matters
+This plugin warns when `try_files` is used, but `open_file_cache` is not configured.
 
-For every request, `try_files` performs file existence checks using `stat()` system calls. Without caching:
+## Why this is a problem
 
-- **High I/O overhead**: Each request causes multiple disk operations
-- **Performance degradation**: Under load, this becomes a bottleneck
-- **Increased latency**: Especially on network filesystems (NFS, distributed storage)
+`try_files` checks the filesystem repeatedly to see whether files exist. Without caching, those checks translate into repeated `stat()` syscalls. Under load, that adds up quickly and can become one of the hottest spots on a busy server.
 
-## Bad example
+## Bad configuration
 
 ```nginx
 location / {
-    try_files $uri $uri/ /index.php$is_args$args;
+    try_files $uri $uri/ /index.html;
 }
 ```
 
-Every request will perform 2-3 `stat()` calls without any caching.
+This works, but every request may trigger multiple filesystem checks.
 
-## Good example
+## Better configuration
+
+Enable `open_file_cache` to cache file metadata:
 
 ```nginx
-# Enable file cache at http or server level
-open_file_cache max=1000 inactive=20s;
-open_file_cache_valid 30s;
+open_file_cache          max=10000 inactive=30s;
+open_file_cache_valid    60s;
 open_file_cache_min_uses 2;
-open_file_cache_errors on;
+open_file_cache_errors   on;
 
-location / {
-    try_files $uri $uri/ /index.php$is_args$args;
+server {
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
 }
 ```
 
-With `open_file_cache`, nginx caches file metadata, dramatically reducing `stat()` calls.
+## Additional notes
 
-## Cache configuration options
-
-| Directive | Description |
-|-----------|-------------|
-| `open_file_cache max=N inactive=T` | Cache up to N entries, expire after T inactive |
-| `open_file_cache_valid T` | How often to validate cached entries |
-| `open_file_cache_min_uses N` | Min accesses before caching |
-| `open_file_cache_errors on` | Cache "file not found" errors too |
-
-## When to disable this check
-
-If you're serving dynamic content where files change frequently, or using a RAM disk, the performance impact may be negligible. You can disable this specific check in your gixy configuration.
-
-## References
-
-- [nginx documentation: open_file_cache](https://nginx.org/en/docs/http/ngx_http_core_module.html#open_file_cache)
+Caching is not always appropriate. If you serve highly dynamic file trees that change constantly (or you are on a filesystem where metadata caching is risky), you may choose to skip it. If you do, at least be aware of the performance tradeoff and test under realistic load.

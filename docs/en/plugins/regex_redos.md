@@ -1,47 +1,54 @@
 ---
 title: "Regex Denial of Service"
-description: "Protect NGINX from ReDoS attacks. Identify catastrophic backtracking in regex locations and rewrite rules that can hang your server."
+description: "Detects risky regular expressions that can trigger catastrophic backtracking (ReDoS). These patterns can peg a worker CPU core on a single crafted request."
 ---
 
 # [regex_redos] Regular Expression Denial of Service (ReDoS)
 
-ReDoS (Regular Expression Denial of Service) occurs when a regex pattern with certain structures causes catastrophic backtracking on specially crafted input, consuming excessive CPU time.
+## What this check looks for
 
-## Why this matters
+This plugin scans regex usage in directives like:
 
-nginx uses PCRE regular expressions in several directives where user-controlled input is matched:
-- `location ~ pattern` - matches request URI
-- `if ($var ~ pattern)` - matches variables like `$http_referer`, `$request_uri`
-- `rewrite pattern replacement` - matches request URI
-- `server_name ~pattern` - matches Host header
+- `location ~ ...`
+- `if ($var ~ ...)`
+- `rewrite ...`
 
-An attacker who can craft input matching a vulnerable regex can cause nginx workers to hang, leading to denial of service with minimal attack resources.
+and warns about patterns that are likely to cause catastrophic backtracking. This issue is also known as [ReDoS](https://en.wikipedia.org/wiki/ReDoS).
 
-## Insecure example
+## Why this is a problem
+
+PCRE-style regex engines can take exponential time on certain inputs when the pattern is ambiguous (nested groups, overlapping alternations, repeated wildcards). With user-controlled input (URI, headers), a single request can burn a lot of CPU in one worker, allowing it to effectively be killed.
+
+## Bad configuration
 
 ```nginx
-# Catastrophic backtracking for long "a" runs
-location ~ ^/(a|aa|aaa|aaaa)+$ {
+# Classic catastrophic backtracking style pattern
+location ~ (a+)+$ {
     return 200 "ok";
 }
 ```
 
-A path like `/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaab` can tie up CPU for a long time.
+A long string of `a` characters followed by a mismatch can keep the engine backtracking for an extremely long time (many seconds per request).
 
-## Safer alternatives
+## Better configuration
 
-- Anchor and simplify patterns; avoid nested alternations and ambiguous repetitions
-- Prefer explicit, linear-time constructs where possible
-- Constrain input length before applying expensive regexes
+Anchor the pattern, simplify it, and avoid nested quantifiers:
 
 ```nginx
-# Safer: anchored and simplified
-location ~ ^/a+$ {
+# Anchored, linear-time for simple inputs
+location ~ ^a+$ {
     return 200 "ok";
 }
 ```
 
-## References
+General approaches:
 
-- [OWASP: Regular expression Denial of Service](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS)
-- [Cloudflare: Details of the Cloudflare outage on July 2, 2019](https://blog.cloudflare.com/details-of-the-cloudflare-outage-on-july-2-2019/) - a famous ReDoS incident
+- use `^` and `$` anchors whenever possible,
+- avoid nested `(...)+` or `(.*)+` constructs,
+- keep alternations unambiguous,
+- constrain input length before matching expensive patterns.
+- use [recheck](https://makenowjust-labs.github.io/recheck/playground/) against any regex patterns used to check for vulnerable expressions.
+
+## Additional notes
+
+For more information about issue in nginx, see [this post](https://joshua.hu/nginx-directives-regex-redos-denial-of-service-vulnerable).
