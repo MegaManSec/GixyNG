@@ -5,9 +5,9 @@ from gixy.core.regexp import Regexp
 from gixy.directives.block import MapBlock
 from gixy.directives.directive import MapDirective, AddHeaderDirective
 from urllib.parse import urlparse
-from publicsuffixlist import PublicSuffixList
+import tldextract
 
-_PSL = PublicSuffixList()
+_EXTRACT = tldextract.TLDExtract(include_psl_private_domains=True, suffix_list_urls=()) # include private domains, because we only care about origin; not domain ownership
 
 class origins(Plugin):
     r"""
@@ -59,7 +59,7 @@ class origins(Plugin):
 
     def __init__(self, config):
         super(origins, self).__init__(config)
-        self.psl = _PSL
+        self.extract = _EXTRACT
 
         self.directive_type = None
         self.insecure_set = set()
@@ -95,10 +95,21 @@ class origins(Plugin):
         if not i or not j:
             return False
 
+        i = i.strip(".").lower()
+        j = j.strip(".").lower()
+
         if i == j:
             return True
 
-        return self.psl.privatesuffix(i.strip('.')) == self.psl.privatesuffix(j.strip('.')) != None
+        xi = self.extract(i)
+        xj = self.extract(j)
+
+        ei = (getattr(xi, "top_domain_under_public_suffix", None) or
+              getattr(xi, "registered_domain", None) or None)
+        ej = (getattr(xj, "top_domain_under_public_suffix", None) or
+              getattr(xj, "registered_domain", None) or None)
+
+        return ei is not None and ei == ej
 
     def parse_url(self, url):
         try:
