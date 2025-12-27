@@ -33,10 +33,7 @@ class regex_redos(Plugin):
     https://github.com/MegaManSec/recheck-http-api
     """
 
-    summary = (
-        'Detect directives with regexes that are vulnerable to '
-        'Regular Expression Denial of Service (ReDoS).'
-    )
+    summary = "Regular expression denial of service (ReDoS)."
     severity = gixy.severity.HIGH
     unknown_severity = gixy.severity.UNSPECIFIED
     description = (
@@ -68,7 +65,7 @@ class regex_redos(Plugin):
             return
 
         regex_pattern = directive.path
-        fail_reason = f'Could not check regex {regex_pattern} for ReDoS.'
+        fail_reason = f"Could not evaluate regex for ReDoS: {regex_pattern}."
 
         modifier = "" if directive.modifier == "~" else "i"
         json_data = {"1": {"pattern": regex_pattern, "modifier": modifier}}
@@ -116,11 +113,11 @@ class regex_redos(Plugin):
 
         # If the status is unknown, add a low-severity issue (likely the server timed out)
         if status == "unknown":
-            reason = f'Could not check complexity of regex {regex_pattern}.'
+            reason = f"Could not determine ReDoS complexity for regex: {regex_pattern}."
             self.add_issue(directive=directive, reason=reason, severity=self.unknown_severity)
             return
 
         # Status is 'vulnerable' here. Report as a high-severity issue.
         complexity_summary = recheck.get("complexity", {}).get("summary", "unknown")
-        reason = f'Regex is vulnerable to {complexity_summary} ReDoS: {regex_pattern}.'
+        reason = f"Regex is vulnerable to {complexity_summary} ReDoS: {regex_pattern}."
         self.add_issue(directive=directive, reason=reason, severity=self.severity)

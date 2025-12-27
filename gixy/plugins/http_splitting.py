@@ -37,7 +37,9 @@ class http_splitting(Plugin):
                 char = '\\r'
             else:
                 continue
-            reason = 'At least variable "${var}" can contain "{char}"'.format(var=var.name, char=char)
+            reason = 'Variable `${var}` can contain `{char}`, which can enable header/response splitting.'.format(
+                var=var.name, char=char
+            )
             self.add_issue(directive=[directive] + var.providers, reason=reason)
 
 

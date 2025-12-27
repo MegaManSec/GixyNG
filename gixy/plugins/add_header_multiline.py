@@ -5,19 +5,16 @@ from gixy.plugins.plugin import Plugin
 
 class add_header_multiline(Plugin):
     """
-        Insecure example:
-    add_header Content-Security-Policy "
+    Insecure example:
+        add_header Content-Security-Policy "
         default-src: 'none';
         img-src data: https://mc.yandex.ru https://yastatic.net *.yandex.net https://mc.yandex.${tld} https://mc.yandex.ru;
         font-src data: https://yastatic.net;";
     """
 
-    summary = "Found a multi-line header."
+    summary = "Multiline response headers."
     severity = gixy.severity.LOW
-    description = (
-        "Multi-line headers are deprecated (see RFC 7230). "
-        "Some clients never supports them (e.g. IE/Edge)."
-    )
+    description = "Multiline headers are deprecated (see RFC 7230). Some clients never support them (for example, IE/Edge)."
     help_url = "https://gixy.io/plugins/add_header_multiline/"
     directives = ["add_header", "more_set_headers"]
 
@@ -26,15 +23,11 @@ class add_header_multiline(Plugin):
             if value is None:
                 continue
             if "\n\x20" in value or "\n\t" in value:
-                self.add_issue(directive=directive)
+                reason = "Header value contains an obsolete folded newline (header folding). Put the value on a single line."
+                self.add_issue(directive=directive, reason=reason)
                 break
             if "\n" in value:
-                reason = (
-                    'A newline character is found in the directive "{directive}". The resulting header {header} will be '
-                    "incomplete. Ensure the value is fit on a single line or use variable nesting.".format(
-                        directive=directive.name, header=header
-                    )
-                )
+                reason = "Header value contains a newline; the emitted header may be truncated or invalid. Put the value on a single line."
                 self.add_issue(
                     severity=gixy.severity.HIGH, directive=directive, reason=reason
                 )

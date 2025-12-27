@@ -21,6 +21,7 @@ class add_header_redefinition(Plugin):
             }
         }
     """
+
     summary = 'Nested "add_header" drops parent headers.'
     severity = gixy.severity.LOW
     description = ('"add_header" replaces ALL parent headers when add_header_inherit is not set on nginx 1.29.3+.')
@@ -103,7 +104,9 @@ class add_header_redefinition(Plugin):
         # Set severity based on whether a secure header was dropped
         issue_severity = gixy.severity.MEDIUM if is_secure_header_dropped else self.severity
 
-        reason = 'Parent headers "{headers}" was dropped in current level'.format(headers='", "'.join(sorted(diff)))
+        reason = 'Parent headers `{headers}` were dropped at this level.'.format(
+            headers='`, `'.join(sorted(diff))
+        )
         self.add_issue(directive=directives, reason=reason, severity=issue_severity)
 
 
@@ -112,7 +115,7 @@ def get_headers(directive):
     if not headers:
         return set()
 
-    return set(map(lambda d: d.header, headers))
+    return {d.header.lower() for d in headers if getattr(d, "header", None)}
 
 def has_header_inherit(directive):
     """

@@ -1,5 +1,3 @@
-"""Module for try_files_is_evil_too plugin."""
-
 import gixy
 from gixy.plugins.plugin import Plugin
 
@@ -12,9 +10,9 @@ class try_files_is_evil_too(Plugin):
         }
     """
 
-    summary = "The try_files directive is evil without open_file_cache"
+    summary = "try_files used without open_file_cache."
     severity = gixy.severity.MEDIUM
-    description = "The try_files directive introduces performance overhead."
+    description = "Using try_files without open_file_cache adds extra stat() calls per request and can cause significant performance overhead."
     help_url = "https://gixy.io/plugins/try_files_is_evil_too/"
     directives = ["try_files"]
 
@@ -25,5 +23,5 @@ class try_files_is_evil_too(Plugin):
             self.add_issue(
                 severity=gixy.severity.MEDIUM,
                 directive=[directive],
-                reason="The try_files directive introduces performance overhead without open_file_cache",
+                reason = "`try_files` introduces extra filesystem lookups without `open_file_cache`."
             )

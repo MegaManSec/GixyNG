@@ -1,5 +1,3 @@
-"""Module for worker_rlimit_nofile_vs_connections plugin."""
-
 import gixy
 from gixy.plugins.plugin import Plugin
 
@@ -29,15 +27,11 @@ class worker_rlimit_nofile_vs_connections(Plugin):
                 self.add_issue(
                     severity=self.severity,
                     directive=[directive, worker_rlimit_nofile_directive],
-                    reason=(
-                        "worker_rlimit_nofile should be at least twice than worker_connections"
-                    ),
+                    reason = "`worker_rlimit_nofile` should be at least twice `worker_connections`."
                 )
         else:
             self.add_issue(
                 severity=self.severity,
                 directive=[directive],
-                reason=(
-                    "Missing worker_rlimit_nofile with at least twice the value of worker_connections"
-                ),
+                reason = "Missing `worker_rlimit_nofile`; set it to at least twice `worker_connections`."
             )

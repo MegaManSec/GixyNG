@@ -7,7 +7,8 @@ class valid_referers(Plugin):
     Insecure example:
         valid_referers none server_names *.webvisor.com;
     """
-    summary = 'Used "none" as valid referer.'
+
+    summary = "none used in valid_referers."
     severity = gixy.severity.HIGH
     description = (
         'Using "none" in valid_referers treats requests with no Referer as trusted, '
@@ -18,4 +19,5 @@ class valid_referers(Plugin):
 
     def audit(self, directive):
         if 'none' in directive.args:
-            self.add_issue(directive=directive)
+            reason = "`valid_referers` includes `none`, treating requests without a Referer as trusted."
+            self.add_issue(directive=directive, reason=reason)

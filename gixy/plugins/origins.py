@@ -37,6 +37,7 @@ class origins(Plugin):
             add_header X-Frame-Options SAMEORIGIN;
         }
     """
+
     summary = 'Validation regex for "origin" or "referer" matches untrusted domain or invalid value.'
     severity_invalid_header = gixy.severity.LOW
     severity_insecure_referer = gixy.severity.MEDIUM
@@ -51,7 +52,7 @@ class origins(Plugin):
         'lower_hostname': True
     }
     options_help = {
-        'domains': 'Comma-separated list of trusted registrable domains. Use * to disable third-party checks. Example: "example.com,foo.bar".',
+        'domains': 'Comma-separated list of trusted registrable domains. Origins/referers that may match a different domain are flagged as insecure. Use "*" to skip domain allowlisting',
         'https_only': 'Boolean. Only allow https scheme in origins/referers when true.',
         'lower_hostname': 'Boolean. Normalize hostnames to lowercase prior to validation.'
     }
@@ -240,19 +241,19 @@ class origins(Plugin):
                 except:
                     continue
             if self.insecure_set:
-                invalids = '\", \"'.join(self.insecure_set).replace('`', 'a')
-                reason = 'Regex matches insecure "{value}" as a valid {name}.'.format(value=invalids, name=name)
+                invalids = ', '.join(self.insecure_set).replace('`', 'a')
+                reason = 'Regex matches insecure `{value}` as a valid {name}.'.format(value=invalids, name=name)
                 self.add_issue(directive=directive, reason=reason, severity=severity)
 
         if self.invalid_set:
             invalids = '\", \"'.join(self.invalid_set).replace('`', 'a')
             reason = 'Regex matches invalid "{value}" as a valid {name}.'.format(value=invalids, name=name)
             if name == 'origin':
-                reason += ' Origin headers must in the format of <scheme>://<hostname>[:port]. No path can be specified.'
+                reason += ' Origin headers must be in the format <scheme>://<hostname>[:port] with no path.'
             else:
                 reason += ' Referer headers should use absolute URLs including a scheme and hostname.'
             if self.lower_hostname:
-                reason += ' All characters in the scheme and hostname should be lowercase.'
+                reason += " Scheme and hostname should be lowercase."
             self.add_issue(directive=directive, reason=reason, severity=self.severity_invalid_header)
 
     def audit(self, directive):
@@ -265,7 +266,7 @@ class origins(Plugin):
             return
 
         if self.directive_type == '$http_referrer':
-            reason = 'Incorrect header "$http_referrer". Use "$http_referer".'
+            reason = "Incorrect header `$http_referrer`; use `$http_referer`."
             self.add_issue(directive=directive, reason=reason, severity=self.severity_insecure_origin)
             return
 

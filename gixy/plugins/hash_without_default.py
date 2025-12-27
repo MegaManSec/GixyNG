@@ -4,14 +4,11 @@ from gixy.directives.directive import MapDirective
 from gixy.directives.block import MapBlock, GeoBlock
 
 class hash_without_default(Plugin):
-    summary = "Detect when a hash block (map, geo) is used without a default value."
+    summary = "Missing default value in hash blocks (map/geo)."
     severity = gixy.severity.MEDIUM
     description = "A hash block without a default value may allow the bypassing of security controls."
     help_url = "https://gixy.io/plugins/hash_without_default/"
     directives = ["map", "geo"]
-
-    def __init__(self, config):
-        super(hash_without_default, self).__init__(config)
 
     def audit(self, directive):
         # Collect entries from this block, following includes when present
@@ -52,5 +49,5 @@ class hash_without_default(Plugin):
         # geo continues to require an explicit default regardless of entries count
         self.add_issue(
             directive=[directive] + directive.children,
-            reason="Missing default value in {0} ${1}".format(directive.name, directive.variable),
+            reason = "Missing `default` entry in `{0}` for variable `${1}`.".format(directive.name, directive.variable)
         )

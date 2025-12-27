@@ -9,9 +9,9 @@ class add_header_content_type(Plugin):
     Good example: default_type text/plain;
     """
 
-    summary = "Found add_header usage for setting Content-Type."
+    summary = "Setting Content-Type via add_header."
     severity = gixy.severity.LOW
-    description = 'Target Content-Type in NGINX should not be set via "add_header".'
+    description = "Do not set Content-Type using add_header; use default_type instead."
     help_url = "https://gixy.io/plugins/add_header_content_type/"
     directives = ["add_header"]
 
@@ -22,7 +22,7 @@ class add_header_content_type(Plugin):
             if self._has_hide_header_content_type(directive):
                 return
 
-            reason = 'You probably want "default_type {default_type};" instead of "add_header" or "more_set_headers"'.format(
+            reason = 'Use `default_type {default_type};` instead of `add_header`/`more_set_headers` to set Content-Type.'.format(
                 default_type=directive.value
             )
             self.add_issue(directive=directive, reason=reason)

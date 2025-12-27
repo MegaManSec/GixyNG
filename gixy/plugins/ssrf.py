@@ -23,7 +23,7 @@ class ssrf(Plugin):
 
     summary = 'Possible SSRF (Server Side Request Forgery) vulnerability.'
     severity = gixy.severity.HIGH
-    description = 'The configuration may allow attacker to create a arbitrary requests from the vulnerable server.'
+    description = "The configuration may allow an attacker to make arbitrary requests from the vulnerable server."
     help_url = 'https://gixy.io/plugins/ssrf/'
     directives = ['proxy_pass']
 
@@ -56,7 +56,7 @@ class ssrf(Plugin):
                 return False
             if var.can_contain('.'):
                 # Yay! Our variable can contain any symbols!
-                reason = 'At least variable "${var}" can contain untrusted user input'.format(var=var.name)
+                reason = 'Variable `${var}` can contain untrusted user input.'.format(var=var.name)
                 self.add_issue(directive=[directive] + var.providers, reason=reason)
 
                 return True

@@ -6,21 +6,20 @@ class version_disclosure(Plugin):
     """
     Syntax for the directive: server_tokens off;
     """
-    summary = 'Detect unsafe or missing server_tokens settings that expose NGINX version.'
+
+    summary = "NGINX version disclosure via server_tokens."
     severity = gixy.severity.HIGH
-    description = ("Using server_tokens on; or server_tokens build;  allows an "
-                   "attacker to learn the version of NGINX you are running, which can "
-                   "be used to exploit known vulnerabilities.")
+    description = "Using server_tokens on; or server_tokens build; allows an attacker to learn the NGINX version, which can be used to target known vulnerabilities."
     help_url = 'https://gixy.io/plugins/version_disclosure/'
     directives = ['server_tokens']
     supports_full_config = True
 
     def audit(self, directive):
-        if directive.args[0] in ['on', 'build']:
+        if directive.args and directive.args[0].lower() in ['on', 'build']:
             self.add_issue(
                 severity=gixy.severity.HIGH,
                 directive=[directive, directive.parent],
-                reason="Using server_tokens value which promotes information disclosure"
+                reason="`server_tokens` is set to a value that enables version disclosure."
             )
 
     def post_audit(self, root):
@@ -37,7 +36,7 @@ class version_disclosure(Plugin):
 
         # Check if server_tokens is set at http level
         http_server_tokens = http_block.some('server_tokens')
-        if http_server_tokens and http_server_tokens.args[0] == 'off':
+        if http_server_tokens and http_server_tokens.args[0].lower() == 'off':
             # server_tokens is properly set at http level, no need to check further
             return
 
@@ -51,10 +50,10 @@ class version_disclosure(Plugin):
                 self.add_issue(
                     severity=gixy.severity.HIGH,
                     directive=[server_block],
-                    reason="Missing server_tokens directive - defaults to 'on' which promotes information disclosure"
+                    reason="Missing `server_tokens`; default is `on`, which enables version disclosure."
                 )
                 server_level_issue = True
-            elif server_tokens.args[0] in ['on', 'build']:
+            elif server_tokens.args[0].lower() in ['on', 'build']:
                 # This case is already handled by the regular audit method
                 server_level_issue = True
 
@@ -76,5 +75,5 @@ class version_disclosure(Plugin):
                             self.add_issue(
                                 severity=gixy.severity.MEDIUM,  # Lower severity for location blocks
                                 directive=[location_block],
-                                reason="Missing server_tokens directive in location - inherits unsafe default"
+                                reason="Missing `server_tokens` in this location; it inherits an unsafe value."
                             )

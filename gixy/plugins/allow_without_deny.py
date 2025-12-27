@@ -7,9 +7,10 @@ class allow_without_deny(Plugin):
     Warn when an 'allow' directive appears in a context without a corresponding
     'deny all;' (or equivalent restriction) in the same context.
     """
-    summary = 'Found allow directive(s) without deny in the same context.'
+
+    summary = "Allow directives without a deny restriction."
     severity = gixy.severity.HIGH
-    description = 'The "allow" directives should be typically accompanied by "deny all;" directive.'
+    description = "Allow directives should typically be paired with a restrictive deny rule (for example, deny all;) in the same context."
     help_url = 'https://gixy.io/plugins/allow_without_deny/'
     directives = ['allow']
 
@@ -26,7 +27,7 @@ class allow_without_deny(Plugin):
             if child.name == 'deny':
                 deny_found = True
         if not deny_found:
-            reason = 'You probably want "deny all;" after all the "allow" directives'
+            reason = "No deny rule was found in the same context; add `deny all;` after the `allow` directives."
             self.add_issue(
                 directive=directive,
                 reason=reason

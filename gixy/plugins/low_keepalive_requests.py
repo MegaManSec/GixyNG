@@ -1,5 +1,3 @@
-"""Module for low_keepalive_requests plugin."""
-
 import gixy
 from gixy.plugins.plugin import Plugin
 
@@ -27,6 +25,6 @@ class low_keepalive_requests(Plugin):
             self.add_issue(
                 severity=self.severity,
                 directive=[directive],
-                reason="The keepalive_requests directive should be at least 1000.",
+                reason = f"`keepalive_requests` is set to {value}; use at least 1000."
             )
 

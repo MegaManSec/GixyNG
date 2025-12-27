@@ -12,11 +12,11 @@ class if_is_evil(Plugin):
             proxy_pass http://backend;
         }
     """
-    summary = 'If is Evil... when used in location context.'
+
+    summary = 'If is evil when used in location context.'
     severity = gixy.severity.HIGH
-    description = 'Directive "if" has problems when used in location context, in some cases it does not do what you ' \
-                  'expect but something completely different instead. In some cases it even segfaults. It is ' \
-                  'generally a good idea to avoid it if possible.'
+    description = ("The if directive has pitfalls in location context: in some cases it does not do what you expect, "
+                   "but something completely different. In some cases it can even segfault. Avoid it where possible.")
     help_url = 'https://gixy.io/plugins/if_is_evil/'
     directives = []
 
@@ -37,10 +37,9 @@ class if_is_evil(Plugin):
         grandparent = parent.parent
 
         if grandparent and grandparent.name == 'location':
-            reason = 'Directive "{directive}" is not safe to use in "if in location" context'.format(directive=directive.name)
+            reason = 'Directive `{directive}` is unsafe inside `if` within a `location` block.'.format(directive=directive.name)
             if directive.name == 'rewrite':
-                reason = 'Directive "rewrite" is only safe to use in "if in location" context when "last", ' \
-                         '"redirect", or "permanent" argument is used'
+                reason = 'Directive `rewrite` is only considered safe in `if` within `location` when the flag is `last`, `redirect`, or `permanent`.'
             self.add_issue(
                 severity=gixy.severity.HIGH,
                 directive=[directive, parent],

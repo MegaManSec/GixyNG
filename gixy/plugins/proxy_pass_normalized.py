@@ -14,7 +14,7 @@ class proxy_pass_normalized(Plugin):
         proxy_pass http://backend/foo/bar;
     """
 
-    summary = "Detect path after host in proxy_pass (potential URL decoding issue)."
+    summary = "proxy_pass path normalization issues."
     severity = gixy.severity.MEDIUM
     description = "A path (beginning with a slash) after the host in proxy_pass leads to unexpected encoding."
     help_url = "https://gixy.io/plugins/proxy_pass_normalized/"
@@ -57,9 +57,6 @@ class proxy_pass_normalized(Plugin):
 
         parsed = urlparse(proxy_pass_args[0])
 
-        if not parsed:
-            return
-
         host = parsed.netloc
         path = parsed.path
         if host == "unix:":
@@ -90,8 +87,8 @@ class proxy_pass_normalized(Plugin):
         self.add_issue(
             severity=self.severity,
             directive=[directive, directive.parent],
-            reason=(
-                "Found a path after the host in proxy_pass, without using $request_uri and a variable (such as $1 or $uri). "
-                "This can lead to path decoding issues or double-encoding issues."
-            ),
+            reason = (
+                "A path is present after the host in `proxy_pass` without using `$request_uri` and a variable (for example, `$1` or `$uri`). "
+                "This can lead to path decoding or double-encoding issues."
+            )
         )
