@@ -20,13 +20,15 @@ Point `gixy` at one or more directories containing variable definition files.
 CLI:
 
 ```bash
+# Read all the *.cfg and *.conf files in /etc/gixy/vars,~/.config/gixy/vars
 gixy --vars-dirs /etc/gixy/vars,~/.config/gixy/vars
 ```
 
 Config file:
 
 ```ini
-vars-dirs = [/etc/gixy/vars, ~/.config/gixy/vars]
+[gixy]
+vars-dirs = /etc/gixy/vars,~/.config/gixy/vars
 ```
 
 `gixy` will read all files ending in `.cfg` or `.conf` inside those directories.

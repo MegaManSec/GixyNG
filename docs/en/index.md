@@ -75,7 +75,7 @@ Something not detected? Please open an [issue](https://github.com/MegaManSec/Gix
 `gixy` defaults to reading a system's NGINX configuration from `/etc/nginx/nginx.conf`. You can also specify the location by passing it to `gixy`:
 
 ```bash
-# analyze the configuration in /opt/nginx.conf
+# Analyze the configuration in /opt/nginx.conf
 gixy /opt/nginx.conf
 ```
 

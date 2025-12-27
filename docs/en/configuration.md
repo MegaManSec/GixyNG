@@ -19,12 +19,14 @@ By default, `gixy` looks in these locations (loaded in this order):
 You can also point to a specific file:
 
 ```bash
+# Load gixy configuration file from ./gixy.conf
 gixy --config ./gixy.conf
 ```
 
 And if you want a starting point, you can generate a config file from your current command-line args:
 
 ```bash
+# Write a gixy configuration file to ./gixy.conf
 gixy --write-config ./gixy.conf
 ```
 
@@ -149,6 +151,7 @@ skips = low_keepalive_requests
 Run it like this:
 
 ```bash
+# Load gixy configuration file from ./gixy.conf
 gixy --config ./gixy.conf
 ```
 

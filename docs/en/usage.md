@@ -12,6 +12,7 @@ GixyNG ships as the `gixy` CLI. It statically analyzes NGINX configuration (your
 If you have a standard NGINX install, this is usually enough:
 
 ```bash
+# By-default scans /etc/nginx/nginx.conf
 gixy
 ```
 
@@ -39,6 +40,7 @@ nginx -T > nginx-dump.conf
 Then you can copy `nginx-dump.conf` anywhere and scan it there:
 
 ```bash
+# Scan the NGINX dump file ./nginx-dump.conf
 gixy ./nginx-dump.conf
 ```
 
@@ -53,13 +55,13 @@ This workflow is especially handy when:
 By default, `gixy` reports everything it finds. If you only care about higher-severity issues, use `-l` repeats:
 
 ```bash
-# LOW and above
+# Show LOW severity issues and above
 gixy -l
 
-# MEDIUM and above
+# Show MEDIUM severity issues and above
 gixy -ll
 
-# HIGH only
+# Show HIGH severity issues only
 gixy -lll
 ```
 
@@ -111,6 +113,7 @@ gixy -f json -o gixy-report.json
 If something looks off (missing includes, weird parsing, unexpected results), debug mode is your friend:
 
 ```bash
+# Enable debug mode
 gixy --debug
 ```
 
@@ -119,6 +122,7 @@ gixy --debug
 By default, `gixy` processes `include` directives so it can analyze the full config tree. If you want to treat the input file as standalone, you can disable include processing:
 
 ```bash
+# Do not read any files that are referenced in 'include' directives
 gixy --disable-includes /path/to/nginx.conf
 ```
 
@@ -129,6 +133,7 @@ When scanning a rendered `nginx -T` dump, leaving includes enabled is usually fi
 If you ever see warnings about unknown variables, you may wish to specify them manually. You can point `gixy` to a directory containing files which define additional variables:
 
 ```bash
+# Read all the *.cfg and *.conf files in ./vars,/etc/gixy/vars
 gixy --vars-dirs ./vars,/etc/gixy/vars
 ```
 
@@ -139,12 +144,14 @@ More information about the expected files in these directories can be found in [
 If you do not want to pass the same flags every time you run `gixy`, you can load options from a config file:
 
 ```bash
+# Load gixy configuration file from ./gixy.conf
 gixy --config ./gixy.conf
 ```
 
 You can also generate a config file from your current CLI arguments:
 
 ```bash
+# Write a gixy configuration file to ./gixy.conf
 gixy --write-config ./gixy.conf
 ```
 
