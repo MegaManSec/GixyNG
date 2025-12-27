@@ -115,7 +115,7 @@ def _get_cli_parser():
     )
 
     parser.add_argument(
-        "-o", "--output", dest="output_file", type=str, help="Write report to file"
+        "-o", "--output", dest="output_file", type=str, default="", help="Write report to file"
     )
 
     parser.add_argument(
@@ -128,11 +128,11 @@ def _get_cli_parser():
     )
 
     parser.add_argument(
-        "--tests", dest="tests", type=str, help="Comma-separated list of tests to run"
+        "--tests", dest="tests", type=str, default="", help="Comma-separated list of tests to exclusively run"
     )
 
     parser.add_argument(
-        "--skips", dest="skips", type=str, help="Comma-separated list of tests to skip"
+        "--skips", dest="skips", type=str, default="", help="Comma-separated list of tests to exclusively skip"
     )
 
     parser.add_argument(
@@ -147,6 +147,7 @@ def _get_cli_parser():
         "--vars-dirs",
         dest="vars_dirs",
         type=str,
+        default="",
         help="Comma-separated list of directories with custom variable drop-ins",
     )
 
@@ -164,15 +165,23 @@ def _get_cli_parser():
             dst_name = "{plugin}:{key}".format(plugin=name, key=opt_key)
             if isinstance(opt_val, (tuple, list, set)):
                 opt_type = str
+                if isinstance(opt_val, set):
+                    default_val = ",".join(sorted(opt_val))
+                else:
+                    default_val = ",".join(opt_val)
             elif isinstance(opt_val, bool):
                 opt_type = _str_to_bool
+                default_val = opt_val
             else:
                 opt_type = type(opt_val)
+                default_val = opt_val
+
             group.add_argument(
                 option_name,
                 metavar=opt_key,
                 dest=dst_name,
                 type=opt_type,
+                default=default_val,
                 help=_create_plugin_help(plugin_cls, opt_key, opt_val),
             )
 
