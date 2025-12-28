@@ -70,16 +70,10 @@ nav:
 
 markdown_extensions:
   - admonition
-  - markdown_include.include
-  - pymdownx.emoji
+  - pymdownx.highlight
   - pymdownx.magiclink
   - pymdownx.superfences
   - pymdownx.tabbed
-  - pymdownx.tasklist
-  - pymdownx.snippets:
-      base_path:
-        - docs
-      check_paths: true
   - toc:
       permalink: false
 extra_javascript:
