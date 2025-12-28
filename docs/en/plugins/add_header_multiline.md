@@ -23,6 +23,13 @@ more_set_headers 'X-Foo: Bar
 
 Even if it "works" in a quick test, it is not safe to rely on.
 
+```nginx
+add_header 'Access-Control-Allow-Headers' 'Content-Disposition,Content-Range,DNT,X-CustomHeader,Keep-Alive,
+User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+```
+
+This is also an unsafe usage, which may result in the header being completely cut off.
+
 ## Better configuration
 
 Keep the configuration readable, but make the actual header value a single line by composing it with variables.
@@ -51,7 +58,3 @@ set $csp "${csp}font-src 'self'";
 
 add_header Content-Security-Policy $csp;
 ```
-
-## Additional notes
-
-If you are templating configs, watch for accidental newlines inside quoted strings. They look harmless in a text editor, but they still become literal newline characters in the header value.

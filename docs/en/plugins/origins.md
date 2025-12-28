@@ -64,6 +64,8 @@ if ($http_referer !~ "^https://([^/])+metrika.*yandex\.ru/") {
 }
 ```
 
+The above case is an example of a MEDIUM finding. The referer regex can be bypassed to match an untrusted domain.
+
 ```nginx
 # Invalid for Origin: origin cannot contain a path
 if ($http_origin !~ "^https://yandex\.ru/$") {
@@ -71,12 +73,16 @@ if ($http_origin !~ "^https://yandex\.ru/$") {
 }
 ```
 
+The above example is a LOW finding. The regex matches an invalid Origin (the Origin must not include a path, even `/`).
+
 ```nginx
 # Wrong variable name (typo)
 if ($http_referrer !~ "^https://yandex\.ru/") {
     add_header X-Frame-Options SAMEORIGIN;
 }
 ```
+
+The above example is a HIGH finding. The config is using the wrong variable (`referer` vs. `referrer`).
 
 ### `map`-based CORS allowlists that reflect an origin
 
@@ -93,6 +99,8 @@ add_header Access-Control-Allow-Origin $allow_origin always;
 ```
 
 If the `map` regex can be bypassed (or matches invalid Origin forms), you can end up reflecting a hostile origin.
+
+Note: scanning of *this* pattern (defining `access-control-allow-origin` based on a map) occurs only when a full configuration is performed, i.e. when the configuration scanned includes an `http { .. }` block.
 
 ## Bad configuration example
 
@@ -148,3 +156,81 @@ Good structure to aim for:
 ## Notes for Referer validation
 
 If your goal is anti-hotlinking or basic referer checks, consider using `valid_referers` (from `ngx_http_referer_module`, [here](https://nginx.org/en/docs/http/ngx_http_referer_module.html)) instead of hand-rolled regex in `if`. It is not perfect, but it is easier to audit than ad-hoc patterns.
+
+## Configuration
+
+This plugin has a few knobs you can use to decide how strict you want it to be.
+
+### domains
+
+You can use the `domains` option to define a trusted allowlist of registrable domains. If the regex can be bypassed to match a different domain, the plugin will flag it as insecure.
+
+By default, this is `*`, which disables domain allowlisting checks.
+
+#### CLI
+
+```bash
+# Only treat origins/referers under example.com and example.org as trusted
+gixy --origins-domains "example.com,example.org"
+```
+
+#### Config
+
+```ini
+[origins]
+; allowlist trusted registrable domains (use "*" to disable allowlisting)
+domains = example.com,example.org
+```
+
+### https-only
+
+You can use the `https-only` option to require the https scheme. When enabled, patterns that allow `http://` will be flagged as insecure.
+
+By default, this is `false`.
+
+#### CLI
+
+```bash
+# Only allow https origins/referers
+gixy --origins-https-only true
+```
+
+#### Config
+
+```ini
+[origins]
+; require https scheme in origins/referers
+https-only = true
+```
+
+### lower-hostname
+
+You can use the `lower-hostname` option to enforce lowercase scheme/hostname expectations. When enabled, patterns that accept uppercase or unusual characters in the scheme/host are treated as invalid.
+
+By default, this is `true`. Only disable this if you really know what you're doing (hostnames are nearly always case insensitive!)
+
+#### CLI
+
+```bash
+# Disable lowercase validation
+gixy --origins-lower-hostname false
+```
+
+#### Config
+
+```ini
+[origins]
+; enforce lowercase scheme/hostname checks
+lower-hostname = true
+```
+
+## Additional notes
+
+This plugin uses different severities depending on what it finds, and which header is involved. The logic is generally quite simple:
+
+- If the regex matches an *insecure* `Origin`, the severity is HIGH.
+- If the regex matches an *invalid* `Origin` or `Referer`, the severity is LOW.
+- If the regex matches an insecure `Referer`, the severity is MEDIUM.
+- If `$http_referrer` is used, the severity is HIGH.
+
+The check for the invalid `map`-based CORS header is only performed when a full configuration scan occurs, i.e. when the configuration scanned includes an `http { .. }` block.

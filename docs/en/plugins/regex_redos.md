@@ -7,13 +7,13 @@ description: "Detects risky regular expressions that can trigger catastrophic ba
 
 ## What this check looks for
 
-This plugin scans regex usage in directives like:
+This plugin checks regex usage in directives like:
 
 - `location ~ ...`
 - `if ($var ~ ...)`
 - `rewrite ...`
 
-and warns about patterns that are likely to cause catastrophic backtracking. This issue is also known as [ReDoS](https://en.wikipedia.org/wiki/ReDoS).
+It warns about patterns that may cause catastrophic backtracking. This issue is also known as [ReDoS](https://en.wikipedia.org/wiki/ReDoS).
 
 ## Why this is a problem
 
@@ -49,6 +49,49 @@ General approaches:
 - constrain input length before matching expensive patterns.
 - use [recheck](https://makenowjust-labs.github.io/recheck/playground/) against any regex patterns used to check for vulnerable expressions.
 
+## Configuration
+
+This plugin is opt-in. It does not run unless you point it at a ReDoS checking service.
+
+### url
+
+You can use the `url` option to configure the ReDoS checking server. The plugin will POST regex patterns to this endpoint and expects a response compatible with the `recheck` JSON format (for example, MegaManSec/recheck-http-api).
+
+By default, this value is empty, which means the plugin skips.
+
+#### CLI
+
+```bash
+# Send regex patterns to this service for evaluation
+gixy --regex-redos-url "http://127.0.0.1:8080/"
+```
+
+#### Config
+
+```ini
+[regex_redos]
+; URL of a compatible ReDoS checking server
+url = http://127.0.0.1:8080/
+```
+
 ## Additional notes
 
-For more information about issue in nginx, see [this post](https://joshua.hu/nginx-directives-regex-redos-denial-of-service-vulnerable).
+### Severity
+
+This plugin reports different severities depending on the result of the external checker:
+
+- MEDIUM, if the external checker reports the expression is vulnerable to ReDoS.
+- UNSPECIFIED, if the plugin cannot evaluate the expression for one reason or another (server failure, network failure, invalid JSON, etc.)
+
+### When this check is skipped
+
+This plugin is intentionally "opt-in" and will silently skip in these cases:
+
+- The Python `requests` dependency is not available.
+- You did not configure a checker URL (the `--regex-redos-url` / plugin `url` option).
+
+The plugin is opt-in because it requires calling to an external service. You can download an run that service, titled [recheck-http-api](https://github.com/megamansec/recheck-http-api).
+
+## More information
+
+For more information about ReDoS vulnerabilities in nginx, see [this post](https://joshua.hu/nginx-directives-regex-redos-denial-of-service-vulnerable).

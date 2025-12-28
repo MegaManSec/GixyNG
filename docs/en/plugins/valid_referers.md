@@ -40,7 +40,3 @@ if ($invalid_referer) {
 ```
 
 Then decide what you want to do for missing referers. If missing referers must be allowed for user experience, referer validation is not a reliable security boundary for that endpoint.
-
-## Additional notes
-
-Referer checks are best treated as a friction mechanism (hotlink protection, lightweight clickjacking mitigation), not as any actual security measure.

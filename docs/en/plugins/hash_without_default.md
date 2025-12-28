@@ -11,13 +11,9 @@ This plugin checks hash-like blocks such as `map` and `geo` and warns when they 
 
 ### Map special-case
 
-For `map`, the check intentionally ignores a very common pattern:
+For `map`, the check intentionally ignores a very common pattern of when a `map` has exactly one mapping entry and no explicit `default`. This configuration is often meant to return an empty string for all other inputs, and is used with `limit_req` and `limit_conn`, where an empty key disables limits.
 
-- If a `map` has exactly one mapping entry and no explicit `default`, it is often meant to return an empty string for all other inputs.
-- This is frequently used with `limit_req` / `limit_conn`, where an empty key disables limits.
-- Requiring an explicit `default` in that case would add noise.
-
-So, the plugin only warns for `map` when there are **two or more mapping entries** and **no explicit `default`**.
+Therefore, this plugin only really warns for `map` when there are two or more mapping entries and no explicit `default`. It warns for all cases with `geo`.
 
 ## Why this is a problem
 

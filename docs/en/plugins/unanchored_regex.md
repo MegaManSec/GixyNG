@@ -47,3 +47,7 @@ location ~ \.php$ {
     # ...
 }
 ```
+
+## Additional notes
+
+It's also worth considering whether your regular expressions are vulnerable to ReDoS. See the [regex_redos](https://gixy.io/plugins/regex_redos/) plugin for more information.

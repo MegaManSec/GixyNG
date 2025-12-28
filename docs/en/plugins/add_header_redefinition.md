@@ -58,8 +58,58 @@ server {
 }
 ```
 
+## Configuration
+
+You can tune this plugin to only report on specific headers. This is useful if you only care about specific headers and want to ignore noise like caching tweaks.
+
+### headers
+
+You can use the `headers` option to only report dropped headers that match the specified list. By default, this value is empty (reports all dropped headers).
+
+The value should be a comma-separated list of header names.
+
+#### CLI
+
+```bash
+# The add_header_redefinition plugin will only report about dropped x-frame-options and content-security-policy headers
+gixy --add-header-redefinition-headers "x-frame-options,content-security-policy"
+```
+
+#### Config
+
+```ini
+[add_header_redefinition]
+; only report about dropped x-frame-options and content-security-policy headers
+headers = x-frame-options,content-security-policy
+```
+
 ## Additional information
 
-Recent NGINX versions added `add_header_inherit` to adjust how `add_header` inherits across levels. If you have it available, `add_header_inherit merge;` can help keep a base set of headers while appending per-location headers. The [documentation](https://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header_inherit) states that for `add_header_inherit`:
+Recent NGINX versions added `add_header_inherit` to adjust how `add_header` inherits across levels. If you have it available (nginx 1.29.3+), enabling inheritance with `add_header_inherit on;` prevents nested `add_header` blocks from wiping out headers defined at higher levels. See the [documentation](https://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header_inherit).
 
-> The inheritance rules themselves are inherited in a standard way. For example, add_header_inherit merge; specified at the top level will be inherited in all nested levels recursively unless redefined later.
+### How severity is determined
+
+This plugin treats some headers as "secure headers" and escalates severity when they are dropped. Concretely:
+
+- If a nested block drops only non-security headers, the issue is reported as LOW.
+- If a nested block drops any header from the secure list below, the issue is reported as MEDIUM.
+
+The following headers are considered security-sensitive:
+
+- `strict-transport-security`
+- `content-security-policy`
+- `content-security-policy-report-only`
+- `x-frame-options`
+- `x-content-type-options`
+- `permissions-policy`
+- `referrer-policy`
+- `cross-origin-embedder-policy`
+- `cross-origin-opener-policy`
+- `cross-origin-resource-policy`
+- `x-xss-protection`
+- `x-permitted-cross-domain-policies`
+- `expect-ct`
+- `cache-control`
+- `pragma`
+- `expires`
+- `content-disposition`

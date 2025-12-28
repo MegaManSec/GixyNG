@@ -58,3 +58,7 @@ http {
     }
 }
 ```
+
+## Additional notes
+
+The check for a missing `server_tokens` is only performed when a full configuration scan occurs, i.e. when the configuration scanned includes an `http { .. }` block.

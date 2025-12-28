@@ -116,3 +116,8 @@ server {
     location / { return 200 "b\n"; }
 }
 ```
+
+
+## Additional notes
+
+This plugin only runs when a scan of full configuration is performed, i.e. when the configuration scanned includes an `http { .. }` block.

@@ -24,6 +24,17 @@ location /i {
 
 A request to `/i../app/config.py` may map to `/data/w3/app/config.py`, which is outside the intended `/images/` directory.
 
+Regex locations can be even trickier because capture groups may get spliced directly into the filesystem path:
+
+```nginx
+location ~ /site(.*) {
+  alias /var/www/site/$1;
+}
+```
+
+If `$1` can start with `.` (or contain `/`), you can end up with traversal-style paths reaching outside the intended directory.
+
+
 ## Better configuration
 
 If the alias points to a directory, make the location look like a directory too:
@@ -41,3 +52,10 @@ location = /i.gif {
     alias /data/w3/images/i.gif;
 }
 ```
+
+## Additional information
+
+This plugin may report either as HIGH or MEDIUM severity, depending on what is detected, and the impact of the configuration:
+
+- Configurations that allow for unfettered path traversal (e.g. from `/var/www/` to `/var/www/../../etc/passwd`) are reported as HIGH.
+- Configurations that allow for restricted path traversal (e.g. from `/var/www` to `/var/www-anything-except-dot`) are reported as MEDIUM.
