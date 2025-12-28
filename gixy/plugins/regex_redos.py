@@ -34,7 +34,7 @@ class regex_redos(Plugin):
     """
 
     summary = "Regular expression denial of service (ReDoS)."
-    severity = gixy.severity.HIGH
+    severity = gixy.severity.MEDIUM
     unknown_severity = gixy.severity.UNSPECIFIED
     description = (
         'Regular expressions with the potential for catastrophic backtracking '
@@ -46,6 +46,10 @@ class regex_redos(Plugin):
     options = {
         'url': ""
     }
+    options_help = {
+        'url': 'URL pointing to a server running a compatible ReDoS checking server (e.g. MegaManSec/recheck-http-api.)'
+    }
+
     skip_test = True
 
     def __init__(self, config):

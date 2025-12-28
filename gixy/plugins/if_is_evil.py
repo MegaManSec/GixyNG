@@ -41,7 +41,6 @@ class if_is_evil(Plugin):
             if directive.name == 'rewrite':
                 reason = 'Directive `rewrite` is only considered safe in `if` within `location` when the flag is `last`, `redirect`, or `permanent`.'
             self.add_issue(
-                severity=gixy.severity.HIGH,
                 directive=[directive, parent],
                 reason=reason
             )

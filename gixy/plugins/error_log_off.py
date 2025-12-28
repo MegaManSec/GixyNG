@@ -17,7 +17,6 @@ class error_log_off(Plugin):
     def audit(self, directive):
         if directive.args and directive.args[0].lower() == "off":
             self.add_issue(
-                severity=self.severity,
                 directive=[directive],
                 reason = "Configured `error_log off;` which treats 'off' as a filename."
             )

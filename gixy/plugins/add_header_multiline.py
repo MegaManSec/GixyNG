@@ -23,12 +23,10 @@ class add_header_multiline(Plugin):
             if value is None:
                 continue
             if "\n\x20" in value or "\n\t" in value:
-                reason = "Header value contains an obsolete folded newline (header folding). Put the value on a single line."
+                reason = "Header value contains an obsolete folded newline (header folding)."
                 self.add_issue(directive=directive, reason=reason)
                 break
             if "\n" in value:
-                reason = "Header value contains a newline; the emitted header may be truncated or invalid. Put the value on a single line."
-                self.add_issue(
-                    severity=gixy.severity.HIGH, directive=directive, reason=reason
-                )
+                reason = "Header value contains a newline; the emitted header may be truncated or invalid."
+                self.add_issue(directive=directive, reason=reason)
                 break

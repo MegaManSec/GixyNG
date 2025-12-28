@@ -85,7 +85,7 @@ class PluginsManager(object):
         """Call post_audit on plugins that support full config analysis when full config is detected."""
         if not self._is_full_config(root):
             return
-            
+
         for plugin in self.plugins:
             if plugin.supports_full_config:
                 plugin.post_audit(root)

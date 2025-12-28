@@ -25,13 +25,11 @@ class worker_rlimit_nofile_vs_connections(Plugin):
             worker_rlimit_nofile = worker_rlimit_nofile_directive.args[0]
             if int(worker_rlimit_nofile) < int(worker_connections) * 2:
                 self.add_issue(
-                    severity=self.severity,
                     directive=[directive, worker_rlimit_nofile_directive],
                     reason = "`worker_rlimit_nofile` should be at least twice `worker_connections`."
                 )
         else:
             self.add_issue(
-                severity=self.severity,
                 directive=[directive],
-                reason = "Missing `worker_rlimit_nofile`; set it to at least twice `worker_connections`."
+                reason = "Missing `worker_rlimit_nofile`."
             )

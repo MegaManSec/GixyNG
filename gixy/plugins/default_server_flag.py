@@ -57,7 +57,6 @@ class default_server_flag(Plugin):
             self.add_issue(
                 directive=first_directive,
                 summary=self.summary,
-                severity=self.severity,
                 description=(
                     f"No server marked as default_server for listen {key}. "
                     "Add 'default_server' to one server block listening on this socket."

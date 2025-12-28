@@ -55,7 +55,7 @@
   {
     "@context": "https://schema.org",
     "@type": "TechArticle",
-    "headline": "{{ page.title }}",
+    "headline": "{{ page.title }} | Gixy Documentation",
     "description": "{% if page.meta and page.meta.description %}{{ page.meta.description }}{% else %}Documentation and security hardening guide for GixyNG / Gixy NGINX scanner.{% endif %}",
     "articleSection": "Documentation",
     "url": "{{ page.canonical_url }}",
@@ -99,6 +99,9 @@
     <meta property="og:title" content="Page Not Found | {{ config.site_name }}">
     <meta property="og:description" content="The page you are looking for does not exist.">
   {% endif %}
+
+  <meta name="robots" content="index, follow">
+  <meta name="keywords" content="GixyNG, gixy, NGINX security scanner, NGINX configuration scanner, nginx.conf analyzer, NGINX hardening, NGINX security audit, NGINX compliance, NGINX configuration audit, static analysis, misconfiguration detection, configuration linting, DevSecOps, CI/CD security, web server security, reverse proxy security, security best practices, open source security tool, Python CLI">
 
   <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
   <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">

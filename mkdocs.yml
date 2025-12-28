@@ -1,8 +1,10 @@
-site_name: "GixyNG: NGINX Configuration Security & Hardening Checker"
-site_long_name: "GixyNG: NGINX Security, Hardening & Configuration Compliance Scanner"
+site_name: "GixyNG: NGINX Configuration Security Scanner"
+site_long_name: "GixyNG: NGINX Configuration Security & Hardening Scanner"
 site_description: "GixyNG is an open source NGINX security, hardening, and configuration compliance scanner. Run automated NGINX configuration security audits and compliance checks, find performance misconfigurations in nginx.conf, and harden your NGINX servers."
 site_url: https://gixy.io/
 repo_url: https://github.com/MegaManSec/GixyNG
+repo_name: MegaManSec/GixyNG
+site_author: "Joshua Rogers"
 theme:
   name: "material"
   language: en
@@ -14,9 +16,10 @@ theme:
     primary: teal
     accent: purple
   features:
-    - navigation.expand
+    - content.code.copy
 plugins:
-  - search
+  - search:
+      separator: '[\s\-,:!=\[\]()"/_]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
   - i18n:
       languages:
         - locale: en
@@ -37,7 +40,7 @@ plugins:
         Built-in plugins:
           - en/plugins/*.md: Scanning plugin
 nav:
-  - "NGINX Security Scanner": index.md
+  - "GixyNG Overview": index.md
   - "Usage Guide": usage.md
   - "Configuration Guide": configuration.md
   - "Custom Variables & Drop-ins": variables-dropins.md

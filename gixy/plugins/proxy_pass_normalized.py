@@ -85,7 +85,6 @@ class proxy_pass_normalized(Plugin):
             return
 
         self.add_issue(
-            severity=self.severity,
             directive=[directive, directive.parent],
             reason = (
                 "A path is present after the host in `proxy_pass` without using `$request_uri` and a variable (for example, `$1` or `$uri`). "
