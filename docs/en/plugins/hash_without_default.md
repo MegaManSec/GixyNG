@@ -3,7 +3,7 @@ title: "Map Default Value Missing"
 description: "Detects hash/geo blocks that omit a default. Missing defaults can cause unexpected fall-through behavior that weakens access control, routing, and rate-limit logic."
 ---
 
-# [hash_without_default] Missing default in hash blocks (map, geo)
+# [hash_without_default] Missing `default` in hash blocks (`map`, `geo`)
 
 ## What this check looks for
 

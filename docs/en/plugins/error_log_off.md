@@ -3,7 +3,7 @@ title: "error_log Set To Off"
 description: "Detects 'error_log off', which does not disable error logging. NGINX treats it as a filename called 'off'. Use /dev/null with an appropriate log level if you truly need to suppress logs."
 ---
 
-# [error_log_off] error_log set to off
+# [error_log_off] `error_log` set to off
 
 ## What this check looks for
 

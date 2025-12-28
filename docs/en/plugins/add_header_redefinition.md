@@ -3,7 +3,7 @@ title: "Header Inheritance Issues"
 description: "Detects add_header usage that unintentionally drops headers due to inheritance rules. Adding a header in a nested block replaces all add_header values from the parent level."
 ---
 
-# [add_header_redefinition] Redefining response headers with add_header
+# [add_header_redefinition] Redefining response headers with `add_header`
 
 ## What this check looks for
 

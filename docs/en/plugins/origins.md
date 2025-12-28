@@ -3,7 +3,7 @@ title: "Weak Referer/Origin Validation"
 description: "Flags unsafe or brittle Origin/Referer validation logic (most often loose regex checks) that can weaken clickjacking and CORS protections by accidentally trusting attacker-controlled inputs."
 ---
 
-# [origins]: Weak Referer/Origin validation
+# [origins] Weak `Referer` / `Origin` validation
 
 This check looks for common mistakes when using `$http_origin` or `$http_referer` to gate security behavior (CORS, clickjacking headers, etc.). It focuses on regex-based validation in `if` conditions and in `map`-based CORS allowlists that reflect an origin into a response header.
 
@@ -30,7 +30,7 @@ It can also flag values that contain uppercase letters or unusual characters in 
 
 `$http_referrer` is not a valid NGINX variable for the HTTP Referer header. The correct variable is `$http_referer`.
 
-## Why this matters
+## Why this is a problem
 
 Origin and Referer are attacker-controlled request headers. If your config uses them to decide whether to:
 
@@ -102,7 +102,7 @@ If the `map` regex can be bypassed (or matches invalid Origin forms), you can en
 
 Note: scanning of *this* pattern (defining `access-control-allow-origin` based on a map) occurs only when a full configuration is performed, i.e. when the configuration scanned includes an `http { .. }` block.
 
-## Bad configuration example
+## Bad configuration
 
 ```nginx
 # Intended to allow only yandex domains, but can also match:
@@ -135,7 +135,7 @@ add_header Access-Control-Allow-Origin $allow_origin always;
 add_header Access-Control-Allow-Credentials "true" always;
 ```
 
-Why this is better:
+This is better because:
 
 * only allowlisted origins are reflected,
 * everything else becomes an empty value,

@@ -3,7 +3,7 @@ title: "Allow Without Deny"
 description: "Detects allow rules that are not paired with an explicit deny. Without a deny, the block is still publicly accessible."
 ---
 
-# [allow_without_deny] allow without deny
+# [allow_without_deny] `allow` without `deny`
 
 ## What this check looks for
 

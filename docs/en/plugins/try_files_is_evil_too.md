@@ -3,7 +3,7 @@ title: "Uncached try_files"
 description: "Detects try_files usage without open_file_cache. Without caching, try_files can generate a high volume of stat() syscalls and become a bottleneck under load."
 ---
 
-# [try_files_is_evil_too] try_files without open_file_cache
+# [try_files_is_evil_too] `try_files` without `open_file_cache`
 
 ## What this check looks for
 

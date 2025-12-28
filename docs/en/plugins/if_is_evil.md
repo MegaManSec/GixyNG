@@ -3,7 +3,7 @@ title: "If Is Evil (in Location)"
 description: "Explains why if inside a location block can behave unpredictably and how to rewrite the config using return, rewrite, map, or separate locations."
 ---
 
-# [if_is_evil] If is evil when used in location context
+# [if_is_evil] `if` is evil when used in location context
 
 ## What this check looks for
 

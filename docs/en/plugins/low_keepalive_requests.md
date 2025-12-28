@@ -3,7 +3,7 @@ title: "Low Keepalive Requests"
 description: "Detects keepalive_requests values that are likely too low for modern traffic patterns (especially HTTP/2). Low values force frequent connection churn and can cause client-side failures under load."
 ---
 
-# [low_keepalive_requests] Low keepalive_requests value
+# [low_keepalive_requests] Low `keepalive_requests` value
 
 ## What this check looks for
 

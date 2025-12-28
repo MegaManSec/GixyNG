@@ -3,7 +3,7 @@ title: "proxy_pass Path Normalization"
 description: "Detects proxy_pass directives that include a URI path, which triggers NGINX URI decoding and normalization. This can change the upstream path and enable traversal or bypasses in some setups."
 ---
 
-# [proxy_pass_normalized] proxy_pass may decode and normalize paths
+# [proxy_pass_normalized] `proxy_pass` may decode and normalize paths
 
 ## What this check looks for
 

@@ -1,3 +1,8 @@
+---
+title: "Contributing"
+description: "Learn how to contribute to GixyNG. Read our pull request requirements, code quality standards, and AI-usage policy to ensure your NGINX security tool contributions are accepted."
+---
+
 # Contributing to GixyNG
 
 This document explains how to contribute meaningful changes to GixyNG that are helpful, reviewable, and maintainable.
@@ -70,6 +75,6 @@ AI-assisted contributions must meet the same standards as hand-written code:
 
 Once again, it is noted that using AI assistance is **allowed**. But if you submit broken code, low quality commits, or content which screams "this person has no idea what they're doing", your contributions are likely to be completely rejected, and you are likely to be flamed.
 
-This policy was created in response to the extremely low quality changes that were generated and accepted in another Gixy fork., Along with other decisions that reduced the overall effectiveness of the tool and its ability to detect vulnerabilities and misconfigurations in nginx configuration (and overall quality of the codebase), *those* changes were made without a clear understanding of what the AI-generated code was actually doing, or the actions it was taking. This was the catalyst for creating GixyNG, and more information about this can be read in [this blog post](/gixy-gixyng-fork-long-live-ai-slop).
+This policy was created in response to the extremely low quality changes that were generated and accepted in another Gixy fork. Along with other decisions that reduced the overall effectiveness of the tool and its ability to detect vulnerabilities and misconfigurations in nginx configuration (and overall quality of the codebase), *those* changes were made without a clear understanding of what the AI-generated code was actually doing, or the actions it was taking. This was the catalyst for creating GixyNG, and more information about this can be read in [this blog post](/gixy-gixyng-fork-long-live-ai-slop).
 
 Note: This document was written with the assistance of ChatGPT.

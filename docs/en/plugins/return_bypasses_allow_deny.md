@@ -3,7 +3,7 @@ title: "Return Bypasses Allow/Deny"
 description: "Detects return directives placed alongside allow/deny in the same effective scope. return short-circuits request processing and can make access controls misleading."
 ---
 
-# [return_bypasses_allow_deny] return bypasses allow and deny
+# [return_bypasses_allow_deny] `return` bypasses `allow` and `deny`
 
 ## What this check looks for
 

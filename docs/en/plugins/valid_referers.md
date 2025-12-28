@@ -3,7 +3,7 @@ title: "Referer Check Bypass"
 description: "Detects use of 'none' in valid_referers. Allowing missing Referer defeats the point of referer validation because attackers can omit the header."
 ---
 
-# [valid_referers] none in valid_referers
+# [valid_referers] `none` in `valid_referers`
 
 ## What this check looks for
 

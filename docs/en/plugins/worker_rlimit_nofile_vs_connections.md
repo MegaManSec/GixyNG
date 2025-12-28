@@ -3,7 +3,7 @@ title: "Low worker_rlimit_nofile"
 description: "Detects worker_rlimit_nofile values that are too low relative to worker_connections. If the file descriptor limit is not high enough, workers can hit 'Too many open files' under load."
 ---
 
-# [worker_rlimit_nofile_vs_connections] worker_rlimit_nofile must be at least twice worker_connections
+# [worker_rlimit_nofile_vs_connections] `worker_rlimit_nofile` must be at least twice `worker_connections`
 
 ## What this check looks for
 

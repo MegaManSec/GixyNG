@@ -3,7 +3,7 @@ title: "Duplicate Content-Type"
 description: "Flags cases where add_header is used to set Content-Type, which can create duplicate Content-Type headers. Prefer default_type, or hide the upstream header first."
 ---
 
-# [add_header_content_type] Using add_header to set Content-Type
+# [add_header_content_type] Using `add_header` to set `Content-Type`
 
 ## What this check looks for
 

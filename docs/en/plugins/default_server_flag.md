@@ -3,7 +3,7 @@ title: "Missing default_server Flag"
 description: "Detects listen sockets shared by multiple server blocks where none is marked as default_server, making unmatched hostnames ambiguous."
 ---
 
-# [default_server_flag] Missing default_server on shared listen socket
+# [default_server_flag] Missing `default_server` on shared listen socket
 
 ## What this check looks for
 
