@@ -139,6 +139,16 @@ gixy --vars-dirs ./vars,/etc/gixy/vars
 
 More information about the expected files in these directories can be found in [Custom Variables & Drop-Ins](https://gixy.io/variables-dropins/).
 
+## Plugin-specific configuration
+
+Most `gixy` settings are global and work well as shared defaults in a config file. Some plugins also expose their own flags/configurations (and those can be set via CLI or via the config file), but the details are specific to each check.
+
+If you need to tune a specific plugin, start with its documentation:
+
+- [add_header_redefinition](https://gixy.io/plugins/add_header_redefinition/)
+- [origins](https://gixy.io/plugins/origins/)
+- [regex_redos](https://gixy.io/plugins/regex_redos/)
+
 ## Using a config file
 
 If you do not want to pass the same flags every time you run `gixy`, you can load options from a config file:
@@ -155,4 +165,4 @@ You can also generate a config file from your current CLI arguments:
 gixy --write-config ./gixy.conf
 ```
 
-Full details (including plugin-specific settings) are found in the [Configuration Guide](https://gixy.io/configuration/).
+Full details are found in the [Configuration Guide](https://gixy.io/configuration/).

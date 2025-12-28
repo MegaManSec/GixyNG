@@ -2,13 +2,13 @@
 description: "Open source NGINX security, hardening, and configuration compliance scanner for automating nginx.conf security audits, compliance checks, and hardening against misconfigurations."
 ---
 
-# GixyNG: NGINX Security Scanner & Configuration Checker for Security Audits
+# GixyNG: NGINX Configuration Security Scanner for Security Audits
 
 ## Overview
 
 <a href="https://gixy.io/"><img width="192" height="192" alt="GixyNG Mascot Logo" style="float: right;" align="right" src="https://gixy.io/imgs/gixy.jpg" /></a>
 
-GixyNG is an open source NGINX configuration security scanner and hardening tool that performs static analysis of your nginx.conf to detect security misconfigurations, hardening gaps, and common performance pitfalls before they reach production. Run it locally or in CI/CD to automate NGINX security audits and configuration compliance checks, producing actionable findings that help prevent unstable/slow NGINX servers, and reduce risk from unsafe directives and insecure defaults.
+GixyNG is an open source NGINX configuration security scanner and hardening tool that performs static analysis of your nginx.conf to detect security misconfigurations, hardening gaps, and common performance pitfalls before they reach production.
 
 ### Quick start
 
@@ -147,7 +147,7 @@ Some plugins expose options which you can set via CLI flags or a configuration f
 
 Unlike running `nginx -t` which only checks syntax, GixyNG actually analyzes your configuration and detects unhardened instances and vulnerabilities.
 
-With GixyNG, you can perform an automated NGINX configuration security review that can run locally or in CI/CD on every change, whether that be for auditing purposes, compliance, or just general testing.
+With GixyNG, you can perform an automated NGINX configuration security review that can run locally or in CI/CD on every change, whether that be for auditing purposes, compliance, or just general testing, helping produce actionable findings that help prevent unstable/slow NGINX servers, and reduce risk from unsafe directives and insecure defaults.
 
 ## Contributing
 

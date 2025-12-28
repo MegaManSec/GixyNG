@@ -155,9 +155,9 @@ Run it like this:
 gixy --config ./gixy.conf
 ```
 
-## Plugin-specific flags
+## Plugin-specific configuration
 
-Most `gixy` settings are global and work well as shared defaults in a config file. Some plugins also expose their own flags (and those can be set via CLI or via the config file), but the details are specific to each check.
+Most `gixy` settings are global and work well as shared defaults in a config file. Some plugins also expose their own flags/configurations (and those can be set via CLI or via the config file), but the details are specific to each check.
 
 If you need to tune a specific plugin, start with its documentation:
 

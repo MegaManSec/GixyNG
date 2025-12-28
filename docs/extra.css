@@ -30,3 +30,8 @@
     height: 0 !important;
   }
 }
+
+.md-main__inner {
+  max-width: none !important;
+  padding: 0 !important;
+}

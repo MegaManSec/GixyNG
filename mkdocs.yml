@@ -81,7 +81,7 @@ markdown_extensions:
         - docs
       check_paths: true
   - toc:
-      permalink: "¤"
+      permalink: false
 extra_javascript:
   - extra/redirect-en.js
 extra:
