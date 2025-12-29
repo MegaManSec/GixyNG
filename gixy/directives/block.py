@@ -48,7 +48,7 @@ class Block(Directive):
             if child.name == name:
                 result.append(child)
             if flat and child.is_block and not child.self_context:
-                result += child.find(name)
+                result += child.find(name, flat)
         return result
 
     def find_recursive(self, name):
