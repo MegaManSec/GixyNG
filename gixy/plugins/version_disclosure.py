@@ -35,8 +35,7 @@ class version_disclosure(Plugin):
 
         # Check if server_tokens is set at http level
         http_server_tokens = http_block.some('server_tokens')
-        if http_server_tokens and http_server_tokens.args[0].lower() == 'off':
-            # server_tokens is properly set at http level, no need to check further
+        if http_server_tokens:
             return
 
         # Check each server block for server_tokens
