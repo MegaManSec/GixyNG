@@ -74,23 +74,6 @@ class origins(Plugin):
         self.lower_hostname = bool(self.config.get('lower_hostname'))
         self.lower_hostname_pattern = re.compile(r'^[a-z0-9.:\[\]-]+$') # :][ for IPv6
 
-    # Generates and compiles an expression to test against generated->manipulated strings from Regex.generate().
-    # Currently unused.
-    def compile_nginx_regex(self, nginx_pat, case_sensitive):
-        flags = re.IGNORECASE if not case_sensitive else 0
-        # strip variables
-        np = re.sub(r'(?<!\\)\$(?=\w)', r'\$', nginx_pat)
-        # look for ^(?flags)
-        m = re.match(r'^\^(\(\?[imxs]+\))', np)
-        if m:
-            inline_flags = m.group(1)           # e.g. '(?i)'
-            rest         = np[m.end():]  # everything after the flags
-            python_pat   = f'{inline_flags}^{rest}'
-            return re.compile(python_pat, flags)
-        else:
-            # no inline-global flags to hoist
-            return re.compile(np, flags)
-
     def same_origin(self, i, j):
         if not i or not j:
             return False

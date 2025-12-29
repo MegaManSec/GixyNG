@@ -80,13 +80,43 @@ class Directive:
         """Get all variables provided by this directive"""
         raise NotImplementedError()
 
-    def find_directives_in_scope(self, name):
-        """Find directives in the current scope"""
+    def _find_recursive_flat(self, node, name):
+        """Find directives named `name` under `node` where self_context == False"""
+        for child in getattr(node, "children", []):
+            if child.name == name:
+                yield child
+            if getattr(child, "is_block", False):
+                # Only flatten through non-self_context blocks (if/include/map/geo)
+                if not getattr(child, "self_context", True):
+                    yield from self._find_recursive_flat(child, name)
+                # else: stop at real context boundary
+
+    def find_declarative_directives_in_scope(self, name, ancestors=True):
+        """Find declarative directives in the current scope, optionally from all ancestors too"""
+        node = self
+        parent = self.parent
+        while parent:
+            for child in parent.children:
+                if child.name == name:
+                    yield child
+
+                if child.is_block and not child.self_context:
+                   yield from self._find_recursive_flat(child, name)
+
+                if child is node:
+                    break
+
+            if not ancestors:
+                break
+
+            node, parent = parent, parent.parent
+
+    def find_imperative_directives_in_scope(self, name, ancestors=True):
+        """Find imperative directives in the current scope, optionally from all ancestors too"""
         for parent in self.parents:
-            directive = parent.some(name, flat=False)
-            if directive:
-                yield directive
-        return None
+            yield from parent.find(name, flat=False)
+            if not ancestors:
+                break
 
     def find_single_directive_in_scope(self, name):
         """Find a single directive in the current scope"""

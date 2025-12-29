@@ -64,7 +64,7 @@ class proxy_pass_normalized(Plugin):
             host = path_parts[0]
             path = path_parts[1] if len(path_parts) > 1 else ""
 
-        for rewrite in directive.find_directives_in_scope("rewrite"):
+        for rewrite in directive.find_declarative_directives_in_scope("rewrite"):
             if (
                 rewrite.pattern == "^"
                 and rewrite.replace == "$request_uri"

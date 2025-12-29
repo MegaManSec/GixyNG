@@ -18,9 +18,7 @@ class worker_rlimit_nofile_vs_connections(Plugin):
     def audit(self, directive):
         # get worker_connections value
         worker_connections = directive.args[0]
-        worker_rlimit_nofile_directive = directive.find_single_directive_in_scope(
-            "worker_rlimit_nofile"
-        )
+        worker_rlimit_nofile_directive = directive.find_single_directive_in_scope("worker_rlimit_nofile")
         if worker_rlimit_nofile_directive:
             worker_rlimit_nofile = worker_rlimit_nofile_directive.args[0]
             if int(worker_rlimit_nofile) < int(worker_connections) * 2:
