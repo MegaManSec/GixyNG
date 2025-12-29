@@ -9,7 +9,7 @@ class error_log_off(Plugin):
     """
 
     summary = "error_log set to off."
-    severity = gixy.severity.MEDIUM
+    severity = gixy.severity.LOW
     description = "The error_log directive should not be set to off. It should be set to a valid file path."
     help_url = "https://gixy.io/plugins/error_log_off/"
     directives = ["error_log"]

@@ -9,7 +9,7 @@ class host_spoofing(Plugin):
     """
 
     summary = 'The proxied Host header may be spoofed.'
-    severity = gixy.severity.MEDIUM
+    severity = gixy.severity.HIGH
     description = 'In most cases, the $host variable is more appropriate; prefer it over $http_host.'
     help_url = 'https://gixy.io/plugins/host_spoofing/'
     directives = ['proxy_set_header']

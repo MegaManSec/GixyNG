@@ -8,7 +8,7 @@ class resolver_external(Plugin):
     """
 
     summary = "Using external DNS nameservers for resolver."
-    severity = gixy.severity.HIGH
+    severity = gixy.severity.MEDIUM
     description = ("Using external nameservers allows an attacker to send spoofed DNS replies to poison the resolver cache, "
                    "causing NGINX to proxy requests to an arbitrary upstream server.")
     help_url = 'https://gixy.io/plugins/resolver_external/'

@@ -8,7 +8,7 @@ class version_disclosure(Plugin):
     """
 
     summary = "NGINX version disclosure via server_tokens."
-    severity = gixy.severity.HIGH
+    severity = gixy.severity.LOW
     description = "Using server_tokens on; or server_tokens build; allows an attacker to learn the NGINX version, which can be used to target known vulnerabilities."
     help_url = 'https://gixy.io/plugins/version_disclosure/'
     directives = ['server_tokens']

@@ -14,7 +14,7 @@ class if_is_evil(Plugin):
     """
 
     summary = 'If is evil when used in location context.'
-    severity = gixy.severity.HIGH
+    severity = gixy.severity.MEDIUM
     description = ("The if directive has pitfalls in location context: in some cases it does not do what you expect, "
                    "but something completely different. In some cases it can even segfault. Avoid it where possible.")
     help_url = 'https://gixy.io/plugins/if_is_evil/'

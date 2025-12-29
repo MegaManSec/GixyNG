@@ -10,7 +10,7 @@ class default_server_flag(Plugin):
     """
 
     summary = "Multiple servers share listen socket without default_server."
-    severity = gixy.severity.LOW
+    severity = gixy.severity.MEDIUM
     description = (
         "When two or more server blocks listen on the same address:port, one "
         "should be marked with the 'default_server' (or 'default') flag to "
