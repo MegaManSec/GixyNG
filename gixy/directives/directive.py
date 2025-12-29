@@ -22,6 +22,32 @@ def get_overrides():
     return result
 
 
+def is_ipv6(host, strip_brackets=True, is_local=False):
+    """Check if a string is an IPv6 address (may include port)."""
+    if strip_brackets and host.startswith("[") and "]" in host:
+        host = host.split("]", 1)[0][1:]
+    try:
+        ip_obj = ipaddress.IPv6Address(host)
+        if is_local:
+            return ip_obj.is_loopback or ip_obj.is_link_local or ip_obj.is_private
+        return True
+    except ValueError:
+        return False
+
+
+def is_ipv4(host, strip_port=True, is_local=False):
+    """Check if a string is an IPv4 address (may include port)."""
+    if strip_port:
+        host = host.rsplit(":", 1)[0]
+    try:
+        ip_obj = ipaddress.IPv4Address(host)
+        if is_local:
+            return ip_obj.is_loopback or ip_obj.is_private or ip_obj.is_link_local
+        return True
+    except ValueError:
+        return False
+
+
 class Directive:
     """Base class for all directives"""
 
@@ -69,8 +95,6 @@ class Directive:
             if directive:
                 return directive
         return None
-
-
 
     def __str__(self):
         return f"{self.name} {' '.join(self.args)};"
@@ -236,31 +260,6 @@ class AliasDirective(Directive):
         self.path = args[0]
 
 
-def is_local_ipv6(ip):
-    """
-    Check if an IPv6 address is a local address
-    IP may include a port number, e.g. `[::1]:80`
-    If port is not specified, IP can be specified without brackets, e.g. ::1
-    """
-    if ip.startswith("[") and "]" in ip:
-        ip = ip.split("]")[0][1:]
-    try:
-        ip_obj = ipaddress.IPv6Address(ip)
-        return ip_obj.is_loopback or ip_obj.is_link_local or ip_obj.is_private
-    except ValueError:
-        return False
-
-
-def is_local_ipv4(addr):
-    """Check if an IPv4 address is a local address (loopback/private/link-local)."""
-    ip = addr.rsplit(":", 1)[0]
-    try:
-        ip_obj = ipaddress.IPv4Address(ip)
-        return ip_obj.is_loopback or ip_obj.is_private or ip_obj.is_link_local
-    except ValueError:
-        return False
-
-
 class ResolverDirective(Directive):
     """
     Syntax:	resolver address ... [valid=time] [ipv4=on|off] [ipv6=on|off] [status_zone=zone];
@@ -287,7 +286,7 @@ class ResolverDirective(Directive):
             elif addr.count(":") == 1:
                 ip_candidate = addr.rsplit(":", 1)[0] # 1.2.3.4:53 -> 1.2.3.4 (or name:53 -> name)
 
-            if is_local_ipv4(addr) or is_local_ipv6(addr):
+            if is_ipv4(addr, is_local=True) or is_ipv6(addr, is_local=True):
                 continue
 
             try:
