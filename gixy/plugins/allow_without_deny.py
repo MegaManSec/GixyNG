@@ -26,6 +26,8 @@ class allow_without_deny(Plugin):
         for child in parent.children:
             if child.name == 'deny':
                 deny_found = True
+                break
+
         if not deny_found:
             reason = "No deny rule was found in the same context; add `deny all;` after the `allow` directives."
             self.add_issue(
