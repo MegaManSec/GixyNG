@@ -308,4 +308,4 @@ class origins(Plugin):
                     else:
                         continue
                     # Analyze as origin regex
-                    self._analyze_and_report(pattern, cs, 'origin', md)
+                    self._analyze_and_report(pattern, cs, 'origin', [md,node])
