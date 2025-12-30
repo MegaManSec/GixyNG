@@ -64,6 +64,8 @@ class proxy_pass_normalized(Plugin):
             host = path_parts[0]
             path = path_parts[1] if len(path_parts) > 1 else ""
 
+        rewritten = None
+
         for rewrite in directive.find_declarative_directives_in_scope("rewrite"):
             if (
                 rewrite.pattern == "^"
@@ -73,19 +75,19 @@ class proxy_pass_normalized(Plugin):
                     # Check for $uri or any numbered variable in the path.
                     if "$uri" in path or self.num_pattern.search(path):
                         return
-                    rewrite_fail = True
+                    rewritten = rewrite
                     break
                 else:
                     if "$uri" in host or self.num_pattern.search(host):
                         return
-                    rewrite_fail = True
+                    rewritten = rewrite
                     break
 
-        if not path and not rewrite_fail:
+        if not path and not rewritten:
             return
 
         self.add_issue(
-            directive=[directive, directive.parent],
+            directive=[directive] + ([rewritten] if rewritten is not None else []),
             reason = (
                 "A path is present after the host in `proxy_pass` without using `$request_uri` and a variable (for example, `$1` or `$uri`). "
                 "This can lead to path decoding or double-encoding issues."
