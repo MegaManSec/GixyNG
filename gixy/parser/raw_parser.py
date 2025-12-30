@@ -1,9 +1,6 @@
-import logging
 import crossplane
 from crossplane.errors import NgxParserBaseException
-
-LOG = logging.getLogger(__name__)
-
+import re
 
 def _process_nginx_string(value):
     """
@@ -12,12 +9,8 @@ def _process_nginx_string(value):
     """
     if not isinstance(value, str):
         return value
-        
-    # Handle escape sequences similar to the old NginxQuotedString parser
-    # The old parser had: self.escCharReplacePattern = '\\\\(\'|")'
-    # This means it would convert \' -> ' and \" -> "
-    result = value.replace('\\"', '"').replace("\\'", "'")
-    return result
+
+    return re.sub(r"\\(['\"])", r"\1", value)
 
 
 def _tokenize_lua_content(content):
@@ -27,27 +20,49 @@ def _tokenize_lua_content(content):
     """
     if not content or not isinstance(content, str):
         return []
-    
+
     # Return the content as a single opaque token
     # This preserves the Lua code but doesn't try to parse its internal structure
-    return [content.strip()]
+    return [content]
 
 
 class ParseException(Exception):
     """Exception for parsing errors that mimics pyparsing.ParseException interface"""
-    def __init__(self, msg, loc=0, lineno=1, col=1):
+    def __init__(self, msg, line=1):
         super(ParseException, self).__init__(msg)
         self.msg = msg
-        self.loc = loc
-        self.lineno = lineno
-        self.col = col
+        self.line = line
 
+def raise_on_crossplane_failure(parsed):
+    if not isinstance(parsed, dict) or parsed.get("status") != "failed":
+        return
 
-"""
+    # Prefer top-level aggregated errors, fall back to per-file errors.
+    err = None
+    errs = parsed.get("errors") or []
+    if errs:
+        err = errs[0]
+    else:
+        cfg = parsed.get("config") or []
+        if cfg and (cfg[0].get("errors") or []):
+            err = cfg[0]["errors"][0]
+
+    if err:
+        msg = err.get("error") or "Failed to parse nginx config"
+        line = err.get("line", None) or err.get("lineno", None) or 1
+        raise ParseException(msg, line)
+
+r"""
 Legacy note:
+
 This module previously exposed a pyparsing-like ParseResults. We now normalize
 crossplane output directly into a lightweight dict node structure and return
 list[dict] from RawParser.
+
+If these changes are ever reverted, please do not forget to change
+value_wq = Regex(r'(?:\([^\s;]*\)|\$\{\w+\}|[^\s;(){}])+')
+to
+value_wq = Regex(r'(?:\([^\s;]*\)|\$\{\w+\}|\\[(){};\s]|[^\s;{}])+')
 """
 
 
@@ -62,12 +77,10 @@ class RawParser(object):
             content = data.decode('utf-8', errors='replace')
         else:
             content = data
-            
+
         # Remove UTF-8 BOM if present (works for both bytes->string and string input)
         if content.startswith('\ufeff'):
             content = content[1:]
-            
-        content = content.strip()
 
         if not content:
             return []
@@ -76,34 +89,37 @@ class RawParser(object):
             # Since crossplane expects a filename, we need to create a temporary file
             import tempfile
             import os
-            
+
             # Create a temporary file with the content
             with tempfile.NamedTemporaryFile(mode='w', suffix='.conf', delete=False) as temp_file:
                 temp_file.write(content)
                 temp_filename = temp_file.name
-            
+
             try:
                 # Parse using crossplane with relaxed context checking for standalone configs
                 parsed = crossplane.parse(
-                    temp_filename, 
-                    single=True, 
+                    temp_filename,
+                    single=True,
                     strict=False,  # Allow directives outside their normal context
                     check_ctx=False,  # Skip context validation
                     check_args=False,  # Skip argument validation
                     comments=True  # Include comments in the output
                 )
-                
-                # Convert crossplane format to normalized nodes
+
+                raise_on_crossplane_failure(parsed)
                 return self._normalize_crossplane(parsed)
             finally:
                 # Clean up temporary file
                 os.unlink(temp_filename)
-            
+
         except NgxParserBaseException as e:
-            # Convert crossplane error to ParseException format
-            raise ParseException(str(e), loc=0, lineno=getattr(e, 'line', 1), col=1)
+            # Convert crossplane exception to ParseException format
+            line = getattr(e, "line", None) or getattr(e, "lineno", None) or 1
+            raise ParseException(str(e), line=line)
+        except ParseException:
+            raise
         except Exception as e:
-            raise ParseException(str(e), loc=0, lineno=1, col=1)
+            raise ParseException(str(e), line=1)
 
     def parse_path(self, path):
         """Parse nginx configuration by file path and return normalized nodes (list[dict])."""
@@ -116,13 +132,16 @@ class RawParser(object):
                 check_args=False,  # Skip argument validation
                 comments=True,  # Include comments in the output
             )
-
+            raise_on_crossplane_failure(parsed)
             return self._normalize_crossplane(parsed)
         except NgxParserBaseException as e:
+            line = getattr(e, "line", None) or getattr(e, "lineno", None) or 1
             # Convert crossplane error to ParseException format
-            raise ParseException(str(e), loc=0, lineno=getattr(e, 'line', 1), col=1)
+            raise ParseException(str(e), line=line)
+        except ParseException:
+            raise
         except Exception as e:
-            raise ParseException(str(e), loc=0, lineno=1, col=1)
+            raise ParseException(str(e), line=1)
 
     def _normalize_crossplane(self, crossplane_data):
         """Convert crossplane JSON output to a normalized list[dict] node structure.

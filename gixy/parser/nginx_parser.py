@@ -37,17 +37,18 @@ class NginxParser(object):
         Raises:
             InvalidConfiguration: When parsing fails.
         """
-        LOG.debug("Parse file: {0}".format(display_path if display_path else path))
+        real_path = display_path if display_path else path
+        LOG.debug("Parse file: {0}".format(real_path))
         root = self._ensure_root(root)
         try:
             parsed = self.parser.parse_path(path)
+        except InvalidConfiguration:
+            raise
         except ParseException as e:
-            error_msg = "char {char} (line:{line}, col:{col})".format(
-                char=e.loc, line=e.lineno, col=e.col
-            )
+            error_msg = "(line:{line}).".format(line=e.line)
             LOG.error(
-                'Failed to parse config "{file}": {error}'.format(
-                    file=path, error=error_msg
+                'Failed to parse config "{file}" {error}'.format(
+                    file=real_path, error=error_msg
                 )
             )
             raise InvalidConfiguration(error_msg)
@@ -75,7 +76,6 @@ class NginxParser(object):
         """
         root = self._ensure_root(root)
         import tempfile
-        import os
         data = content if isinstance(content, (bytes, bytearray)) else content.encode('utf-8')
         tmp_filename = None
         try:
@@ -83,10 +83,10 @@ class NginxParser(object):
                 tmp.write(data)
                 tmp_filename = tmp.name
             return self.parse_file(tmp_filename, root=root, display_path=path_info)
+        except InvalidConfiguration:
+            raise
         except ParseException as e:
-            error_msg = "char {char} (line:{line}, col:{col})".format(
-                char=e.loc, line=e.lineno, col=e.col
-            )
+            error_msg = "(line:{line}).".format(line=e.line)
             if path_info:
                 LOG.error(
                     'Failed to parse config "{file}": {error}'.format(
@@ -141,9 +141,10 @@ class NginxParser(object):
             parsed_block = self.configs[root_filename]
 
         # Parse into the provided root/parent context and keep attribution
+        old_stack = self._path_stack
         self._path_stack = current_path
         self.parse_block(parsed_block, root)
-        self._path_stack = current_path
+        self._path_stack = old_stack
         return root
 
     def parse_block(self, parsed_block, parent):
@@ -157,8 +158,13 @@ class NginxParser(object):
             if parsed_type == 'include':
                 # include is handled specially
                 path_info = self.path_info
-                self._resolve_include(node.get('args', []), parent)
-                self._path_stack = path_info
+                try:
+                    self._resolve_include(node['args'], parent)
+                except Exception as exc:
+                    LOG.warn('Skipping include "%s"', node['args'][0])
+                finally:
+                    self._path_stack = path_info
+
                 continue
 
             parsed_name = node.get('name')
@@ -218,7 +224,7 @@ class NginxParser(object):
         elif parsed_type == "hash_value":
             return directive.MapDirective
         elif parsed_type == "unparsed_block":
-            LOG.warning('Skip unparseable block: "%s"', parsed_name)
+            LOG.warning("Skip unparseable block '%s' from '%s'", parsed_name, self.path_info)
             return None
         else:
             return None
@@ -242,8 +248,6 @@ class NginxParser(object):
         path = os.path.join(self.cwd, pattern)
         exists = False
         for file_path in glob.iglob(path):
-            if not os.path.exists(file_path):
-                continue
             exists = True
             # parse the include into current context
             self.parse_file(file_path, parent)
@@ -251,9 +255,9 @@ class NginxParser(object):
         if not exists:
             # Align behavior with nginx: unmatched glob patterns are not warnings
             if glob.has_magic(path):
-                LOG.debug("Include pattern matched no files: {0}".format(path))
+                LOG.debug("Include pattern '%s' matched no files from '%s'", path, self.path_info)
             else:
-                LOG.warning("File not found: {0}".format(path))
+                LOG.warning("File not found: '%s'", path)
 
     def _resolve_dump_include(self, pattern, parent):
         path = os.path.join(self.cwd, pattern)
