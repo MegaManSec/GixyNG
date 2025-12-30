@@ -113,5 +113,5 @@ class alias_traversal(Plugin):
     def report_issue(self, directive, location, severity):
         self.add_issue(
             severity=severity,
-            directive=[directive, location],
+            directive=directive,
         )
