@@ -28,6 +28,6 @@ class worker_rlimit_nofile_vs_connections(Plugin):
                 )
         else:
             self.add_issue(
-                directive=[directive],
+                directive=directive,
                 reason = "Missing `worker_rlimit_nofile`."
             )
