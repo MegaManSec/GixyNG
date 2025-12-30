@@ -119,7 +119,7 @@ class stale_dns_cache(Plugin):
             if not resolver:
                 self.add_issue(
                     severity=gixy.severity.MEDIUM,
-                    directive=[directive],
+                    directive=directive,
                     reason="proxy_pass uses variables, but no `resolver` is configured. Requests will fail because nginx cannot resolve the upstream at runtime."
                 )
             return
@@ -130,6 +130,9 @@ class stale_dns_cache(Plugin):
         if not found_upstream:
             if parsed_host and self.extract(parsed_host).suffix: # Registerable suffix (one way or another)
                 severity = gixy.severity.MEDIUM
+
+        if resolver:
+            upstream_directives.extend([resolver])
 
         self.add_issue(
             severity=severity,
