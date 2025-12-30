@@ -46,6 +46,7 @@ GixyNG can detect issues such as:
 - `add_header_content_type` – setting `Content-Type` via `add_header`
 - `version_disclosure` – leaking NGINX version via `server_tokens`
 - `unanchored_regex` – regular expressions without anchors in security sensitive places.
+- `stale_dns_cache` - outdated or incorrect hosts/ip addresses being used for upstream proxying due to DNS caching.
 
 In other words:
 

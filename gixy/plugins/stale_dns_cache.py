@@ -10,7 +10,7 @@ import tldextract
 
 _EXTRACT = tldextract.TLDExtract(include_psl_private_domains=True, suffix_list_urls=())
 
-class stale_dns(Plugin):
+class stale_dns_cache(Plugin):
     """
     Insecure example:
         proxy_pass https://example.com;
@@ -23,11 +23,11 @@ class stale_dns(Plugin):
         "resolution only at startup, risking proxying to stale IPs. Use a variable in proxy_pass (resolver-based), or "
         "use upstream 'server ... resolve' (nginx>=1.27.3) so TTLs are respected."
     )
-    help_url = "https://gixy.io/plugins/stale_dns/"
+    help_url = "https://gixy.io/plugins/stale_dns_cache/"
     directives = ["proxy_pass"]
 
     def __init__(self, config):
-        super(stale_dns, self).__init__(config)
+        super(stale_dns_cache, self).__init__(config)
         self.extract = _EXTRACT
         self.parse_uri_re = re.compile(r'^(?P<scheme>[a-z][a-z0-9+.-]*://)?(?P<host>\[[0-9a-fA-F:.]+\]|[^/?#:]+)(?::(?P<port>[0-9]+))?')
 

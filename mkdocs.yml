@@ -64,7 +64,7 @@ nav:
     - plugins/resolver_external.md
     - plugins/return_bypasses_allow_deny.md
     - plugins/ssrf.md
-    - plugins/stale_dns.md
+    - plugins/stale_dns_cache.md
     - plugins/try_files_is_evil_too.md
     - plugins/unanchored_regex.md
     - plugins/valid_referers.md

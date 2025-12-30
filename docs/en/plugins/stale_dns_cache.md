@@ -1,33 +1,27 @@
 ---
-title: "Stale DNS records used in proxy_pass"
-description: "Detects proxy_pass targets that may keep using outdated IP addresses because hostnames are only resolved at startup. Use a resolver-based proxy_pass (variables) or upstream server ... resolve with a shared zone so DNS TTLs are respected."
+title: "Outdated/stale cached DNS records used in proxy_pass"
+description: "Detects proxy_pass targets that may keep using cached, stale/outdated IP addresses because hostnames are only resolved at startup. Use a resolver-based proxy_pass (variables) or upstream server ... resolve with a shared zone so DNS TTLs are respected/honored."
 ---
 
-# [stale_dns] Stale DNS records used in proxy_pass
+# [stale_dns_cache] Outdated/stale cached DNS records used in proxy_pass
 
 ## What this check looks for
 
-This plugin flags `proxy_pass` configurations where NGINX will resolve a hostname once (on startup or reload) and then keep using that IP address even if DNS changes later.
+This plugin detects risky `proxy_pass` and `upstream` configurations where NGINX can keep using stale/outdated DNS cache entries, causing requests to be routed to the wrong upstream IP addresses.
 
-It mainly catches two patterns:
+GixyNG's `stale_dns_cache` mainly catches two patterns:
 
-- `proxy_pass` points at a literal hostname (not an IP, not a unix socket), for example `proxy_pass https://api.example.com;`
-- `proxy_pass` points to an `upstream`, and one or more `server` entries inside that upstream are hostnames without `resolve`
-
-It intentionally ignores:
-
-- unix sockets (`unix:`)
-- literal IPv4/IPv6 addresses
-- localhost-style names (`localhost`, `ip6-localhost`, and `*.localhost`)
+- `proxy_pass` points at a literal hostname, for example `proxy_pass https://api.example.com;`,
+- `proxy_pass` points to an `upstream`, and one or more `server` entries inside that `upstream` are hostnames without the `resolve` option.
 
 ## Why this is a problem
 
-By default, a hostname in `proxy_pass` or an upstream `server` is resolved during config load, and NGINX will keep using those IP addresses until the next reload. If the backend IP address of that host ever changes, NGINX will keep sending traffic to the stale address.
+By default, NGINX does not automatically honor DNS TTL values for upstream hostnames. Unless otherwise configured, it resolves upstream hostnames once at startup, then continues using the same resolved IP addresses until NGINX is reloaded or restarted; even if the DNS records change in the meantime. That behavior can lead to traffic being sent to an unintended host and data being exchanged with the wrong upstream.
 
 If you want NGINX to re-resolve names at runtime, you have to opt into it using either:
 
 - variables in `proxy_pass` plus a configured `resolver`, or
-- `upstream` servers with the `resolve` parameter plus a configured `resolver` and a shared `zone`.
+- `upstream` servers with the `resolve` parameter plus a configured `resolver` and a shared `zone` (available in NGINX Open Source starting 1.27.3; previously NGINX Plus only).
 
 ## Bad configuration
 
@@ -92,7 +86,7 @@ Like above, the proxy will not work at all, because there is no `resolver` confi
 
 ```nginx
 http {
-    resolver 10.0.0.1 valid=30s;
+    resolver 127.0.0.1 valid=30s;
 
     server {
         location / {
@@ -103,13 +97,13 @@ http {
 }
 ```
 
-One way to force NGINX to resolve addresses of hostnames with `proxy_pass` is to use variables. If there is a variable (any variable at all) in the `proxy_pass` directive, DNS resolution will occur. Note however, that a `resolver` MUST be set for it to work. When using `resolver`, if you do not set the `valid=` option, the DNS record's TTL will be respected.
+One way to force NGINX to resolve addresses of hostnames with `proxy_pass` is to use variables. If there is a variable (any variable at all) in the `proxy_pass` directive, DNS resolution will occur. Note however, that a `resolver` MUST be set for it to work. When using `resolver`, if you do not set the `valid=` option, the DNS record's TTL will be respected; otherwise the record's TTL will not be honored and the `valid=` option will take preference.
 
 ### upstream server ... resolve (open source NGINX 1.27.3+)
 
 ```nginx
 http {
-    resolver 10.0.0.1 valid=30s;
+    resolver 127.0.0.1 valid=30s;
 
     upstream backend {
         zone backend 64k;

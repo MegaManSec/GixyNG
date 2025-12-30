@@ -62,7 +62,7 @@ GixyNG can detect a wide range of NGINX security and performance misconfiguratio
 *   [[resolver_external] Using external DNS nameservers](https://gixy.io/plugins/resolver_external/)
 *   [[return_bypasses_allow_deny] Return directive bypasses allow/deny restrictions](https://gixy.io/plugins/return_bypasses_allow_deny/)
 *   [[ssrf] Server Side Request Forgery](https://gixy.io/plugins/ssrf/)
-*   [[stale_dns] Stale DNS records used in proxy_pass](https://gixy.io/plugins/stale_dns/)
+*   [[stale_dns_cache] Outdated/stale cached DNS records used in proxy_pass](https://gixy.io/plugins/stale_dns_cache/)
 *   [[try_files_is_evil_too] `try_files` directive is evil without open_file_cache](https://gixy.io/plugins/try_files_is_evil_too/)
 *   [[unanchored_regex] Unanchored regular expressions](https://gixy.io/plugins/unanchored_regex/)
 *   [[valid_referers] none in valid_referers](https://gixy.io/plugins/valid_referers/)
