@@ -53,9 +53,9 @@ class default_server_flag(Plugin):
             if has_default:
                 continue
             # Report once per ambiguous listen group
-            first_directive = entries[0][1]
+            listen_directives = [listen for (srv, listen, is_def) in entries]
             self.add_issue(
-                directive=first_directive,
+                directive=listen_directives,
                 summary=self.summary,
                 description=(
                     f"No server marked as default_server for listen {key}. "
