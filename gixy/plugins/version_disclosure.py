@@ -17,7 +17,7 @@ class version_disclosure(Plugin):
     def audit(self, directive):
         if directive.args and directive.args[0].lower() in ['on', 'build']:
             self.add_issue(
-                directive=[directive, directive.parent],
+                directive=directive,
                 reason="`server_tokens` is set to a value that enables version disclosure."
             )
 
@@ -45,6 +45,6 @@ class version_disclosure(Plugin):
             if not server_tokens:
                 # Missing server_tokens directive in this server block
                 self.add_issue(
-                    directive=[server_block],
+                    directive=server_block,
                     reason="Missing `server_tokens`; default is `on`, which enables version disclosure."
                 )
