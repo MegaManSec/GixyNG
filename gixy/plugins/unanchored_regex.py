@@ -24,6 +24,6 @@ class unanchored_regex(Plugin):
         if directive.needs_anchor():
             self.add_issue(
                 severity=gixy.severity.LOW,
-                directive=[directive],
+                directive=directive,
                 reason = "Regular expressions without anchors can be slow."
             )
