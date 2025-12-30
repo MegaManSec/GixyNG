@@ -87,10 +87,13 @@ class origins(Plugin):
         xi = self.extract(i)
         xj = self.extract(j)
 
-        ei = (getattr(xi, "top_domain_under_public_suffix", None) or
-              getattr(xi, "registered_domain", None) or None)
-        ej = (getattr(xj, "top_domain_under_public_suffix", None) or
-              getattr(xj, "registered_domain", None) or None)
+        def _top_domain_under_public_suffix(x):
+            domain = getattr(x, "domain", None) or ""
+            suffix = getattr(x, "suffix", None) or ""
+            return f"{domain}.{suffix}" if domain and suffix else None
+
+        ei = _top_domain_under_public_suffix(xi)
+        ej = _top_domain_under_public_suffix(xj)
 
         return ei is not None and ei == ej
 
