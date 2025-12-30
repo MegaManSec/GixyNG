@@ -78,3 +78,7 @@ html, body { overscroll-behavior: none; }
 .md-typeset h1 {
   margin-bottom: 0.25em !important;
 }
+
+.md-header.md-header--shadow {
+  box-shadow: 0 0.4rem 0.6rem 0 var(--md-default-bg-color);
+}
