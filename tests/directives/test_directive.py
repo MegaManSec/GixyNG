@@ -68,7 +68,7 @@ def test_rewrite():
 
     assert directive.pattern == '^'
     assert directive.replace == 'http://some'
-    assert directive.flag == None
+    assert directive.flag is None
 
 
 def test_rewrite_flags():

@@ -17,7 +17,7 @@ class unanchored_regex(Plugin):
     help_url = "https://gixy.io/plugins/unanchored_regex/"
     directives = ["location"]
 
-    def audit(self, directive: LocationBlock):
+    def audit(self, directive):
         # check for `location ~ \.php` instead of `location ~ \.php$`
         if not directive.is_regex:
             return

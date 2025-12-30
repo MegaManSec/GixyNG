@@ -15,7 +15,7 @@ class add_header_content_type(Plugin):
     help_url = "https://gixy.io/plugins/add_header_content_type/"
     directives = ["add_header"]
 
-    def audit(self, directive: AddHeaderDirective):
+    def audit(self, directive):
         if directive.header == "content-type":
             # Check if *_hide_header Content-Type is present in the same scope
             # This is a valid pattern to override backend Content-Type
@@ -27,7 +27,7 @@ class add_header_content_type(Plugin):
             )
             self.add_issue(directive=directive, reason=reason)
 
-    def _has_hide_header_content_type(self, directive: AddHeaderDirective):
+    def _has_hide_header_content_type(self, directive):
         """Check if *_hide_header Content-Type exists in the same scope or parent scopes"""
         # List of nginx directives that can hide headers from backend
         hide_header_directives = [

@@ -18,7 +18,7 @@ class add_header_multiline(Plugin):
     help_url = "https://gixy.io/plugins/add_header_multiline/"
     directives = ["add_header", "more_set_headers"]
 
-    def audit(self, directive: AddHeaderDirective):
+    def audit(self, directive):
         for header, value in directive.headers.items():
             if value is None:
                 continue
