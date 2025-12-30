@@ -143,6 +143,6 @@ class invalid_regex(Plugin):
                 )
 
             self.add_issue(
-                directive=[directive, if_directive],
+                directive=directive,
                 reason=reason
             )
