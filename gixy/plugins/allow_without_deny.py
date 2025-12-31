@@ -14,6 +14,10 @@ class allow_without_deny(Plugin):
     help_url = 'https://gixy.io/plugins/allow_without_deny/'
     directives = ['allow']
 
+    def __init__(self, config):
+        super(allow_without_deny, self).__init__(config)
+        self._reported_parents = set()
+
     def audit(self, directive):
         parent = directive.parent
         if not parent:
@@ -21,6 +25,11 @@ class allow_without_deny(Plugin):
         if directive.args == ['all']:
             # for example, "allow all" in a nested location which allows access to otherwise forbidden parent location
             return
+
+        key = id(parent)
+        if key in self._reported_parents:
+            return
+        self._reported_parents.add(key)
 
         deny_found = False
         for child in parent.children:
@@ -31,7 +40,7 @@ class allow_without_deny(Plugin):
         if not deny_found:
             reason = "No deny rule was found in the same context; add `deny all;` after the `allow` directives."
             self.add_issue(
-                directive=directive,
+                directive=[directive] + list(parent.find_recursive('allow')),
                 reason=reason
             )
 
