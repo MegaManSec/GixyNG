@@ -1,13 +1,13 @@
 ---
 title: "Header Inheritance Issues"
-description: "Detects add_header usage that unintentionally drops headers due to inheritance rules. Adding a header in a nested block replaces all add_header values from the parent level."
+description: "Detects add_header usage that unintentionally drops headers due to inheritance rules. Adding a header in a nested block replaces inherited add_header values unless add_header_inherit merge is enabled (nginx 1.29.3+)."
 ---
 
 # [add_header_redefinition] Redefining response headers with `add_header`
 
 ## What this check looks for
 
-This plugin looks for nested contexts where `add_header` is used in both places.
+This plugin looks for nested contexts where `add_header` is used at a lower level and headers declared at higher levels are not effective at that lower level.
 
 ## Why this is a problem
 
@@ -83,9 +83,40 @@ gixy --add-header-redefinition-headers "x-frame-options,content-security-policy"
 headers = x-frame-options,content-security-policy
 ```
 
+### merge_reported_headers
+
+By default, the plugin reports headers declared in higher scopes that are not effective at the flagged block. This can include headers that were dropped at an intermediate scope (and remain missing further down).
+
+If you prefer stricter "dropped at this level" reporting, you can disable this behavior so the plugin only compares against the immediate parent's effective headers.
+
+#### CLI
+
+```bash
+# Only compare against the immediate parent's effective headers
+gixy --add-header-redefinition-merge-reported-headers false
+```
+
+#### Config
+
+```ini
+[add_header_redefinition]
+; only compare against the immediate parent's effective headers
+merge_reported_headers = false
+```
+
 ## Additional information
 
-Recent NGINX versions added `add_header_inherit` to adjust how `add_header` inherits across levels. If you have it available (nginx 1.29.3+), enabling inheritance with `add_header_inherit on;` prevents nested `add_header` blocks from wiping out headers defined at higher levels. See the [documentation](https://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header_inherit).
+### add_header_inherit
+
+Recent NGINX versions added `add_header_inherit` to adjust how `add_header` inherits across levels. If you have it available (nginx 1.29.3+), using `add_header_inherit merge;` prevents nested `add_header` blocks from wiping out headers defined at higher levels by merging inherited headers with headers defined at the current level. See the [documentation](https://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header_inherit).
+
+### What "dropped" means in reports
+
+By default, this plugin reports headers that were declared in higher scopes but are not effective at the flagged block.
+
+In practice, that usually means the headers were dropped by the `add_header` directives inside the flagged block. However, in some configurations a header can be dropped earlier (at an intermediate scope) and remain missing further down.
+
+If you see a report where the flagged block never inherited a header in the first place, that is expected with the default behavior: the plugin is telling you "this header is declared somewhere above, but it is not in effect here".
 
 ### How severity is determined
 
