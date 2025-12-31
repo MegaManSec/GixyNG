@@ -12,14 +12,14 @@ GixyNG is an open source NGINX configuration security scanner and hardening tool
 
 ### Quick start
 
-GixyNG (the `gixy` CLI) is distributed on [PyPI](https://pypi.python.org/pypi/GixyNG). You can install it with pip or uv:
+GixyNG (the `gixy` CLI) ~~is distributed on [PyPI](https://pypi.python.org/pypi/GixyNG)~~ (not distributed by PyPI just yet). You can install it with pip or uv:
 
 ```bash
 # pip
-pip install GixyNG
+pip3 install "GixyNG @ git+https://github.com/MegaManSec/GixyNG.git"
 
 # uv
-uv tool install GixyNG
+uv pip install "GixyNG @ git+https://github.com/MegaManSec/GixyNG.git"
 ```
 
 You can also export your NGINX configuration to a single dump file:

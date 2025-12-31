@@ -55,7 +55,7 @@ In other words:
 
 ## Quick start as a configuration checker
 
-If you have GixyNG installed via `pip install gixyng`, a basic check looks like this:​
+If you have GixyNG installed, a basic check looks like this:​
 
 ```bash
 # Check the default NGINX config (usually /etc/nginx/nginx.conf)

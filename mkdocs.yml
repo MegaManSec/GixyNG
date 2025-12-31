@@ -77,6 +77,7 @@ markdown_extensions:
   - pymdownx.highlight
   - pymdownx.magiclink
   - pymdownx.superfences
+  - pymdownx.tilde
   - pymdownx.tabbed
   - toc:
       permalink: false
