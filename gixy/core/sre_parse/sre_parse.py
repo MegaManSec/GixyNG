@@ -135,20 +135,20 @@ class SubPattern:
         UNITCODES = (ANY, RANGE, IN, LITERAL, NOT_LITERAL, CATEGORY)
         REPEATCODES = (MIN_REPEAT, MAX_REPEAT)
         for op, av in self.data:
-            if op is BRANCH:
+            if op == BRANCH:
                 i = MAXREPEAT - 1
                 j = 0
-                for _ in av[1]:
-                    l, h = av.getwidth()
+                for branch in av[1]:
+                    l, h = branch.getwidth()
                     i = min(i, l)
                     j = max(j, h)
                 lo = lo + i
                 hi = hi + j
-            elif op is CALL:
+            elif op == CALL:
                 i, j = av.getwidth()
                 lo = lo + i
                 hi = hi + j
-            elif op is SUBPATTERN:
+            elif op == SUBPATTERN:
                 i, j = av[1].getwidth()
                 lo = lo + i
                 hi = hi + j
