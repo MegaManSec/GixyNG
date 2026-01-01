@@ -11,11 +11,13 @@ class BaseFormatter(object):
     def __init__(self):
         self.reports = {}
         self.stats = dict.fromkeys(gixy.severity.ALL, 0)
+        self._config_cache = {}
 
     def format_reports(self, reports, stats):
         raise NotImplementedError("Formatter must override format_reports function")
 
     def feed(self, path, manager):
+        self._config_cache.clear()
         for severity in gixy.severity.ALL:
             self.stats[severity] += manager.stats[severity]
 
@@ -89,8 +91,14 @@ class BaseFormatter(object):
             points.add(directive)
             points.update(p for p in directive.parents)
 
-        result = self._traverse_tree(root, points, 0)
-        return '\n'.join(result)
+        cache_key = frozenset(points)
+        cached = self._config_cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        rendered = '\n'.join(self._traverse_tree(root, points, 0))
+        self._config_cache[cache_key] = rendered
+        return rendered
 
     def _traverse_tree(self, tree, points, level):
         result = []
