@@ -2,8 +2,11 @@
 
 # flake8: noqa
 
+import re
+from collections import OrderedDict
 from configargparse import *
 from io import StringIO
+
 
 from gixy.core.plugins_manager import PluginsManager
 

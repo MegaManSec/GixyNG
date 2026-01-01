@@ -258,6 +258,17 @@ def main():
             if val is None:
                 continue
 
+            if isinstance(opt_val, (tuple, list, set)):
+                if isinstance(val, str) and not val.strip():
+                    if isinstance(opt_val, tuple):
+                        val = ()
+                    elif isinstance(opt_val, set):
+                        val = set()
+                    else:
+                        val = []
+                    options[opt_key] = val
+                    continue
+
             if isinstance(opt_val, tuple):
                 val = tuple([x.strip() for x in val.split(",")])
             elif isinstance(opt_val, set):
