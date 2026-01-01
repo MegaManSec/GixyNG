@@ -308,3 +308,22 @@ geo $some_var {
     assert len(directive.children) == 2
     assert [c.src_val for c in directive.children] == ['5.6.7.8', 'default']
     assert [c.dest_val for c in directive.children] == ['d', 'e']
+
+
+def test_content_by_lua_block_preserves_raw():
+    config = r'''
+    some {
+        content_by_lua_block {
+            ngx.say("hi")
+        }
+    }
+    '''
+
+    directive = _get_parsed(config)
+    lua_block = directive.some('content_by_lua_block', flat=True)
+    assert lua_block is not None
+    assert isinstance(lua_block, Block)
+    assert lua_block.is_block
+    assert getattr(lua_block, 'raw', None) is not None
+    assert len(lua_block.raw) == 1
+    assert 'ngx.say("hi")' in lua_block.raw[0]

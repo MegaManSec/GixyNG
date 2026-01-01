@@ -181,7 +181,11 @@ class NginxParser(object):
 
             if parent.name in ['map', 'geo'] and parsed_type == 'directive': # Hack because included maps are treated as directives (bleh)
                 if isinstance(parsed_args, list) and len(parsed_args) > 1:
-                    error_msg = "Invalid map with {} parameters: map {} {} {{ {} {}; }};".format(len(parsed_args), parent.args[0], parent.args[1], parsed_name, ' '.join(parsed_args))
+                    parent_args = getattr(parent, "args", []) or []
+                    hdr = "{} {}".format(parent.name, " ".join(parent_args)).strip()
+                    error_msg = "Invalid {} entry with {} parameters: {} {{ {} {}; }};".format(
+                        parent.name, len(parsed_args), hdr, parsed_name, " ".join(parsed_args)
+                    )
                     LOG.warn('Failed to parse "{path_info}": {error}'.format(path_info=self.path_info, error=error_msg))
                     continue
                 parsed_type = 'hash_value'
@@ -190,6 +194,12 @@ class NginxParser(object):
                 parsed_type, parsed_name, parsed_args
             )
             if directive_inst:
+                # RawParser emits 'raw' for *_lua_block
+                if parsed_type == 'block' and node.get('raw') is not None:
+                    try:
+                        setattr(directive_inst, "raw", node.get("raw"))
+                    except Exception:
+                        pass
                 # Set line number and file path
                 directive_inst.line = parsed_line
                 directive_inst.file = self.path_info
@@ -247,7 +257,7 @@ class NginxParser(object):
     def _resolve_file_include(self, pattern, parent):
         path = os.path.join(self.cwd, pattern)
         exists = False
-        for file_path in glob.iglob(path):
+        for file_path in sorted(glob.iglob(path)):
             exists = True
             # parse the include into current context
             self.parse_file(file_path, parent)
