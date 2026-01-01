@@ -177,7 +177,7 @@ class IfBlock(Block):
 
         if len(args) == 1:
             # if ($slow)
-            self.variable = args[0]
+            self.variable = args[0] # Do not lstrip because this is not used for defining variables
         elif len(args) == 2:
             # if (!-e $foo)
             self.operand, self.value = args
@@ -249,7 +249,7 @@ class MapBlock(Block):
     def __init__(self, name, args):
         super(MapBlock, self).__init__(name, args)
         self.source = args[0]
-        self.variable = args[1].lstrip("$") # XXX: Why do we strip here?
+        self.variable = args[1].lstrip("$")
 
     def gather_map_directives(self, nodes):
         for node in nodes:
@@ -325,10 +325,10 @@ class GeoBlock(Block):
         super(GeoBlock, self).__init__(name, args)
         if len(args) == 1:  # geo uses $remote_addr as default source of the value
             source = "$remote_addr"
-            variable = args[0].lstrip("$") # XXX: Why do we strip here?
+            variable = args[0].lstrip("$")
         else:
             source = args[0]
-            variable = args[1].lstrip("$") # XXX: Why do we strip here?
+            variable = args[1].lstrip("$")
         self.source = source
         self.variable = variable
 
