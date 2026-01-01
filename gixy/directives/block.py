@@ -29,9 +29,14 @@ class Block(Directive):
     def __init__(self, name, args):
         super(Block, self).__init__(name, args)
         self.children = []
+        self._children_by_name = {}
 
     def some(self, name, flat=True):
         """Find first directive with given name"""
+        if not flat:
+            lst = self._children_by_name.get(name)
+            return lst[0] if lst else None
+
         for child in self.children:
             if child.name == name:
                 return child
@@ -42,13 +47,15 @@ class Block(Directive):
         return None
 
     def find(self, name, flat=False):
-        """Find all directives with given name"""
+        if not flat:
+            return list(self._children_by_name.get(name, ()))
+
         result = []
         for child in self.children:
             if child.name == name:
                 result.append(child)
-            if flat and child.is_block and not child.self_context:
-                result += child.find(name, flat)
+            if child.is_block and not child.self_context:
+                result.extend(child.find(name, flat=True))
         return result
 
     def find_recursive(self, name):
@@ -57,12 +64,13 @@ class Block(Directive):
             if child.name == name:
                 result.append(child)
             if child.is_block:
-                result += child.find_recursive(name)
+                result.extend(child.find_recursive(name))
         return result
 
     def append(self, directive):
         directive.set_parent(self)
         self.children.append(directive)
+        self._children_by_name.setdefault(directive.name, []).append(directive)
 
     def find_children_directives(self, name):
         """Find directives below the current scope"""
@@ -135,20 +143,25 @@ class LocationBlock(Block):
         return self.modifier and self.modifier in ("~", "~*")
 
     @cached_property
-    def variables(self):
+    def _regexp(self):
         if not self.is_regex:
-            return []
+            return None
+        return Regexp(self.path, case_sensitive=self.modifier == "~")
 
-        regexp = Regexp(self.path, case_sensitive=self.modifier == "~")
-        result = []
-        for name, group in regexp.groups.items():
-            result.append(
-                Variable(name=name, value=group, boundary=None, provider=self)
-            )
-        return result
+    @cached_property
+    def variables(self):
+        regexp = self._regexp
+        if not regexp:
+            return []
+        return [
+            Variable(name=name, value=group, boundary=None, provider=self)
+            for name, group in regexp.groups.items()
+        ]
 
     def needs_anchor(self):
-        regexp = Regexp(self.path, case_sensitive=self.modifier == "~")
+        regexp = self._regexp
+        if not regexp:
+            return False
         return regexp.needs_tail_anchor()
 
 
@@ -248,7 +261,7 @@ class MapBlock(Block):
     @cached_property
     def variables(self):
         vars = []
-        for child in list(self.gather_map_directives(self.children)):
+        for child in self.gather_map_directives(self.children):
             if not isinstance(child, MapDirective):
                 continue # XXX: Should never happen?
             src_val = child.src_val
@@ -290,9 +303,6 @@ class MapBlock(Block):
         return [Variable(name=self.variable, value=vars, boundary=None, provider=self, have_script=False)]
 
     def __str__(self):
-        mapblock_vars = []
-        for i in self.variables[0].value:
-            mapblock_vars.append(str(i.value))
         return "{0} {1} ${2} {{".format(self.nginx_name, self.source, self.variable)
 
 class GeoBlock(Block):
@@ -332,7 +342,7 @@ class GeoBlock(Block):
     @cached_property
     def variables(self):
         vars = []
-        for child in list(self.gather_geo_directives(self.children)):
+        for child in self.gather_geo_directives(self.children):
             src_val = child.src_val
             dest_val = child.dest_val
 
@@ -349,7 +359,4 @@ class GeoBlock(Block):
         return [Variable(name=self.variable, value=vars, boundary=None, provider=self, have_script=False)]
 
     def __str__(self):
-        mapblock_vars = []
-        for i in self.variables[0].value:
-            mapblock_vars.append(str(i.value))
         return "{0} {1} ${2} {{".format(self.nginx_name, self.source, self.variable)

@@ -1,4 +1,7 @@
-"""This module contains all the classes for directives"""
+try:
+    from cached_property import cached_property
+except ImportError:
+    from functools import cached_property
 
 from gixy.core.variable import Variable
 from gixy.core.regexp import Regexp
@@ -256,15 +259,17 @@ class RewriteDirective(Directive):
         if len(args) > 2:
             self.flag = args[2]
 
+    @cached_property
+    def _regexp(self):
+        return Regexp(self.pattern, case_sensitive=True)
+
     @property
     def variables(self):
-        regexp = Regexp(self.pattern, case_sensitive=True)
-        result = []
-        for name, group in regexp.groups.items():
-            result.append(
-                Variable(name=name, value=group, boundary=self.boundary, provider=self)
-            )
-        return result
+        regexp = self._regexp
+        return [
+            Variable(name=name, value=group, boundary=self.boundary, provider=self)
+            for name, group in regexp.groups.items()
+        ]
 
 
 class RootDirective(Directive):
@@ -297,6 +302,36 @@ class ResolverDirective(Directive):
 
     nginx_name = "resolver"
 
+    @cached_property
+    def _external_nameservers(self):
+        external_nameservers = []
+        suffix_cache = {}
+        for addr in self.addresses:
+            ip_candidate = addr
+            if addr.startswith("[") and "]" in addr:
+                ip_candidate = addr.split("]", 1)[0][1:]  # [::1]:53 -> ::1
+            elif addr.count(":") == 1:
+                ip_candidate = addr.rsplit(":", 1)[0]  # 1.2.3.4:53 -> 1.2.3.4 (or name:53 -> name)
+
+            if is_ipv4(addr, is_local=True) or is_ipv6(addr, is_local=True):
+                continue
+
+            try:
+                ipaddress.ip_address(ip_candidate)  # is it even an ip address?
+            except ValueError:
+                host = ip_candidate.rstrip(".")  # example.com. -> example.com
+                suffix = suffix_cache.get(host)
+                if suffix is None:
+                    suffix = _TLD(host).suffix
+                    suffix_cache[host] = suffix
+                if not suffix:
+                    continue  # Non-registerable hostname
+                external_nameservers.append(addr)
+                continue
+
+            external_nameservers.append(addr)
+        return external_nameservers
+
     def __init__(self, name, args):
         super().__init__(name, args)
         addresses = []
@@ -308,28 +343,8 @@ class ResolverDirective(Directive):
 
     def get_external_nameservers(self):
         """Get a list of external nameservers used by the resolver directive"""
-        external_nameservers = []
-        for addr in self.addresses:
-            ip_candidate = addr
-            if addr.startswith("[") and "]" in addr:
-                ip_candidate = addr.split("]")[0][1:] # [::1]:53 -> ::1
-            elif addr.count(":") == 1:
-                ip_candidate = addr.rsplit(":", 1)[0] # 1.2.3.4:53 -> 1.2.3.4 (or name:53 -> name)
+        return self._external_nameservers
 
-            if is_ipv4(addr, is_local=True) or is_ipv6(addr, is_local=True):
-                continue
-
-            try:
-                ipaddress.ip_address(ip_candidate) # is it even an ip address?
-            except ValueError:
-                host = ip_candidate.rstrip(".") # example.com. -> example.com
-                if not _TLD(host).suffix:
-                    continue # Non-registerable hostname
-                external_nameservers.append(addr)
-                continue
-
-            external_nameservers.append(addr)
-        return external_nameservers
 
 class MapDirective(Directive):
     """
