@@ -92,6 +92,7 @@ setup(
         "nginx config linter",
         "nginx security scanner",
         "nginx configuration static analyzer",
+        "nginx vulnerability scanner",
         "nginx.conf security audit",
         "configuration compliance",
         "configuration security",
@@ -143,7 +144,6 @@ setup(
         "Intended Audience :: Information Technology",
 
         "Topic :: Security",
-        "Topic :: Security :: Vulnerability Scanners",
         "Topic :: System :: Systems Administration",
         "Topic :: Internet :: WWW/HTTP :: Site Management",
         "Topic :: Software Development :: Quality Assurance",
