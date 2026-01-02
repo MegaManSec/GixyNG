@@ -132,9 +132,10 @@ class GixyHelpFormatter(HelpFormatter):
         manager = PluginsManager()
         help_message = super(GixyHelpFormatter, self).format_help()
         if "plugins options:" in help_message:
-            # Print available blugins _only_ if we prints options for it
+            # Print available plugins _only_ if we print options for it
             plugins = "\n".join(
-                "\t" + plugin.__name__ for plugin in manager.plugins_classes
+                "\t" + plugin.__name__
+                for plugin in sorted(manager.plugins_classes, key=lambda p: p.__name__)
             )
             help_message = f"{help_message}\n\navailable plugins:\n{plugins}\n"
         return help_message
