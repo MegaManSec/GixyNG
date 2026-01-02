@@ -1,8 +1,4 @@
----
-description: "Open source NGINX security, hardening, and configuration compliance scanner for automating nginx.conf security audits, compliance checks, and hardening against misconfigurations."
----
-
-# GixyNG: NGINX Configuration Security Scanner for Security Audits
+# Gixy-Next: NGINX Configuration Security Scanner for Security Audits
 
 ## Overview
 
@@ -12,19 +8,19 @@ GixyNG is an open source NGINX configuration security scanner and hardening tool
 
 ### Quick start
 
-GixyNG (the `gixy` CLI) ~~is distributed on [PyPI](https://pypi.python.org/pypi/GixyNG)~~ _(not distributed by PyPI just yet)_. You can install it with pip or uv:
+Gixy-Next (the `gixy` CLI) is distributed on [PyPI](https://pypi.python.org/pypi/Gixy-Next). You can install it with pip or uv:
 
-```bash
+```shell-session
 # pip
-pip3 install "GixyNG @ git+https://github.com/MegaManSec/GixyNG.git"
+pip3 install gixy-next
 
 # uv
-uv pip install "GixyNG @ git+https://github.com/MegaManSec/GixyNG.git"
+uv pip install gixy-next
 ```
 
 You can then run it:
 
-```bash
+```shell-session
 # gixy defaults to reading /etc/nginx/nginx.conf
 gixy
 
@@ -34,14 +30,14 @@ gixy /opt/nginx.conf
 
 You can also export your NGINX configuration to a single dump file:
 
-```bash
+```shell-session
 # Dumps the full NGINX configuration into a single file (including all includes)
 nginx -T > ./nginx-dump.conf
 ```
 
 And then scan the dump file elsewhere (or via stdin):
 
-```bash
+```shell-session
 # Equivalent to scanning the full rendered configuration output.
 gixy ./nginx-dump.conf
 
@@ -85,35 +81,35 @@ Something not detected? Please open an [issue](https://github.com/MegaManSec/Gix
 
 `gixy` defaults to reading a system's NGINX configuration from `/etc/nginx/nginx.conf`. You can also specify the location by passing it to `gixy`:
 
-```bash
+```shell-session
 # Analyze the configuration in /opt/nginx.conf
 gixy /opt/nginx.conf
 ```
 
 You can run a focused subset of checks with `--tests`:
 
-```bash
+```shell-session
 # Only run these checks
 gixy --tests http_splitting,ssrf,version_disclosure
 ```
 
 Or skip a few noisy checks with `--skips`:
 
-```bash
+```shell-session
 # Run everything except these checks
 gixy --skips low_keepalive_requests,worker_rlimit_nofile_vs_connections
 ```
 
 To only report issues of a certain severity or higher, use the compounding `-l` flag:
 
-```bash
+```shell-session
 # -l for LOW severity issues and high, -ll for MEDIUM and higher, and -lll for only HIGH severity issues
 gixy -ll
 ```
 
 By default, the output of `gixy` is ANSI-colored; best viewed in an ANSI-compatible terminal. You can use the `--format` (`-f`) flag with the `text` value to get an uncolored output:
 
-```shell
+```shell-session
 $ gixy -f text
 
 ==================== Results ===================
@@ -143,7 +139,7 @@ Total issues:
 
 You can also use `-f json` to get a reproducible, machine-readable JSON output:
 
-```shell
+```shell-session
 $ gixy -f json
 [{"config":"\nserver {\n\n\tlocation ~ /v1/((?<action>[^.]*)\\.json)?$ {\n\t\tadd_header X-Action $action;\n\t}\n}","description":"Using variables that can contain \"\\n\" or \"\\r\" may lead to http injection.","file":"/etc/nginx/nginx.conf","line":4,"path":"/etc/nginx/nginx.conf","plugin":"http_splitting","reason":"At least variable \"$action\" can contain \"\\n\"","reference":"https://gixy.io/plugins/http_splitting/","severity":"HIGH","summary":"Possible HTTP-Splitting vulnerability."}]
 ```
