@@ -1,6 +1,6 @@
 ---
 title: "Configuration Guide"
-description: "Configure GixyNG using a config file: set defaults for output, includes, selected checks, and variable drop-ins so scans are consistent across runs and environments."
+description: "Configure Gixy-Next using a config file: set defaults for output, includes, selected checks, and variable drop-ins so scans are consistent across runs and environments."
 ---
 
 # Configuration

@@ -1,9 +1,9 @@
-site_name: "GixyNG: NGINX Configuration Security Scanner"
-site_long_name: "GixyNG: NGINX Configuration Security & Hardening Scanner"
-site_description: "GixyNG is an open source NGINX security, hardening, and configuration compliance scanner. Run automated NGINX configuration security audits and compliance checks, find performance misconfigurations in nginx.conf, and harden your NGINX servers."
+site_name: "Gixy-Next: NGINX Configuration Security Scanner"
+site_long_name: "Gixy-Next: NGINX Configuration Security & Hardening Scanner"
+site_description: "Gixy-Next is an open source NGINX security, hardening, and configuration compliance scanner. Run automated NGINX configuration security audits and compliance checks, find performance misconfigurations in nginx.conf, and harden your NGINX servers."
 site_url: https://gixy.io/
-repo_url: https://github.com/MegaManSec/GixyNG
-repo_name: MegaManSec/GixyNG
+repo_url: https://github.com/MegaManSec/Gixy-Next
+repo_name: MegaManSec/Gixy-Next
 site_author: "Joshua Rogers"
 theme:
   name: "material"
@@ -30,7 +30,7 @@ plugins:
       reconfigure_material: true
       fallback_to_default: true
   - llmstxt:
-      markdown_description: The GixyNG security scanner and configuration checker statically analyzes NGINX configurations to find security issues, performance issues, and hardening opportunities before they reach production.
+      markdown_description: The Gixy-Next security scanner and configuration checker statically analyzes NGINX configurations to find security issues, performance issues, and hardening opportunities before they reach production.
       full_output: llms-full.txt
       sections:
         Overview and usage:
@@ -40,7 +40,7 @@ plugins:
         Built-in plugins:
           - en/plugins/*.md: Scanning plugin
 nav:
-  - "GixyNG Overview": index.md
+  - "Gixy-Next Overview": index.md
   - "Usage Guide": usage.md
   - "Configuration Guide": configuration.md
   - "Custom Variables & Drop-ins": variables-dropins.md
@@ -70,7 +70,7 @@ nav:
     - plugins/valid_referers.md
     - plugins/version_disclosure.md
     - plugins/worker_rlimit_nofile_vs_connections.md
-  - "Contributing to GixyNG": contributing.md
+  - "Contributing to Gixy-Next": contributing.md
 
 markdown_extensions:
   - admonition

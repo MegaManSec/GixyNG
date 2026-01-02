@@ -69,7 +69,7 @@ except FileNotFoundError:
         long_description = None
 
 setup(
-    name="GixyNG",
+    name="Gixy-Next",
     version=version,
 
     description=(
@@ -103,6 +103,7 @@ setup(
         "version disclosure",
         "redos",
         "gixy",
+        "gixy next",
         "gixy-ng",
         "gixyng",
     ],
@@ -114,8 +115,8 @@ setup(
     project_urls={
         "Homepage": "https://gixy.io/",
         "Documentation": "https://gixy.io/",
-        "Source": "https://github.com/MegaManSec/GixyNG",
-        "Issue Tracker": "https://github.com/MegaManSec/GixyNG/issues",
+        "Source": "https://github.com/MegaManSec/gixy-next",
+        "Issue Tracker": "https://github.com/MegaManSec/gixy-next/issues",
         "Original Gixy": "https://github.com/yandex/gixy",
     },
 
@@ -124,8 +125,8 @@ setup(
 
     install_requires=install_requires,
     extras_require={
-        "tests": install_requires + tests_requires,
-        "dev": install_requires + dev_requires,
+        "tests": tests_requires,
+        "dev": dev_requires,
         # Optional: ReDoS checks via external API
         "redos": ["requests>=2.20.0"],
     },
@@ -135,6 +136,10 @@ setup(
             "gixy=gixy.cli.main:main",
         ],
     },
+
+    license="MPL-2.0",
+
+    license_files=["LICENSE"],
 
     classifiers=[
         "Environment :: Console",
@@ -149,8 +154,6 @@ setup(
         "Topic :: Software Development :: Quality Assurance",
         "Topic :: Software Development :: Testing",
         "Topic :: Utilities",
-
-        "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
 
         "Operating System :: POSIX :: Linux",
 

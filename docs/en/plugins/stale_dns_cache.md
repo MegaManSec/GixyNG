@@ -9,7 +9,7 @@ description: "Detects proxy_pass targets that may keep using cached, stale/outda
 
 This plugin detects risky `proxy_pass` and `upstream` configurations where NGINX can keep using stale/outdated DNS cache entries, causing requests to be routed to the wrong upstream IP addresses.
 
-GixyNG's `stale_dns_cache` mainly catches two patterns:
+Gixy-Next's `stale_dns_cache` plugin mainly catches two patterns:
 
 - `proxy_pass` points at a literal hostname, for example `proxy_pass https://api.example.com;`,
 - `proxy_pass` points to an `upstream`, and one or more `server` entries inside that `upstream` are hostnames without the `resolve` option.

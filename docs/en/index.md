@@ -2,9 +2,9 @@
 
 ## Overview
 
-<a href="https://gixy.io/"><img width="192" height="192" alt="GixyNG Mascot Logo" style="float: right;" align="right" src="https://gixy.io/imgs/gixy.jpg" /></a>
+<a href="https://gixy.io/"><img width="192" height="192" alt="Gixy-Next Mascot Logo" style="float: right;" align="right" src="https://gixy.io/imgs/gixy.jpg" /></a>
 
-GixyNG is an open source NGINX configuration security scanner and hardening tool that performs static analysis of your nginx.conf to detect security misconfigurations, hardening gaps, and common performance pitfalls before they reach production. It is an actively maintained fork of Yandex's [Gixy](https://github.com/yandex/gixy).
+Gixy-Next is an open source NGINX configuration security scanner and hardening tool that performs static analysis of your nginx.conf to detect security misconfigurations, hardening gaps, and common performance pitfalls before they reach production. It is an actively maintained fork of Yandex's [Gixy](https://github.com/yandex/gixy).
 
 ### Quick start
 
@@ -47,7 +47,7 @@ cat ./nginx-dump.conf | gixy -
 
 ## What it can do
 
-GixyNG can detect a wide range of NGINX security and performance misconfigurations across `nginx.conf` and included configuration files. The following plugins are supported:
+Gixy-Next can detect a wide range of NGINX security and performance misconfigurations across `nginx.conf` and included configuration files. The following plugins are supported:
 
 *   [[add_header_content_type] Setting Content-Type via add_header](https://gixy.io/plugins/add_header_content_type/)
 *   [[add_header_multiline] Multiline response headers](https://gixy.io/plugins/add_header_multiline/)
@@ -75,7 +75,7 @@ GixyNG can detect a wide range of NGINX security and performance misconfiguratio
 *   [[version_disclosure] Using insecure values for server_tokens](https://gixy.io/plugins/version_disclosure/)
 *   [[worker_rlimit_nofile_vs_connections] `worker_rlimit_nofile` must be at least twice `worker_connections`](https://gixy.io/plugins/worker_rlimit_nofile_vs_connections/)
 
-Something not detected? Please open an [issue](https://github.com/MegaManSec/GixyNG/issues) on GitHub with what's missing!
+Something not detected? Please open an [issue](https://github.com/MegaManSec/Gixy-Next/issues) on GitHub with what's missing!
 
 ## Usage (flags)
 
@@ -150,39 +150,39 @@ More flags for usage can be found by passing `--help` to `gixy`. You can also fi
 
 Some plugins expose options which you can set via CLI flags or a configuration file. You can read more about those in the [Configuration guide](https://gixy.io/configuration/).
 
-## GixyNG for NGINX security and compliance
+## Gixy-Next for NGINX security and compliance
 
-Unlike running `nginx -t` which only checks syntax, GixyNG actually analyzes your configuration and detects unhardened instances and vulnerabilities.
+Unlike running `nginx -t` which only checks syntax, Gixy-Next actually analyzes your configuration and detects unhardened instances and vulnerabilities.
 
-With GixyNG, you can perform an automated NGINX configuration security review that can run locally or in CI/CD on every change, whether that be for auditing purposes, compliance, or just general testing, helping produce actionable findings that help prevent unstable/slow NGINX servers, and reduce risk from unsafe directives and insecure defaults.
+With Gixy-Next, you can perform an automated NGINX configuration security review that can run locally or in CI/CD on every change, whether that be for auditing purposes, compliance, or just general testing, helping produce actionable findings that help prevent unstable/slow NGINX servers, and reduce risk from unsafe directives and insecure defaults.
 
 ## Contributing
 
-Contributions to GixyNG are always welcome! You can help us in different ways, such as:
+Contributions to Gixy-Next are always welcome! You can help us in different ways, such as:
 
 - Reporting bugs.
 - Suggesting new plugins for detection.
 - Improving documentation.
 - Fixing, refactoring, improving, and writing new code.
 
-Before submitting any changes in pull requests, please read the contribution guideline document, [Contributing to GixyNG](https://gixy.io/contributing/).
+Before submitting any changes in pull requests, please read the contribution guideline document, [Contributing to Gixy-Next](https://gixy.io/contributing/).
 
-The official homepage of GixyNG is [https://gixy.io/](https://gixy.io/). Any changes to documentation in GixyNG will automatically be reflected on that website.
+The official homepage of Gixy-Next is [https://gixy.io/](https://gixy.io/). Any changes to documentation in Gixy-Next will automatically be reflected on that website.
 
-The source code can be found at [https://github.com/MegaManSec/GixyNG](https://github.com/MegaManSec/GixyNG).
+The source code can be found at [https://github.com/MegaManSec/Gixy-Next](https://github.com/MegaManSec/Gixy-Next).
 
 ## What is Gixy? (Background)
 
 _Gixy_ is an NGINX configuration analyzer that was [originally](https://github.com/yandex/gixy) developed by Yandex's Andrew Krasichkov. It was first released in 2017, and has since become unmaintained, and does not support modern versions of Python3, contains numerous bugs, and is limited in its functionality and ability to detect vulnerable NGINX configurations.
 
-GixyNG, therefore, is a fork, that adds new checks, performance improvements, hardening suggestions, and support for modern Python and NGINX versions.
+Gixy-Next, therefore, is a fork, that adds new checks, performance improvements, hardening suggestions, and support for modern Python and NGINX versions.
 
-### Why GixyNG?
+### Why not `gixy-ng`?
 
-GixyNG is actually a fork of `gixy-ng`, which itself was a fork of the original `gixy`. GixyNG was created after the maintainer of `gixy-ng` started producing large amounts of AI-assisted changes and autogenerated code that was both unreviewably large as well as broken.
+Gixy-Next is actually a fork of `gixy-ng`, which itself was a fork of the original `gixy`. Gixy-Next was created after the maintainer of `gixy-ng` started producing large amounts of AI-assisted changes and autogenerated code that was both unreviewably large as well as broken.
 
 After some time, the maintainer of `gixy-ng` began to commit AI-generated changes to the codebase which introduced obvious regressions, broke critical behavior of the tool (which anybody using the tool would have picked up), added random AI-tooling artefacts, and introduced code which simply did not do what it was supposed to do. Most importantly, the maintainer also **added marketing for their business to all documentation, all output, and all source code** of `gixy-ng`.
 
 In other words, the `gixy-ng` maintainer took the original `gixy`, asked AI to make changes, introduced a bunch of bugs (and other AI slop), and then added advertising to the code. They also accepted contributions in the form of merge requests, but stripped the author's information (see [this](https://joshua.hu/gixy-ng-new-version-gixy-updated-checks#quality-degradation) post).
 
-GixyNG focuses on restoring quality, and has been battle-tests on NGINX configurations which are nearly 100,000-lines long. It fixes bugs and mis-detections introduced by changes introduced in `gixy-ng`, removes AI tool artifacts/junk, and tries to keep the codebase reviewable and maintainable. This fork is for those interested in clean code and long-term maintainability.
+Gixy-Next focuses on restoring quality, and has been battle-tests on NGINX configurations which are nearly 100,000-lines long. It fixes bugs and mis-detections introduced by changes introduced in `gixy-ng`, removes AI tool artifacts/junk, and tries to keep the codebase reviewable and maintainable. This fork is for those interested in clean code and long-term maintainability.

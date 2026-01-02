@@ -1,16 +1,16 @@
 ---
-title: "GixyNG vs nginx -t: The Difference"
-description: "Understand the difference between nginx -t (syntax check) and GixyNG (security audit). Learn when to use which gixyNG for safe NGINX deployments."
+title: "gixy-next vs nginx -t: The Difference"
+description: "Understand the difference between nginx -t (syntax check) and gixy-next (security audit). Learn when to use gixy-next for safe NGINX deployments."
 ---
 
-# NGINX Config Checker: GixyNG vs nginx -t
+# NGINX Config Checker: gixy-next vs nginx -t
 
 When people say "NGINX configuration checker", they usually mean one of two things:
 
 - `nginx -t` for syntax validation, or
-- A static analyzer like the actively maintained Gixy fork, GixyNG, which focuses on security and best practices and actual runtime behavior.
+- A static analyzer like the actively maintained Gixy fork, Gixy-Next, which focuses on security and best practices and actual runtime behavior.
 
-This page explains how GixyNG complements `nginx -t`, and how to use it as your NGINX configuration checker in day to day work.
+This page explains how Gixy-Next complements `nginx -t`, and how to use it as your NGINX configuration checker in day to day work.
 
 ## What `nginx -t` actually checks
 
@@ -33,11 +33,11 @@ It does **not** mean:
 
 It is a linter for syntax, not a security review.
 
-## What GixyNG adds as a configuration checker
+## What Gixy-Next adds as a configuration checker
 
-GixyNG is an **NGINX configuration security checker**. It parses your `nginx.conf` (and all included files) and runs a set of security and correctness checks on top of simple syntax validation.
+Gixy-Next is an **NGINX configuration security checker**. It parses your `nginx.conf` (and all included files) and runs a set of security and correctness checks on top of simple syntax validation.
 
-GixyNG can detect issues such as:
+Gixy-Next can detect issues such as:
 
 - `ssrf` – server side request forgery risks in `proxy_pass` and similar directives
 - `http_splitting` – HTTP response splitting via unsafe variables in headers
@@ -51,11 +51,11 @@ GixyNG can detect issues such as:
 In other words:
 
 - `nginx -t` answers: *Can NGINX load this config?*
-- GixyNG answers: *Is this config safe and sane?*
+- Gixy-Next answers: *Is this config safe and sane?*
 
 ## Quick start as a configuration checker
 
-If you have GixyNG installed, a basic check looks like this:​
+If you have Gixy-Next installed, a basic check looks like this:​
 
 ```bash
 # Check the default NGINX config (usually /etc/nginx/nginx.conf)
@@ -65,13 +65,13 @@ gixy
 gixy /etc/nginx/nginx.conf
 ```
 
-If you want to scan the nginx config using GixyNG on a system other than that which is running NGINX, you can perform a live-configuration dump, like so:
+If you want to scan the nginx config using Gixy-Next on a system other than that which is running NGINX, you can perform a live-configuration dump, like so:
 
 ```bash
 # Dump the whole nginx configuration to a single file
 nginx -T > nginx.dump
 
-# Scan the full configuration (all "include" files included) with GixyNG
+# Scan the full configuration (all "include" files included) with Gixy-Next
 gixy nginx.dump
 ```
 
@@ -82,32 +82,32 @@ To skip specific checks that you know are noisy for your environment:
 gixy --skips http_splitting /etc/nginx/nginx.conf
 ```
 
-To focus on more serious problems only (depending on how you wire severity flags in GixyNG):
+To focus on more serious problems only (depending on how you wire severity flags in Gixy-Next):
 
 ```bash
 # Example: only medium and high severity issues
 gixy -ll /etc/nginx/nginx.conf
 ```
 
-## Side by side: `nginx -t` vs GixyNG
+## Side by side: `nginx -t` vs Gixy-Next
 
 | Tool       | Syntax validation | Includes / multi file configs | Security misconfig checks | Best practice checks | CI/CD friendly |
 | ---------- | ----------------- | ----------------------------- | ------------------------- | -------------------- | -------------- |
 | `nginx -t` | Yes               | Yes                           | No                        | No                   | Sort of        |
-| GixyNG     | Parses config     | Yes                           | Yes                       | Yes (via plugins)    | Yes            |
+| Gixy-Next     | Parses config     | Yes                           | Yes                       | Yes (via plugins)    | Yes            |
 
 They are complementary:
 
 * Always run `nginx -t` before reloads to avoid broken configs.
-* Run **GixyNG** as your NGINX configuration checker before changes hit production, to catch security and logic issues.
+* Run **Gixy-Next** as your NGINX configuration checker before changes hit production, to catch security and logic issues.
 
-## Example: treating GixyNG as a gatekeeper
+## Example: treating Gixy-Next as a gatekeeper
 
 A simple manual workflow:
 
 1. Edit your NGINX configuration.
 
-2. Run GixyNG:
+2. Run Gixy-Next:
 
    ```bash
    gixy /etc/nginx/nginx.conf
@@ -121,7 +121,7 @@ A simple manual workflow:
 
 This way:
 
-* GixyNG acts as your **NGINX configuration checker** and security auditor.
+* Gixy-Next acts as your **NGINX configuration checker** and security auditor.
 * `nginx -t` remains the last line of defense against syntax errors.
 
 ## When to use each tool
@@ -131,7 +131,7 @@ Use **`nginx -t`** when:
 * You just edited a configuration file and want to be sure NGINX will start.
 * You are troubleshooting a reload failure.
 
-Use **GixyNG** when:
+Use **Gixy-Next** when:
 
 * You want to perform an **NGINX configuration security audit**.
 * You are onboarding a new application or team and want to catch common misconfigurations.

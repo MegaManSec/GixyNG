@@ -1,15 +1,15 @@
 ---
 title: "Contributing"
-description: "Learn how to contribute to GixyNG. Read our pull request requirements, code quality standards, and AI-usage policy to ensure your NGINX security tool contributions are accepted."
+description: "Learn how to contribute to Gixy-Next. Read our pull request requirements, code quality standards, and AI-usage policy to ensure your NGINX security tool contributions are accepted."
 ---
 
-# Contributing to GixyNG
+# Contributing to Gixy-Next
 
-This document explains how to contribute meaningful changes to GixyNG that are helpful, reviewable, and maintainable.
+This document explains how to contribute meaningful changes to Gixy-Next that are helpful, reviewable, and maintainable.
 
-The official homepage of GixyNG is [https://gixy.io/](https://gixy.io/). Any changes to documentation in GixyNG will automatically be reflected on that website.
+The official homepage of Gixy-Next is [https://gixy.io/](https://gixy.io/). Any changes to documentation in Gixy-Next will automatically be reflected on that website.
 
-The source code can be found at [https://github.com/MegaManSec/GixyNG](https://github.com/MegaManSec/GixyNG).
+The source code can be found at [https://github.com/MegaManSec/Gixy-Next](https://github.com/MegaManSec/Gixy-Next).
 
 ## General Expectations
 
@@ -22,8 +22,8 @@ Low-quality contributions in the past have included broken code, random files, f
 
 GitHub is the main location for contributing.
 
-- Pull requests may be submitted in [MegaManSec/GixyNG/pulls](https://github.com/MegaManSec/gixyng/pulls).
-- Bug reports, suggestions, and other contributions are best handled in [MegaManSec/GixyNG/issues](https://github.com/MegaManSec/gixyng/issues).
+- Pull requests may be submitted in [MegaManSec/Gixy-Next/pulls](https://github.com/MegaManSec/Gixy-Next/pulls).
+- Bug reports, suggestions, and other contributions are best handled in [MegaManSec/Gixy-Next/issues](https://github.com/MegaManSec/Gixy-Next/issues).
 
 ## Pull Request Guidelines
 
@@ -75,6 +75,6 @@ AI-assisted contributions must meet the same standards as hand-written code:
 
 Once again, it is noted that using AI assistance is **allowed**. But if you submit broken code, low quality commits, or content which screams "this person has no idea what they're doing", your contributions are likely to be completely rejected, and you are likely to be flamed.
 
-This policy was created in response to the extremely low quality changes that were generated and accepted in another Gixy fork. Along with other decisions that reduced the overall effectiveness of the tool and its ability to detect vulnerabilities and misconfigurations in nginx configuration (and overall quality of the codebase), *those* changes were made without a clear understanding of what the AI-generated code was actually doing, or the actions it was taking. This was the catalyst for creating GixyNG, and more information about this can be read in [this blog post](https://joshua.hu/gixy-gixyng-fork-long-live-ai-slop).
+This policy was created in response to the extremely low quality changes that were generated and accepted in another Gixy fork. Along with other decisions that reduced the overall effectiveness of the tool and its ability to detect vulnerabilities and misconfigurations in nginx configuration (and overall quality of the codebase), *those* changes were made without a clear understanding of what the AI-generated code was actually doing, or the actions it was taking. This was the catalyst for creating Gixy-Next, and more information about this can be read in [this blog post](https://joshua.hu/gixy-gixyng-fork-long-live-ai-slop).
 
 Note: This document was written with the assistance of ChatGPT.

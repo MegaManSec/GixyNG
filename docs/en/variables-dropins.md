@@ -1,11 +1,11 @@
 ---
 title: "Custom Variables & Drop-ins"
-description: "Define custom NGINX variables for GixyNG using drop-in files, so scans handle third-party modules and stop warning about unknown variables."
+description: "Define custom NGINX variables for Gixy-Next using drop-in files, so scans handle third-party modules and stop warning about unknown variables."
 ---
 
 # Custom Variables & Drop-ins
 
-`gixy` tries to resolve variables as it analyzes your NGINX config. When it sees a variable it does not recognize, it will warn; not because your config is wrong, but because the scanner cannot safely tell what might flow into that value.
+`gixy` (Gixy-Next's CLI) tries to resolve variables as it analyzes your NGINX config. When it sees a variable it does not recognize, it will warn; not because your config is wrong, but because the scanner cannot safely tell what might flow into that value.
 
 This comes up a lot with third-party modules and bespoke setups (for example variables like `$brotli_ratio`), or when your organization injects variables through templates.
 

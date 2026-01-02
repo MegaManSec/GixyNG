@@ -1,11 +1,11 @@
 ---
 title: "Usage Guide"
-description: "How to run GixyNG locally or in CI, scan rendered configs, filter findings, and produce reports in text or JSON."
+description: "How to run Gixy-Next locally or in CI, scan rendered configs, filter findings, and produce reports in text or JSON."
 ---
 
 # Usage
 
-GixyNG ships as the `gixy` CLI. It statically analyzes NGINX configuration (your `nginx.conf` plus any files it includes) and reports security and hardening issues, along with a few common performance footguns.
+Gixy-Next ships as the `gixy` CLI. It statically analyzes NGINX configuration (your `nginx.conf` plus any files it includes) and reports security and hardening issues, along with a few common performance footguns.
 
 ## Basic scan
 
