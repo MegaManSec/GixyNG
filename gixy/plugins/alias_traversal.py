@@ -1,8 +1,8 @@
 import re
 
 import gixy
-from gixy.plugins.plugin import Plugin
 from gixy.core.variable import compile_script
+from gixy.plugins.plugin import Plugin
 
 
 class alias_traversal(Plugin):
@@ -69,13 +69,11 @@ class alias_traversal(Plugin):
             search_pos = group_pos
 
             location_has_slash_before = (
-                (group_pos == 0 and part.must_startswith("/"))
-                or (
-                    group_pos > 0
-                    and (
-                        location_pattern[group_pos - 1] == "/"
-                        or part.must_startswith("/")
-                    )
+                group_pos == 0 and part.must_startswith("/")
+            ) or (
+                group_pos > 0
+                and (
+                    location_pattern[group_pos - 1] == "/" or part.must_startswith("/")
                 )
             )
 

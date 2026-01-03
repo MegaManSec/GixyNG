@@ -1,5 +1,5 @@
-from gixy.parser.nginx_parser import NginxParser
 from gixy.directives.block import *
+from gixy.parser.nginx_parser import NginxParser
 
 # TODO(buglloc): what about include block?
 
@@ -154,8 +154,8 @@ if ($http_some = '/some') {
 
 
 def test_if_regex_backrefs_provide_variables():
-    from gixy.directives.block import IfBlock
     from gixy.core.manager import Manager
+    from gixy.directives.block import IfBlock
     from gixy.parser.nginx_parser import NginxParser
 
     config = r"""

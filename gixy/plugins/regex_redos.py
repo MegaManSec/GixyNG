@@ -1,5 +1,6 @@
 try:
     import requests
+
     _REQUESTS_AVAILABLE = True
 except Exception:
     requests = None  # requests is optional; plugin will auto-skip without it
@@ -37,24 +38,24 @@ class regex_redos(Plugin):
     severity = gixy.severity.MEDIUM
     unknown_severity = gixy.severity.UNSPECIFIED
     description = (
-        'Regular expressions with the potential for catastrophic backtracking '
-        'allow an nginx server to be denial-of-service attacked with very low '
-        'resources (also known as ReDoS).'
+        "Regular expressions with the potential for catastrophic backtracking "
+        "allow an nginx server to be denial-of-service attacked with very low "
+        "resources (also known as ReDoS)."
     )
-    help_url = 'https://gixy.io/plugins/regex_redos/'
-    directives = ['location']  # XXX: Missing server_name, rewrite, if, map, proxy_redirect
-    options = {
-        'url': ""
-    }
+    help_url = "https://gixy.io/plugins/regex_redos/"
+    directives = [
+        "location"
+    ]  # XXX: Missing server_name, rewrite, if, map, proxy_redirect
+    options = {"url": ""}
     options_help = {
-        'url': 'URL pointing to a server running a compatible ReDoS checking server (e.g. MegaManSec/recheck-http-api.)'
+        "url": "URL pointing to a server running a compatible ReDoS checking server (e.g. MegaManSec/recheck-http-api.)"
     }
 
     skip_test = True
 
     def __init__(self, config):
         super(regex_redos, self).__init__(config)
-        self.redos_server = self.config.get('url')
+        self.redos_server = self.config.get("url")
 
     def audit(self, directive):
         # If requests is not available, skip.
@@ -65,7 +66,7 @@ class regex_redos(Plugin):
             return
 
         # Only process directives that have regex modifiers.
-        if directive.modifier not in ('~', '~*'):
+        if directive.modifier not in ("~", "~*"):
             return
 
         regex_pattern = directive.path
@@ -80,32 +81,40 @@ class regex_redos(Plugin):
                 self.redos_server,
                 json=json_data,
                 headers={"Content-Type": "application/json"},
-                timeout=60
+                timeout=60,
             )
         except Exception:
-            self.add_issue(directive=directive, reason=fail_reason, severity=self.unknown_severity)
+            self.add_issue(
+                directive=directive, reason=fail_reason, severity=self.unknown_severity
+            )
             return
 
         # If we get a non-200 response, skip.
         if response.status_code != 200:
-            self.add_issue(directive=directive, reason=fail_reason, severity=self.unknown_severity)
+            self.add_issue(
+                directive=directive, reason=fail_reason, severity=self.unknown_severity
+            )
             return
 
         # Attempt to parse the JSON response.
         try:
             response_json = response.json()
         except ValueError:
-            self.add_issue(directive=directive, reason=fail_reason, severity=self.unknown_severity)
+            self.add_issue(
+                directive=directive, reason=fail_reason, severity=self.unknown_severity
+            )
             return
 
         # Ensure the expected data structure is present and matches the pattern.
         if (
-            "1" not in response_json or
-            response_json["1"] is None or
-            "source" not in response_json["1"] or
-            response_json["1"]["source"] != regex_pattern
+            "1" not in response_json
+            or response_json["1"] is None
+            or "source" not in response_json["1"]
+            or response_json["1"]["source"] != regex_pattern
         ):
-            self.add_issue(directive=directive, reason=fail_reason, severity=self.unknown_severity)
+            self.add_issue(
+                directive=directive, reason=fail_reason, severity=self.unknown_severity
+            )
             return
 
         recheck = response_json["1"]
@@ -118,7 +127,9 @@ class regex_redos(Plugin):
         # If the status is unknown, add a low-severity issue (likely the server timed out)
         if status == "unknown":
             reason = f"Could not determine ReDoS complexity for regex: {regex_pattern}."
-            self.add_issue(directive=directive, reason=reason, severity=self.unknown_severity)
+            self.add_issue(
+                directive=directive, reason=reason, severity=self.unknown_severity
+            )
             return
 
         # Status is 'vulnerable' here. Report as a high-severity issue.

@@ -94,7 +94,7 @@ class PluginsManager(object):
         """Detect if this is a full nginx config by checking for http block."""
         # Check if root has an http block child
         for child in root.children:
-            if child.name == 'http':
+            if child.name == "http":
                 return True
         return False
 

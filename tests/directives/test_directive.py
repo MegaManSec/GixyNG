@@ -1,5 +1,5 @@
-from gixy.parser.nginx_parser import NginxParser
 from gixy.directives.directive import *
+from gixy.parser.nginx_parser import NginxParser
 
 
 def _get_parsed(config):

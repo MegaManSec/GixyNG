@@ -23,6 +23,5 @@ class low_keepalive_requests(Plugin):
             return
         if value < 1000:
             self.add_issue(
-                directive=directive,
-                reason=f"`keepalive_requests` is set to {value}."
+                directive=directive, reason=f"`keepalive_requests` is set to {value}."
             )

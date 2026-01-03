@@ -21,7 +21,7 @@ class add_header_content_type(Plugin):
             if self._has_hide_header_content_type(directive):
                 return
 
-            reason = 'Use `default_type {default_type};` instead of `add_header`/`more_set_headers` to set Content-Type.'.format(
+            reason = "Use `default_type {default_type};` instead of `add_header`/`more_set_headers` to set Content-Type.".format(
                 default_type=directive.value
             )
             self.add_issue(directive=directive, reason=reason)
@@ -30,11 +30,11 @@ class add_header_content_type(Plugin):
         """Check if *_hide_header Content-Type exists in the same scope or parent scopes"""
         # List of nginx directives that can hide headers from backend
         hide_header_directives = [
-            'proxy_hide_header',
-            'fastcgi_hide_header',
-            'uwsgi_hide_header',
-            'scgi_hide_header',
-            'grpc_hide_header'
+            "proxy_hide_header",
+            "fastcgi_hide_header",
+            "uwsgi_hide_header",
+            "scgi_hide_header",
+            "grpc_hide_header",
         ]
 
         # Check in the same block (parent)
@@ -43,7 +43,7 @@ class add_header_content_type(Plugin):
                 hide_headers = directive.parent.find(hide_directive)
                 for hh in hide_headers:
                     # hide_header has one argument: the header name
-                    if hh.args and hh.args[0].lower() == 'content-type':
+                    if hh.args and hh.args[0].lower() == "content-type":
                         return True
 
         # Also check in parent scopes (server, http, etc.) because *_hide_header is inherited
@@ -51,7 +51,7 @@ class add_header_content_type(Plugin):
             for hide_directive in hide_header_directives:
                 hide_headers = parent.find(hide_directive)
                 for hh in hide_headers:
-                    if hh.args and hh.args[0].lower() == 'content-type':
+                    if hh.args and hh.args[0].lower() == "content-type":
                         return True
 
         return False

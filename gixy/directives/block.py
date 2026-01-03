@@ -3,9 +3,9 @@ try:
 except ImportError:
     from functools import cached_property
 
-from gixy.directives.directive import Directive, MapDirective
-from gixy.core.variable import Variable, compile_script
 from gixy.core.regexp import Regexp
+from gixy.core.variable import Variable, compile_script
+from gixy.directives.directive import Directive, MapDirective
 
 
 def get_overrides():
@@ -177,7 +177,9 @@ class IfBlock(Block):
 
         if len(args) == 1:
             # if ($slow)
-            self.variable = args[0]  # Do not lstrip because this is not used for defining variables
+            self.variable = args[
+                0
+            ]  # Do not lstrip because this is not used for defining variables
         elif len(args) == 2:
             # if (!-e $foo)
             self.operand, self.value = args
@@ -213,7 +215,7 @@ class IfBlock(Block):
                 # compile_script may raise if the context of a variable cannot be found, such as in unit tests.
                 pass
 
-        regexp = Regexp(self.value, case_sensitive=self.operand in {"~", '!~'})
+        regexp = Regexp(self.value, case_sensitive=self.operand in {"~", "!~"})
         result = []
         for name, group in regexp.groups.items():
             result.append(
@@ -243,6 +245,7 @@ class MapBlock(Block):
         ~*^re(.*)$ $1; <- this part is the directive, but MapBlock sets variables
     } <- this part is the block
     """
+
     nginx_name = "map"
     self_context = False
     provide_variables = True
@@ -284,7 +287,11 @@ class MapBlock(Block):
             for name, group in child.regex.groups.items():
                 result.append(
                     Variable(
-                        name=name, value=group, provider=child, boundary=None, ctx=src_val,
+                        name=name,
+                        value=group,
+                        provider=child,
+                        boundary=None,
+                        ctx=src_val,
                     )
                 )
                 break  # Only need the first result (full expression)
@@ -301,7 +308,15 @@ class MapBlock(Block):
                 ),
             )
 
-        return [Variable(name=self.variable, value=vars, boundary=None, provider=self, have_script=False)]
+        return [
+            Variable(
+                name=self.variable,
+                value=vars,
+                boundary=None,
+                provider=self,
+                have_script=False,
+            )
+        ]
 
     def __str__(self):
         return "{0} {1} ${2} {{".format(self.nginx_name, self.source, self.variable)
@@ -358,7 +373,15 @@ class GeoBlock(Block):
                     ctx=src_val,
                 ),
             )
-        return [Variable(name=self.variable, value=vars, boundary=None, provider=self, have_script=False)]
+        return [
+            Variable(
+                name=self.variable,
+                value=vars,
+                boundary=None,
+                provider=self,
+                have_script=False,
+            )
+        ]
 
     def __str__(self):
         return "{0} {1} ${2} {{".format(self.nginx_name, self.source, self.variable)

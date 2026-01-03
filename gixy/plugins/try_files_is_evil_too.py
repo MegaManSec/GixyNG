@@ -22,6 +22,7 @@ class try_files_is_evil_too(Plugin):
         if not open_file_cache or open_file_cache.args[0] == "off":
             self.add_issue(
                 severity=gixy.severity.MEDIUM,
-                directive=[directive] + ([open_file_cache] if open_file_cache is not None else []),
-                reason="`try_files` introduces extra filesystem lookups without `open_file_cache`."
+                directive=[directive]
+                + ([open_file_cache] if open_file_cache is not None else []),
+                reason="`try_files` introduces extra filesystem lookups without `open_file_cache`.",
             )

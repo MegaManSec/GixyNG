@@ -38,6 +38,9 @@ class return_bypasses_allow_deny(Plugin):
             all_allow_directives = list(parent.find_recursive("allow"))
             all_deny_directives = list(parent.find_recursive("deny"))
             self.add_issue(
-                directive=[directive] + return_directive + all_allow_directives + all_deny_directives,
-                reason="`allow`/`deny` do not restrict responses produced by `return` in the same scope."
+                directive=[directive]
+                + return_directive
+                + all_allow_directives
+                + all_deny_directives,
+                reason="`allow`/`deny` do not restrict responses produced by `return` in the same scope.",
             )

@@ -25,43 +25,45 @@ class add_header_redefinition(Plugin):
     summary = 'Nested "add_header" drops parent headers.'
     severity = gixy.severity.LOW
     description = '"add_header" at a nested level replaces inherited headers unless `add_header_inherit merge` is in effect (nginx 1.29.3+).'
-    help_url = 'https://gixy.io/plugins/add_header_redefinition/'
-    directives = ['server', 'location', 'if']
-    options = {'headers': set(), 'merge_reported_headers': True}
+    help_url = "https://gixy.io/plugins/add_header_redefinition/"
+    directives = ["server", "location", "if"]
+    options = {"headers": set(), "merge_reported_headers": True}
     options_help = {
-        'headers': 'Only report dropped headers from this allowlist. Case-insensitive. Comma-separated list, e.g. "x-frame-options,content-security-policy".',
-        'merge_reported_headers': 'Report headers declared in higher scopes that are not inherited (but were dropped at an intermediate level).'
+        "headers": 'Only report dropped headers from this allowlist. Case-insensitive. Comma-separated list, e.g. "x-frame-options,content-security-policy".',
+        "merge_reported_headers": "Report headers declared in higher scopes that are not inherited (but were dropped at an intermediate level).",
     }
 
     def __init__(self, config):
         super(add_header_redefinition, self).__init__(config)
-        raw_headers = self.config.get('headers')
+        raw_headers = self.config.get("headers")
         # Normalize configured headers to lowercase set for case-insensitive matching
         if isinstance(raw_headers, (list, tuple, set)):
-            self.interesting_headers = set(h.lower().strip() for h in raw_headers if h and isinstance(h, str))
+            self.interesting_headers = set(
+                h.lower().strip() for h in raw_headers if h and isinstance(h, str)
+            )
         else:
             self.interesting_headers = set()
         # Define secure headers that should escalate severity
         self.secure_headers = [
-            'cache-control',
-            'content-security-policy',
-            'content-security-policy-report-only',
-            'cross-origin-embedder-policy',
-            'cross-origin-opener-policy',
-            'cross-origin-resource-policy',
-            'permissions-policy',
-            'referrer-policy',
-            'strict-transport-security',
-            'x-content-type-options',
-            'x-frame-options',
-            'x-xss-protection',
-            'x-permitted-cross-domain-policies',
-            'expect-ct',
-            'pragma',
-            'expires',
-            'content-disposition'
+            "cache-control",
+            "content-security-policy",
+            "content-security-policy-report-only",
+            "cross-origin-embedder-policy",
+            "cross-origin-opener-policy",
+            "cross-origin-resource-policy",
+            "permissions-policy",
+            "referrer-policy",
+            "strict-transport-security",
+            "x-content-type-options",
+            "x-frame-options",
+            "x-xss-protection",
+            "x-permitted-cross-domain-policies",
+            "expect-ct",
+            "pragma",
+            "expires",
+            "content-disposition",
         ]
-        self.merge_reported_headers = self.config.get('merge_reported_headers')
+        self.merge_reported_headers = self.config.get("merge_reported_headers")
 
     def audit(self, directive):
         if not directive.is_block:
@@ -75,10 +77,10 @@ class add_header_redefinition(Plugin):
         mode = self.effective_add_header_inherit_mode(directive)
         # 'merge', parent headers are appended.
         # 'off', inheritance is explicitly cancelled.
-        if mode in ('merge', 'off'):
+        if mode in ("merge", "off"):
             return
 
-        parent = getattr(directive, 'parent', None)
+        parent = getattr(directive, "parent", None)
         if not parent:
             return
 
@@ -106,7 +108,8 @@ class add_header_redefinition(Plugin):
         # Use the parent's scope so we pick up server-level headers and includes.
         scope_add_headers = parent.find_imperative_directives_in_scope("add_header")
         directives.extend(
-            d for d in scope_add_headers
+            d
+            for d in scope_add_headers
             if getattr(d, "header", None) and d.header.lower() in diff
         )
         # and always include the headers at the current and parent level
@@ -117,7 +120,9 @@ class add_header_redefinition(Plugin):
         directives.extend(current.find("add_header_inherit"))
 
         is_secure_header_dropped = any(h in self.secure_headers for h in diff)
-        issue_severity = gixy.severity.MEDIUM if is_secure_header_dropped else self.severity
+        issue_severity = (
+            gixy.severity.MEDIUM if is_secure_header_dropped else self.severity
+        )
 
         if self.merge_reported_headers:
             reason = "Headers declared in higher scopes `{headers}` are not effective here.".format(
@@ -137,8 +142,8 @@ class add_header_redefinition(Plugin):
         """
         headers = []
         if inherited:
-            headers.extend(directive.find_imperative_directives_in_scope('add_header'))
-        headers.extend(directive.find('add_header'))
+            headers.extend(directive.find_imperative_directives_in_scope("add_header"))
+        headers.extend(directive.find("add_header"))
 
         if not headers:
             return set()
@@ -150,18 +155,18 @@ class add_header_redefinition(Plugin):
         """
         node = directive
         while node is not None:
-            inherit_directives = node.find('add_header_inherit')
+            inherit_directives = node.find("add_header_inherit")
             mode = None
             # If multiple are present at the same level, the last valid one wins.
             for d in inherit_directives:
-                if getattr(d, 'args', None):
+                if getattr(d, "args", None):
                     v = d.args[0].lower()
-                    if v in ('on', 'off', 'merge'):
+                    if v in ("on", "off", "merge"):
                         mode = v
             if mode is not None:
                 return mode
-            node = getattr(node, 'parent', None)
-        return 'on'
+            node = getattr(node, "parent", None)
+        return "on"
 
     def effective_headers(self, directive):
         """
@@ -175,12 +180,12 @@ class add_header_redefinition(Plugin):
 
         mode = self.effective_add_header_inherit_mode(directive)
         own = self.get_headers(directive, inherited=False)
-        parent = getattr(directive, 'parent', None)
+        parent = getattr(directive, "parent", None)
         inherited = self.effective_headers(parent) if parent is not None else set()
 
-        if mode == 'off':
+        if mode == "off":
             return set(own)
-        if mode == 'merge':
+        if mode == "merge":
             return set(inherited) | set(own)
         # mode == 'on'
         return set(own) if own else set(inherited)

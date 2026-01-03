@@ -1,7 +1,7 @@
-from itertools import product
 import logging
-import re
 import random  # noqa: S311 - used for example generation, not security
+import re
+from itertools import product
 
 try:
     from cached_property import cached_property

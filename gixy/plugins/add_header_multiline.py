@@ -22,7 +22,9 @@ class add_header_multiline(Plugin):
             if value is None:
                 continue
             if "\n\x20" in value or "\n\t" in value:
-                reason = "Header value contains an obsolete folded newline (header folding)."
+                reason = (
+                    "Header value contains an obsolete folded newline (header folding)."
+                )
                 self.add_issue(directive=directive, reason=reason)
                 break
             if "\n" in value:

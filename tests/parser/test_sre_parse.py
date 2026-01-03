@@ -1,4 +1,5 @@
 import pytest
+
 import gixy.core.sre_parse.sre_parse as sre_parse
 
 

@@ -4,7 +4,7 @@ text_type = str
 binary_type = (bytes, bytearray)
 
 
-def to_bytes(obj, encoding='latin1', errors='strict', nonstring='replace'):
+def to_bytes(obj, encoding="latin1", errors="strict", nonstring="replace"):
     if isinstance(obj, binary_type):
         return obj
 
@@ -13,31 +13,32 @@ def to_bytes(obj, encoding='latin1', errors='strict', nonstring='replace'):
             # Try this first as it's the fastest
             return obj.encode(encoding, errors)
         except UnicodeEncodeError:
-            return b'failed_to_encode'
+            return b"failed_to_encode"
 
-    if nonstring == 'simplerepr':
+    if nonstring == "simplerepr":
         try:
-
             value = str(obj)
         except UnicodeError:
             try:
                 value = repr(obj)
             except UnicodeError:
                 # Giving up
-                return b'failed_to_encode'
-    elif nonstring == 'passthru':
+                return b"failed_to_encode"
+    elif nonstring == "passthru":
         return obj
-    elif nonstring == 'replace':
-        return b'failed_to_encode'
-    elif nonstring == 'strict':
-        raise TypeError('obj must be a string type')
+    elif nonstring == "replace":
+        return b"failed_to_encode"
+    elif nonstring == "strict":
+        raise TypeError("obj must be a string type")
     else:
-        raise TypeError('Invalid value %s for to_bytes\' nonstring parameter' % nonstring)
+        raise TypeError(
+            "Invalid value %s for to_bytes' nonstring parameter" % nonstring
+        )
 
     return to_bytes(value, encoding, errors)
 
 
-def to_text(obj, encoding='latin1', errors='strict', nonstring='replace'):
+def to_text(obj, encoding="latin1", errors="strict", nonstring="replace"):
     if isinstance(obj, text_type):
         return obj
 
@@ -45,9 +46,9 @@ def to_text(obj, encoding='latin1', errors='strict', nonstring='replace'):
         try:
             return obj.decode(encoding, errors)
         except UnicodeEncodeError:
-            return u'failed_to_encode'
+            return "failed_to_encode"
 
-    if nonstring == 'simplerepr':
+    if nonstring == "simplerepr":
         try:
             value = str(obj)
         except UnicodeError:
@@ -55,15 +56,17 @@ def to_text(obj, encoding='latin1', errors='strict', nonstring='replace'):
                 value = repr(obj)
             except UnicodeError:
                 # Giving up
-                return u'failed_to_encode'
-    elif nonstring == 'passthru':
+                return "failed_to_encode"
+    elif nonstring == "passthru":
         return obj
-    elif nonstring == 'replace':
-        return u'failed_to_encode'
-    elif nonstring == 'strict':
-        raise TypeError('obj must be a string type')
+    elif nonstring == "replace":
+        return "failed_to_encode"
+    elif nonstring == "strict":
+        raise TypeError("obj must be a string type")
     else:
-        raise TypeError('Invalid value %s for to_text\'s nonstring parameter' % nonstring)
+        raise TypeError(
+            "Invalid value %s for to_text's nonstring parameter" % nonstring
+        )
 
     return to_text(value, encoding, errors)
 

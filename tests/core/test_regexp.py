@@ -1,4 +1,5 @@
 import pytest
+
 from gixy.core.regexp import Regexp
 
 '''

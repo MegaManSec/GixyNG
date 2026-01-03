@@ -1,8 +1,9 @@
-from gixy.core.context import get_context, push_context, purge_context
 from gixy.core import builtin_variables as builtins
-from gixy.directives.block import Root
+from gixy.core.context import get_context, purge_context, push_context
 from gixy.core.regexp import Regexp
 from gixy.core.variable import Variable
+from gixy.directives.block import Root
+
 
 def setup_function():
     push_context(Root())

@@ -1,13 +1,13 @@
-import os
 import logging
+import os
 
 import gixy
+from gixy.core import builtin_variables as builtins
+from gixy.core.config import Config
+from gixy.core.context import get_context, pop_context, purge_context, push_context
 from gixy.core.plugins_manager import PluginsManager
-from gixy.core.context import get_context, pop_context, push_context, purge_context
 from gixy.directives.directive import MapDirective
 from gixy.parser.nginx_parser import NginxParser
-from gixy.core.config import Config
-from gixy.core import builtin_variables as builtins
 
 LOG = logging.getLogger(__name__)
 
@@ -28,11 +28,14 @@ class Manager(object):
         except Exception as e:
             LOG.debug("Custom variables loading failed: %s", e)
         parser = NginxParser(
-            cwd=os.path.dirname(file_path) if not is_stdin else '',
-            allow_includes=self.config.allow_includes)
+            cwd=os.path.dirname(file_path) if not is_stdin else "",
+            allow_includes=self.config.allow_includes,
+        )
         if is_stdin:
             # Route stdin through parse_string for consistent path-based parsing via tempfile
-            self.root = parser.parse_string(content=file_data.read(), path_info=file_path)
+            self.root = parser.parse_string(
+                content=file_data.read(), path_info=file_path
+            )
         else:
             # Prefer path-based parsing to avoid temporary files
             self.root = parser.parse_file(file_path)

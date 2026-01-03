@@ -27,4 +27,4 @@ class JsonFormatter(BaseFormatter):
                         entry["file"] = location["file"]
                 result.append(entry)
 
-        return json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
+        return json.dumps(result, sort_keys=True, indent=2, separators=(",", ": "))

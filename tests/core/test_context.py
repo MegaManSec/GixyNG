@@ -1,7 +1,14 @@
-from gixy.core.context import get_context, pop_context, push_context, purge_context, CONTEXTS, Context
-from gixy.directives.block import Root
-from gixy.core.variable import Variable
+from gixy.core.context import (
+    CONTEXTS,
+    Context,
+    get_context,
+    pop_context,
+    purge_context,
+    push_context,
+)
 from gixy.core.regexp import Regexp
+from gixy.core.variable import Variable
+from gixy.directives.block import Root
 
 
 def setup_function():

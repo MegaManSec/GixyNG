@@ -166,7 +166,6 @@ class SubPattern:
 
 
 class Tokenizer:
-
     def __init__(self, string):
         self.next = None
         self.string = string
@@ -300,8 +299,7 @@ def _escape(source, escape, state):
                     import warnings
 
                     warnings.warn(
-                        "group references in lookbehind "
-                        "assertions are not supported",
+                        "group references in lookbehind assertions are not supported",
                         RuntimeWarning,
                     )
                 return GROUPREF, group
@@ -409,7 +407,6 @@ def _parse(source, state):
     REPEATCODES = _REPEATCODES
 
     while 1:
-
         if source.next in PATTERNENDERS:
             break  # end of subpattern
         this = sourceget()
@@ -591,9 +588,7 @@ def _parse(source, state):
                         if not name:
                             raise error("missing group name")
                         if not isname(name):
-                            raise error(
-                                "bad character in backref group name " "%r" % name
-                            )
+                            raise error("bad character in backref group name %r" % name)
                         gid = state.groupdict.get(name)
                         if gid is None:
                             msg = "unknown group name: {0!r}".format(name)

@@ -33,11 +33,11 @@ class proxy_pass_normalized(Plugin):
         # Only analyze HTTP context: inside location, or inside if/limit_except within location.
         # This avoids false positives for the stream module, where proxy_pass has different semantics.
         effective_location = None
-        if parent.name == 'location':
+        if parent.name == "location":
             effective_location = parent
-        elif parent.name in ['limit_except', 'if']:
+        elif parent.name in ["limit_except", "if"]:
             grandparent = parent.parent
-            if grandparent and grandparent.name == 'location':
+            if grandparent and grandparent.name == "location":
                 effective_location = grandparent
 
         if not effective_location:
@@ -45,12 +45,12 @@ class proxy_pass_normalized(Plugin):
             return
 
         # Skip exact-match locations where normalization concerns do not apply
-        if effective_location.modifier == '=':
+        if effective_location.modifier == "=":
             return
 
         proxy_pass_args = directive.args
 
-        if proxy_pass_args[0].startswith("$") and '/' not in proxy_pass_args[0]:
+        if proxy_pass_args[0].startswith("$") and "/" not in proxy_pass_args[0]:
             # If proxy pass destination is defined by only a variable, it is not possible to check for path normalization issues
             return
 
@@ -66,10 +66,7 @@ class proxy_pass_normalized(Plugin):
         rewritten = None
 
         for rewrite in directive.find_declarative_directives_in_scope("rewrite"):
-            if (
-                rewrite.pattern == "^"
-                and rewrite.replace == "$request_uri"
-            ):
+            if rewrite.pattern == "^" and rewrite.replace == "$request_uri":
                 if path:
                     # Check for $uri or any numbered variable in the path.
                     if "$uri" in path or self.num_pattern.search(path):
@@ -90,5 +87,5 @@ class proxy_pass_normalized(Plugin):
             reason=(
                 "A path is present after the host in `proxy_pass` without using `$request_uri` and a variable (for example, `$1` or `$uri`). "
                 "This can lead to path decoding or double-encoding issues."
-            )
+            ),
         )

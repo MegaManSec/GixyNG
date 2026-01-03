@@ -24,5 +24,5 @@ class unanchored_regex(Plugin):
             self.add_issue(
                 severity=gixy.severity.LOW,
                 directive=directive,
-                reason="Regular expressions without anchors can be slow."
+                reason="Regular expressions without anchors can be slow.",
             )

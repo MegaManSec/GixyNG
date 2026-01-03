@@ -1,13 +1,15 @@
-from gixy.formatters import BaseFormatter
+import json
 import os
 from os import path
-import json
+
 import pytest
 
-from ..utils import *
+from gixy.core.config import Config
 from gixy.core.manager import Manager as Gixy
 from gixy.core.plugins_manager import PluginsManager
-from gixy.core.config import Config
+from gixy.formatters import BaseFormatter
+
+from ..utils import *
 
 
 def generate_config_test_cases():

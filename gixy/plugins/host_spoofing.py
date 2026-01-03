@@ -8,15 +8,15 @@ class host_spoofing(Plugin):
         proxy_set_header Host $http_host
     """
 
-    summary = 'The proxied Host header may be spoofed.'
+    summary = "The proxied Host header may be spoofed."
     severity = gixy.severity.HIGH
-    description = 'In most cases, the $host variable is more appropriate; prefer it over $http_host.'
-    help_url = 'https://gixy.io/plugins/host_spoofing/'
-    directives = ['proxy_set_header']
+    description = "In most cases, the $host variable is more appropriate; prefer it over $http_host."
+    help_url = "https://gixy.io/plugins/host_spoofing/"
+    directives = ["proxy_set_header"]
 
     def audit(self, directive):
         name, value = directive.args
-        if name.lower() != 'host':
+        if name.lower() != "host":
             # Not a "Host" header
             return
 

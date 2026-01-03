@@ -3,11 +3,12 @@ try:
 except ImportError:
     from functools import cached_property
 
-from gixy.core.variable import Variable
-from gixy.core.regexp import Regexp
-
 import ipaddress
+
 import tldextract
+
+from gixy.core.regexp import Regexp
+from gixy.core.variable import Variable
 
 _TLD = tldextract.TLDExtract(include_psl_private_domains=False, suffix_list_urls=())
 
@@ -312,7 +313,9 @@ class ResolverDirective(Directive):
             if addr.startswith("[") and "]" in addr:
                 ip_candidate = addr.split("]", 1)[0][1:]  # [::1]:53 -> ::1
             elif addr.count(":") == 1:
-                ip_candidate = addr.rsplit(":", 1)[0]  # 1.2.3.4:53 -> 1.2.3.4 (or name:53 -> name)
+                ip_candidate = addr.rsplit(":", 1)[
+                    0
+                ]  # 1.2.3.4:53 -> 1.2.3.4 (or name:53 -> name)
 
             if is_ipv4(addr, is_local=True) or is_ipv6(addr, is_local=True):
                 continue
@@ -370,11 +373,13 @@ class MapDirective(Directive):
     def __init__(self, source, destination):
         super().__init__(source, destination)
         self.src_val = source
-        self.dest_val = destination[0] if destination and len(destination) == 1 else None
+        self.dest_val = (
+            destination[0] if destination and len(destination) == 1 else None
+        )
         self.regex = None
 
         if self.is_regex:
-            if self.src_val.startswith('~*'):
+            if self.src_val.startswith("~*"):
                 pattern = self.src_val[2:]
                 cs = False
             else:
@@ -399,15 +404,25 @@ class MapDirective(Directive):
             return []
 
         ancestor = self.parent
-        while ancestor is not None and ancestor.nginx_name != 'map':  # XXX: Better to check isinstance(ancestor, MapBlock) but circular import..
-            ancestor = getattr(ancestor, 'parent', None)
+        while (
+            ancestor is not None and ancestor.nginx_name != "map"
+        ):  # XXX: Better to check isinstance(ancestor, MapBlock) but circular import..
+            ancestor = getattr(ancestor, "parent", None)
 
-        if ancestor is None:  # This happens for "geo" directives, which is ok because geo directive does not provide variables.
+        if (
+            ancestor is None
+        ):  # This happens for "geo" directives, which is ok because geo directive does not provide variables.
             return []
 
         result = []
         for name, group in self.regex.groups.items():
             result.append(
-                Variable(name=name, value=group, provider=self, boundary=None, ctx=self.src_val)
+                Variable(
+                    name=name,
+                    value=group,
+                    provider=self,
+                    boundary=None,
+                    ctx=self.src_val,
+                )
             )
         return result

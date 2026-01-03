@@ -1,12 +1,12 @@
-import os
+import fnmatch
 import glob
 import logging
-import fnmatch
+import os
 
 from gixy.core.exceptions import InvalidConfiguration
+from gixy.directives import block, directive
 from gixy.parser import raw_parser
 from gixy.parser.raw_parser import ParseException
-from gixy.directives import block, directive
 from gixy.utils.text import to_native
 
 LOG = logging.getLogger(__name__)
@@ -45,13 +45,15 @@ class NginxParser(object):
         except InvalidConfiguration:
             raise
         except ParseException as e:
-            error_msg = "(line:{line}).".format(line=e.line)
+            # Preserve the underlying parser message and line info.
+            base_msg = getattr(e, "msg", None) or str(e) or "Failed to parse nginx config"
+            error_msg = "{msg} (line:{line}).".format(msg=base_msg, line=e.line)
             LOG.error(
                 'Failed to parse config "{file}" {error}'.format(
                     file=real_path, error=error_msg
                 )
             )
-            raise InvalidConfiguration(error_msg)
+            raise InvalidConfiguration(error_msg) from e
 
         current_path = display_path if display_path else path
         return self._build_tree_from_parsed(parsed, root, current_path)
@@ -76,26 +78,22 @@ class NginxParser(object):
         """
         root = self._ensure_root(root)
         import tempfile
-        data = content if isinstance(content, (bytes, bytearray)) else content.encode('utf-8')
+
+        data = (
+            content
+            if isinstance(content, (bytes, bytearray))
+            else content.encode("utf-8")
+        )
         tmp_filename = None
         try:
-            with tempfile.NamedTemporaryFile(mode='wb', suffix='.conf', delete=False) as tmp:
+            with tempfile.NamedTemporaryFile(
+                mode="wb", suffix=".conf", delete=False
+            ) as tmp:
                 tmp.write(data)
                 tmp_filename = tmp.name
             return self.parse_file(tmp_filename, root=root, display_path=path_info)
         except InvalidConfiguration:
             raise
-        except ParseException as e:
-            error_msg = "(line:{line}).".format(line=e.line)
-            if path_info:
-                LOG.error(
-                    'Failed to parse config "{file}": {error}'.format(
-                        file=path_info, error=error_msg
-                    )
-                )
-            else:
-                LOG.error("Failed to parse config: {error}".format(error=error_msg))
-            raise InvalidConfiguration(error_msg)
         finally:
             if tmp_filename:
                 try:
@@ -133,7 +131,11 @@ class NginxParser(object):
             block.Root: The root containing parsed directives.
         """
         # Handle nginx -T dump format if detected (multi-file with file delimiters)
-        if len(parsed_block) and isinstance(parsed_block[0], dict) and parsed_block[0].get('kind') == "file_delimiter":
+        if (
+            len(parsed_block)
+            and isinstance(parsed_block[0], dict)
+            and parsed_block[0].get("kind") == "file_delimiter"
+        ):
             LOG.info("Switched to parse nginx configuration dump.")
             root_filename = self._prepare_dump(parsed_block)
             self.is_dump = True
@@ -151,51 +153,63 @@ class NginxParser(object):
         for node in parsed_block:
             if not isinstance(node, dict):
                 continue
-            parsed_type = node.get('kind')
-            if parsed_type == 'comment' or parsed_type is None:
+            parsed_type = node.get("kind")
+            if parsed_type == "comment" or parsed_type is None:
                 continue
 
-            if parsed_type == 'include':
+            if parsed_type == "include":
                 # include is handled specially
                 path_info = self.path_info
                 try:
-                    self._resolve_include(node['args'], parent)
+                    self._resolve_include(node["args"], parent)
                 except Exception as exc:
-                    LOG.warn('Skipping include "%s"', node['args'][0])
+                    LOG.warn('Skipping include "%s"', node["args"][0])
                 finally:
                     self._path_stack = path_info
 
                 continue
 
-            parsed_name = node.get('name')
-            parsed_line = node.get('line')
-            if parsed_type == 'block':
-                parsed_args = [node.get('args', []), node.get('children', [])]
-            elif parsed_type == 'directive':
-                parsed_args = node.get('args', [])
-            elif parsed_type == 'hash_value':
-                parsed_args = node.get('args', [])
+            parsed_name = node.get("name")
+            parsed_line = node.get("line")
+            if parsed_type == "block":
+                parsed_args = [node.get("args", []), node.get("children", [])]
+            elif parsed_type == "directive":
+                parsed_args = node.get("args", [])
+            elif parsed_type == "hash_value":
+                parsed_args = node.get("args", [])
             else:
                 # unknown or file_delimiter should not be here
                 continue
 
-            if parent.name in ['map', 'geo'] and parsed_type == 'directive':  # Hack because included maps are treated as directives (bleh)
+            if (
+                parent.name in ["map", "geo"] and parsed_type == "directive"
+            ):  # Hack because included maps are treated as directives (bleh)
                 if isinstance(parsed_args, list) and len(parsed_args) > 1:
                     parent_args = getattr(parent, "args", []) or []
                     hdr = "{} {}".format(parent.name, " ".join(parent_args)).strip()
-                    error_msg = "Invalid {} entry with {} parameters: {} {{ {} {}; }};".format(
-                        parent.name, len(parsed_args), hdr, parsed_name, " ".join(parsed_args)
+                    error_msg = (
+                        "Invalid {} entry with {} parameters: {} {{ {} {}; }};".format(
+                            parent.name,
+                            len(parsed_args),
+                            hdr,
+                            parsed_name,
+                            " ".join(parsed_args),
+                        )
                     )
-                    LOG.warn('Failed to parse "{path_info}": {error}'.format(path_info=self.path_info, error=error_msg))
+                    LOG.warn(
+                        'Failed to parse "{path_info}": {error}'.format(
+                            path_info=self.path_info, error=error_msg
+                        )
+                    )
                     continue
-                parsed_type = 'hash_value'
+                parsed_type = "hash_value"
 
             directive_inst = self.directive_factory(
                 parsed_type, parsed_name, parsed_args
             )
             if directive_inst:
                 # RawParser emits 'raw' for *_lua_block
-                if parsed_type == 'block' and node.get('raw') is not None:
+                if parsed_type == "block" and node.get("raw") is not None:
                     try:
                         setattr(directive_inst, "raw", node.get("raw"))
                     except Exception:
@@ -234,7 +248,9 @@ class NginxParser(object):
         elif parsed_type == "hash_value":
             return directive.MapDirective
         elif parsed_type == "unparsed_block":
-            LOG.warning("Skip unparseable block '%s' from '%s'", parsed_name, self.path_info)
+            LOG.warning(
+                "Skip unparseable block '%s' from '%s'", parsed_name, self.path_info
+            )
             return None
         else:
             return None
@@ -265,7 +281,11 @@ class NginxParser(object):
         if not exists:
             # Align behavior with nginx: unmatched glob patterns are not warnings
             if glob.has_magic(path):
-                LOG.debug("Include pattern '%s' matched no files from '%s'", path, self.path_info)
+                LOG.debug(
+                    "Include pattern '%s' matched no files from '%s'",
+                    path,
+                    self.path_info,
+                )
             else:
                 LOG.warning("File not found: '%s'", path)
 
@@ -302,10 +322,10 @@ class NginxParser(object):
         filename = ""
         root_filename = ""
         for node in parsed_block:
-            if isinstance(node, dict) and node.get('kind') == 'file_delimiter':
+            if isinstance(node, dict) and node.get("kind") == "file_delimiter":
                 if not filename:
-                    root_filename = node.get('file')
-                filename = node.get('file')
+                    root_filename = node.get("file")
+                filename = node.get("file")
                 self.configs[filename] = []
                 continue
             self.configs[filename].append(node)

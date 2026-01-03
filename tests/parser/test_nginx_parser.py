@@ -1,7 +1,8 @@
 import pytest
-from gixy.parser.nginx_parser import NginxParser
-from gixy.directives.directive import *
+
 from gixy.directives.block import *
+from gixy.directives.directive import *
+from gixy.parser.nginx_parser import NginxParser
 
 
 def _parse(config):

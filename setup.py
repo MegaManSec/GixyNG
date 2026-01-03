@@ -1,7 +1,7 @@
 import pathlib
 import re
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 # FileNotFoundError is not there in Python 2, define it:
 try:
