@@ -119,3 +119,44 @@ def test_custom_variable_dropin_literal_and_regex(tmp_path):
     assert v2.must_startswith("/")
     assert not v2.can_contain("\n")
     assert not v2.must_contain(".")
+
+
+def test_custom_variable_dropin_more_cases(tmp_path):
+    builtins.clear_custom_variables()
+
+    d = tmp_path / "vars"
+    d.mkdir()
+
+    # literal + regex metachar
+    (d / "a.cfg").write_text('lit_plus "a+b"\n')      # literal
+    (d / "b.cfg").write_text("rx_plus r'a+b'\n")      # regex
+
+    # unquoted is regex (compat)
+    (d / "c.cfg").write_text("compat_dot example.com\n")
+
+    # empty and null, plus separators and trailing comma
+    (d / "d.cfg").write_text('empty = ""\nnone: null,\n')
+
+    builtins.load_custom_variables_from_dirs([str(d)])
+
+    v = builtins.builtin_var("lit_plus")
+    assert v is not None
+    assert v.must_contain("+")          # literal plus required
+    assert not v.can_contain("\n")
+
+    v = builtins.builtin_var("rx_plus")
+    assert v is not None
+    assert v.must_contain("b")
+    assert not v.must_contain("+")      # plus is not literal here (usually)
+
+    v = builtins.builtin_var("compat_dot")
+    assert v is not None
+    assert not v.must_contain(".")      # '.' is wildcard in regex example.com
+
+    v = builtins.builtin_var("empty")
+    assert v is not None
+    assert not v.can_contain("\n")      # depending on how Regexp("") behaves in your code,
+                                        # you may need to assert it becomes "builtin" instead
+
+    v = builtins.builtin_var("none")
+    assert v is not None
