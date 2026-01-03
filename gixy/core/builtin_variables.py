@@ -1,6 +1,6 @@
 import os
-import re
 import logging
+import re
 
 from gixy.core.regexp import Regexp
 from gixy.core.variable import Variable
@@ -275,10 +275,17 @@ def _normalize_value_token(token):
         token = token[1:]
 
     # Strip quotes
+    quoted = False
     if len(token) >= 2 and token[0] == token[-1] and token[0] in ("'", '"'):
+        quoted = True
         token = token[1:-1]
 
-    # For regex patterns we just return the inside content (without r/quotes)
+    # If it was quoted without a raw prefix, treat as a literal string (not regex).
+    # Raw-prefixed quoted values (r"..." / r'...') continue to mean "regex pattern".
+    if quoted and not raw_prefix:
+        return re.escape(token)
+
+    # Otherwise treat as a regex pattern (backward compatible for unquoted tokens).
     return token
 
 
