@@ -52,13 +52,14 @@ class GixyConfigParser(DefaultConfigFileParser):
                 continue
             if line[0] == "[":
                 section = line[1:-1].strip()
-                section_norm = section.lower().replace("_", "-")
+                section_key = section.replace("_", "-")
+                section_norm = section_key.lower()
 
                 # Treat [gixy] as "global scope"
                 if section_norm == "gixy":
                     prefix = ""
                 else:
-                    prefix = f"{section_norm}-"
+                    prefix = f"{section_key}-"
 
                 continue
 
