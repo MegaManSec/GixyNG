@@ -73,9 +73,8 @@ setup(
     version=version,
 
     description=(
-        "Open source NGINX security scanner and configuration checker for "
-        "automating nginx.conf security audits, finding performance "
-        "misconfigurations, and hardening NGINX servers."
+        "Open source NGINX configuration security scanner for "
+        "detecting nginx security/performance misconfigurations"
     ),
 
     long_description=long_description,
