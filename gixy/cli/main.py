@@ -1,18 +1,18 @@
 """Main module for Gixy CLI"""
 
 import argparse
+import copy
+import logging
 import os
 import sys
-import logging
-import copy
 
 import gixy
-from gixy.core.manager import Manager as Gixy
-from gixy.formatters import get_all as formatters
-from gixy.core.plugins_manager import PluginsManager
-from gixy.core.config import Config
 from gixy.cli.argparser import create_parser
+from gixy.core.config import Config
 from gixy.core.exceptions import InvalidConfiguration
+from gixy.core.manager import Manager as Gixy
+from gixy.core.plugins_manager import PluginsManager
+from gixy.formatters import get_all as formatters
 
 LOG = logging.getLogger()
 
@@ -115,7 +115,12 @@ def _get_cli_parser():
     )
 
     parser.add_argument(
-        "-o", "--output", dest="output_file", type=str, default="", help="Write report to file"
+        "-o",
+        "--output",
+        dest="output_file",
+        type=str,
+        default="",
+        help="Write report to file",
     )
 
     parser.add_argument(
@@ -128,11 +133,19 @@ def _get_cli_parser():
     )
 
     parser.add_argument(
-        "--tests", dest="tests", type=str, default="", help="Comma-separated list of tests to exclusively run"
+        "--tests",
+        dest="tests",
+        type=str,
+        default="",
+        help="Comma-separated list of tests to exclusively run",
     )
 
     parser.add_argument(
-        "--skips", dest="skips", type=str, default="", help="Comma-separated list of tests to exclusively skip"
+        "--skips",
+        dest="skips",
+        type=str,
+        default="",
+        help="Comma-separated list of tests to exclusively skip",
     )
 
     parser.add_argument(
@@ -204,7 +217,7 @@ def main():
 
             nginx_files.append("-")
         else:
-            path = os.path.expanduser(os.path.abspath(input_path))
+            path = os.path.abspath(os.path.expanduser(input_path))
 
             if not os.path.exists(path):
                 sys.stderr.write(
@@ -243,7 +256,9 @@ def main():
         plugins=tests,
         skips=skips,
         allow_includes=not args.disable_includes,
-        vars_dirs=[x.strip() for x in args.vars_dirs.split(",")] if args.vars_dirs else None,
+        vars_dirs=[x.strip() for x in args.vars_dirs.split(",")]
+        if args.vars_dirs
+        else None,
     )
 
     for plugin_cls in PluginsManager().plugins_classes:
@@ -306,5 +321,7 @@ def main():
     sys.exit(0)
 
 
-if __name__ == "__main__":  # pragma: no cover - invoked only via `python -m gixy.cli.main`
+if (
+    __name__ == "__main__"
+):  # pragma: no cover - invoked only via `python -m gixy.cli.main`
     main()
