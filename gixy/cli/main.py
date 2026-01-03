@@ -57,7 +57,8 @@ def _create_plugin_help(plugin_cls, opt_key, option):
     `options_help` mapping on the plugin class.
     """
     if isinstance(option, (tuple, list, set)):
-        default = ",".join(list(option))
+        seq = sorted(option) if isinstance(option, set) else list(option)
+        default = ",".join(map(str, seq))
         usage_hint = "Comma-separated list."
     else:
         default = str(option)
@@ -179,9 +180,9 @@ def _get_cli_parser():
             if isinstance(opt_val, (tuple, list, set)):
                 opt_type = str
                 if isinstance(opt_val, set):
-                    default_val = ",".join(sorted(opt_val))
+                    default_val = ",".join(map(str, sorted(opt_val)))
                 else:
-                    default_val = ",".join(opt_val)
+                    default_val = ",".join(map(str, opt_val))
             elif isinstance(opt_val, bool):
                 opt_type = _str_to_bool
                 default_val = opt_val
