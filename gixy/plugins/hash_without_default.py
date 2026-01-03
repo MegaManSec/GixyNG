@@ -3,6 +3,7 @@ from gixy.plugins.plugin import Plugin
 from gixy.directives.directive import MapDirective
 from gixy.directives.block import MapBlock, GeoBlock
 
+
 class hash_without_default(Plugin):
     summary = "Missing default value in hash blocks (map/geo)."
     severity = gixy.severity.MEDIUM
@@ -49,5 +50,5 @@ class hash_without_default(Plugin):
         # geo continues to require an explicit default regardless of entries count
         self.add_issue(
             directive=[directive] + directive.children,
-            reason = "Missing `default` entry in `{0}` for variable `${1}`.".format(directive.name, directive.variable)
+            reason="Missing `default` entry in `{0}` for variable `${1}`.".format(directive.name, directive.variable)
         )

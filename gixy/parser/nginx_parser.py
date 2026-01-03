@@ -179,7 +179,7 @@ class NginxParser(object):
                 # unknown or file_delimiter should not be here
                 continue
 
-            if parent.name in ['map', 'geo'] and parsed_type == 'directive': # Hack because included maps are treated as directives (bleh)
+            if parent.name in ['map', 'geo'] and parsed_type == 'directive':  # Hack because included maps are treated as directives (bleh)
                 if isinstance(parsed_args, list) and len(parsed_args) > 1:
                     parent_args = getattr(parent, "args", []) or []
                     hdr = "{} {}".format(parent.name, " ".join(parent_args)).strip()

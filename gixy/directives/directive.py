@@ -11,6 +11,7 @@ import tldextract
 
 _TLD = tldextract.TLDExtract(include_psl_private_domains=False, suffix_list_urls=())
 
+
 def get_overrides():
     """Get a list of all directives that override the default behavior"""
     result = {}
@@ -104,7 +105,7 @@ class Directive:
                     yield child
 
                 if child.is_block and not child.self_context:
-                   yield from self._find_recursive_flat(child, name)
+                    yield from self._find_recursive_flat(child, name)
 
                 if child is node:
                     break
@@ -363,7 +364,7 @@ class MapDirective(Directive):
     }
     """
 
-    nginx_name = "map" # XXX: Also used for "geo". Could also work for "charset_map"
+    nginx_name = "map"  # XXX: Also used for "geo". Could also work for "charset_map"
     provide_variables = True
 
     def __init__(self, source, destination):
@@ -398,10 +399,10 @@ class MapDirective(Directive):
             return []
 
         ancestor = self.parent
-        while ancestor is not None and ancestor.nginx_name != 'map': # XXX: Better to check isinstance(ancestor, MapBlock) but circular import..
+        while ancestor is not None and ancestor.nginx_name != 'map':  # XXX: Better to check isinstance(ancestor, MapBlock) but circular import..
             ancestor = getattr(ancestor, 'parent', None)
 
-        if ancestor is None: # This happens for "geo" directives, which is ok because geo directive does not provide variables.
+        if ancestor is None:  # This happens for "geo" directives, which is ok because geo directive does not provide variables.
             return []
 
         result = []

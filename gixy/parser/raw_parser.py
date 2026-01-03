@@ -2,6 +2,7 @@ import crossplane
 from crossplane.errors import NgxParserBaseException
 import re
 
+
 def _process_nginx_string(value):
     """
     Process nginx string escape sequences to match the old parser behavior.
@@ -33,6 +34,7 @@ class ParseException(Exception):
         self.msg = msg
         self.line = line
 
+
 def raise_on_crossplane_failure(parsed):
     if not isinstance(parsed, dict) or parsed.get("status") != "failed":
         return
@@ -51,6 +53,7 @@ def raise_on_crossplane_failure(parsed):
         msg = err.get("error") or "Failed to parse nginx config"
         line = err.get("line", None) or err.get("lineno", None) or 1
         raise ParseException(msg, line)
+
 
 r"""
 Legacy note:

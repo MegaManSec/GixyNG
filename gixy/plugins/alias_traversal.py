@@ -105,7 +105,7 @@ class alias_traversal(Plugin):
                 alias_has_slash_before = str(prev_part.value).endswith("/")
 
                 if not alias_has_slash_before and not part.must_startswith("/"):
-                     # location /site/(.*) ~ { alias /lol$1; }
+                    # location /site/(.*) ~ { alias /lol$1; }
                     self.report_issue(directive, location, gixy.severity.MEDIUM)
 
             prev_part = part

@@ -20,7 +20,5 @@ class resolver_external(Plugin):
             self.add_issue(
                 severity=gixy.severity.HIGH,
                 directive=directive,
-                reason = "Resolver uses external DNS servers: `{dns_servers}`.".format(dns_servers=", ".join(bad_nameservers))
+                reason="Resolver uses external DNS servers: `{dns_servers}`.".format(dns_servers=", ".join(bad_nameservers))
             )
-
-

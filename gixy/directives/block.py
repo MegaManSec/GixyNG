@@ -177,7 +177,7 @@ class IfBlock(Block):
 
         if len(args) == 1:
             # if ($slow)
-            self.variable = args[0] # Do not lstrip because this is not used for defining variables
+            self.variable = args[0]  # Do not lstrip because this is not used for defining variables
         elif len(args) == 2:
             # if (!-e $foo)
             self.operand, self.value = args
@@ -222,6 +222,7 @@ class IfBlock(Block):
 
         return result
 
+
 class IncludeBlock(Block):
     nginx_name = "include"
     self_context = False
@@ -263,7 +264,7 @@ class MapBlock(Block):
         vars = []
         for child in self.gather_map_directives(self.children):
             if not isinstance(child, MapDirective):
-                continue # XXX: Should never happen?
+                continue  # XXX: Should never happen?
             src_val = child.src_val
             dest_val = child.dest_val
 
@@ -286,13 +287,13 @@ class MapBlock(Block):
                         name=name, value=group, provider=child, boundary=None, ctx=src_val,
                     )
                 )
-                break # Only need the first result (full expression)
+                break  # Only need the first result (full expression)
             if len(result) != 1:
                 continue
             vars.append(
                 Variable(
                     name=src_val,
-                    value=result[0].value, # Value is Regexp()
+                    value=result[0].value,  # Value is Regexp()
                     boundary=None,
                     provider=child,
                     have_script=False,
@@ -304,6 +305,7 @@ class MapBlock(Block):
 
     def __str__(self):
         return "{0} {1} ${2} {{".format(self.nginx_name, self.source, self.variable)
+
 
 class GeoBlock(Block):
     """

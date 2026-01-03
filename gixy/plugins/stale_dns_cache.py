@@ -10,6 +10,7 @@ import tldextract
 
 _EXTRACT = tldextract.TLDExtract(include_psl_private_domains=True, suffix_list_urls=())
 
+
 class stale_dns_cache(Plugin):
     """
     Insecure example:
@@ -48,8 +49,8 @@ class stale_dns_cache(Plugin):
         if not raw_host:
             return
 
-        parsed_host_compiled = compile_script(raw_host) # proxy_pass $var <- $var may be a variable to an upstream (ugly, but valid).
-        parsed_host = "" # this is fine, just ugly; parsed_host is only really used for upstream anyways
+        parsed_host_compiled = compile_script(raw_host)  # proxy_pass $var <- $var may be a variable to an upstream (ugly, but valid).
+        parsed_host = ""  # this is fine, just ugly; parsed_host is only really used for upstream anyways
         upstream_name_candidates = set()
         for var in parsed_host_compiled:
             if var.name and builtins.is_builtin(var.name):
@@ -113,9 +114,9 @@ class stale_dns_cache(Plugin):
                     upstream_directives.append(child)
 
                     if self.extract(parsed_upstream_host).suffix:
-                        severity = gixy.severity.MEDIUM # Registerable suffix (one way or another)
+                        severity = gixy.severity.MEDIUM  # Registerable suffix (one way or another)
 
-        if not found_upstream and '$' in proxy_target: # https://host/$1 is OK, as long as 'host' is not an 'upstream'.
+        if not found_upstream and '$' in proxy_target:  # https://host/$1 is OK, as long as 'host' is not an 'upstream'.
             if not resolver:
                 self.add_issue(
                     severity=gixy.severity.MEDIUM,
@@ -128,7 +129,7 @@ class stale_dns_cache(Plugin):
             return
 
         if not found_upstream:
-            if parsed_host and self.extract(parsed_host).suffix: # Registerable suffix (one way or another)
+            if parsed_host and self.extract(parsed_host).suffix:  # Registerable suffix (one way or another)
                 severity = gixy.severity.MEDIUM
 
         if resolver:

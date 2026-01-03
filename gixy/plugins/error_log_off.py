@@ -18,5 +18,5 @@ class error_log_off(Plugin):
         if directive.args and directive.args[0].lower() == "off":
             self.add_issue(
                 directive=directive,
-                reason = "Configured `error_log off;` which treats 'off' as a filename."
+                reason="Configured `error_log off;` which treats 'off' as a filename."
             )

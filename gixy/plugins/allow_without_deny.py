@@ -43,5 +43,3 @@ class allow_without_deny(Plugin):
                 directive=[directive] + list(parent.find_recursive('allow')),
                 reason=reason
             )
-
-

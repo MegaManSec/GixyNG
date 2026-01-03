@@ -1,5 +1,4 @@
 import gixy
-from gixy.directives.directive import AddHeaderDirective
 from gixy.plugins.plugin import Plugin
 
 

@@ -7,7 +7,8 @@ from gixy.directives.directive import MapDirective, AddHeaderDirective
 from urllib.parse import urlparse
 import tldextract
 
-_EXTRACT = tldextract.TLDExtract(include_psl_private_domains=True, suffix_list_urls=()) # include private domains, because we only care about origin; not domain ownership
+_EXTRACT = tldextract.TLDExtract(include_psl_private_domains=True, suffix_list_urls=())  # include private domains, because we only care about origin; not domain ownership
+
 
 class origins(Plugin):
     r"""
@@ -72,7 +73,7 @@ class origins(Plugin):
 
         self.https_only = bool(self.config.get('https_only'))
         self.lower_hostname = bool(self.config.get('lower_hostname'))
-        self.lower_hostname_pattern = re.compile(r'^[a-z0-9.:\[\]-]+$') # :][ for IPv6
+        self.lower_hostname_pattern = re.compile(r'^[a-z0-9.:\[\]-]+$')  # :][ for IPv6
 
     def same_origin(self, i, j):
         if not i or not j:
@@ -311,4 +312,4 @@ class origins(Plugin):
                     else:
                         continue
                     # Analyze as origin regex
-                    self._analyze_and_report(pattern, cs, 'origin', [md,node])
+                    self._analyze_and_report(pattern, cs, 'origin', [md, node])

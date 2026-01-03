@@ -25,7 +25,6 @@ class proxy_pass_normalized(Plugin):
         self.num_pattern = re.compile(r"\$\d+")
 
     def audit(self, directive):
-        rewrite_fail = False
         parent = directive.parent
 
         if not parent:
@@ -88,7 +87,7 @@ class proxy_pass_normalized(Plugin):
 
         self.add_issue(
             directive=[directive] + ([rewritten] if rewritten is not None else []),
-            reason = (
+            reason=(
                 "A path is present after the host in `proxy_pass` without using `$request_uri` and a variable (for example, `$1` or `$uri`). "
                 "This can lead to path decoding or double-encoding issues."
             )
