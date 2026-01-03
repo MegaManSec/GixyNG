@@ -90,7 +90,7 @@ class GixyConfigParser(DefaultConfigFileParser):
                 continue
 
             raise ConfigFileParserException(
-                f"Unexpected line {i} in {getattr(stream, 'name', 'stream')}: {line}"
+                f"Unexpected line {i + 1} in {getattr(stream, 'name', 'stream')}: {line}"
             )
         return items
 
