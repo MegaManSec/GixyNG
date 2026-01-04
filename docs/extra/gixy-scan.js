@@ -144,8 +144,8 @@
         <div class="gixy-row1">
           ${severityBadgeHtml(sev)}
           <strong>${escapeHtml(f.summary || "(no summary)")}</strong>
-          <span class="gixy-meta">${escapeHtml(f.plugin || "")}</span>
-          <span class="gixy-meta">${escapeHtml(file)}${escapeHtml(line)}</span>
+          <span class="gixy-meta">[${escapeHtml(f.plugin || "")}]</span>
+          <span class="gixy-meta">(line:${escapeHtml(line)})</span>
         </div>
         <div class="gixy-meta">${escapeHtml(f.reason || "")}</div>
       `;
