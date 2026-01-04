@@ -108,7 +108,6 @@ class BaseFormatter(object):
 
     def _traverse_tree(self, tree, points, level):
         result = []
-        prev_printable_is_block = False
         for leap in tree.children:
             if leap not in points:
                 continue
@@ -118,13 +117,12 @@ class BaseFormatter(object):
             have_parentheses = type(leap) != block.IncludeBlock
 
             if printable:
-                if leap.is_block and result and not prev_printable_is_block:
+                if leap.is_block and result:
                     result.append("")
                 directive = str(leap).replace("\n", "\n" + "\t" * (level + 1))
                 result.append(
                     "{indent:s}{dir:s}".format(indent="\t" * level, dir=directive)
                 )
-                prev_printable_is_block = leap.is_block
 
             if leap.is_block:
                 result.extend(
