@@ -161,7 +161,7 @@ class NginxParser(object):
             and isinstance(parsed_block[0], dict)
             and parsed_block[0].get("kind") == "file_delimiter"
         ):
-            LOG.info("Switched to parse nginx configuration dump.")
+            LOG.debug("Switched to parse nginx configuration dump.")
             root_filename = self._prepare_dump(parsed_block)
             self.is_dump = True
             self.cwd = os.path.dirname(root_filename)
