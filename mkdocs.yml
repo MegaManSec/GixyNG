@@ -82,8 +82,11 @@ markdown_extensions:
   - toc:
       permalink: false
 extra_javascript:
+  - extra/gixy-scan.js
   - extra/redirect-en.js
 extra:
   generator: false
 extra_css:
   - extra.css
+extra_files:
+  - extra/gixy_next-0.0.9-py3-none-any.whl
