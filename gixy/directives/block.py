@@ -118,7 +118,7 @@ class ServerBlock(Block):
     def __str__(self):
         server_names = [str(sn) for sn in self.find("server_name")]
         if server_names:
-            return "server {{\n{0}".format("\n".join(server_names[:2]))
+            return "server {{\n{0}\n".format("\n".join(server_names[:2]))
         return "server {"
 
 
