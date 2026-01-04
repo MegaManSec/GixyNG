@@ -3,7 +3,7 @@ title: "Configuration Guide"
 description: "Configure Gixy-Next using a config file: set defaults for output, includes, selected checks, and variable drop-ins so scans are consistent across runs and environments."
 ---
 
-# Configuration
+# Configuration Guide
 
 You can run `gixy` entirely from CLI flags, but a configuration file may also be used to read settings, including output formatting, where to write reports, which checks to run, whether to process `include` directives, some plugin-specific settings, output severity filtering, and where to look for custom variable drop-ins.
 

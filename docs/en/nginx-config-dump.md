@@ -3,7 +3,7 @@ title: "nginx -T Live Configuration Dump"
 description: "See what an nginx live configuration dump looks like, why nginx -T is useful for debugging includes, and how to capture the dump (stdout) separately from test status (stderr)."
 ---
 
-# nginx -T and the "live configuration dump"
+# Live Configuration Dumps: nginx -T
 
 An nginx "live configuration dump" is what you get from running this command on a system configured for NGINX:
 

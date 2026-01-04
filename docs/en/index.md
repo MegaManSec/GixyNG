@@ -19,7 +19,8 @@ uv pip install gixy-next
 ```
 
 !!! note "In-Browser Scanner"
-    Gixy-Next also comes as an in-browser scanner [here](https://gixy.io/scanner/). No download is needed, you can scan your configurations on the website (locally, using WebAssembly).
+
+    Gixy-Next also comes as an in-browser scanner [here](https://gixy.io/scanner/). No download is needed, you can just scan your configurations on the website (locally, using WebAssembly).
 
 You can then run it:
 

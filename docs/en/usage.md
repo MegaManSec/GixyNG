@@ -3,7 +3,7 @@ title: "Usage Guide"
 description: "How to run Gixy-Next locally or in CI, scan rendered configs, filter findings, and produce reports in text or JSON."
 ---
 
-# Usage
+# Usage Guide
 
 Gixy-Next ships as the `gixy` CLI. It statically analyzes NGINX configuration (your `nginx.conf` plus any files it includes) and reports security and hardening issues, along with a few common performance footguns.
 
