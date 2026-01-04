@@ -65,7 +65,7 @@ gixy
 gixy /etc/nginx/nginx.conf
 ```
 
-If you want to scan the nginx config using Gixy-Next on a system other than that which is running NGINX, you can perform a live-configuration dump, like so:
+If you want to scan the nginx config using Gixy-Next on a system other than that which is running NGINX, you can perform a live-configuration dump (see [nginx -T Live Configuration Dump](https://gixy.io/nginx-config-dump)), like so:
 
 ```bash
 # Dump the whole nginx configuration to a single file

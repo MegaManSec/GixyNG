@@ -28,12 +28,12 @@ cat /opt/nginx/nginx.conf | gixy -
 
 ## Scan a rendered config dump
 
-One of the easiest ways to get consistent results from `gixy` is to scan the fully rendered configuration that NGINX sees. NGINX can print that with `nginx -T`.
+One of the easiest ways to get consistent results from `gixy` is to scan the fully rendered live configuration that NGINX sees (see [nginx -T Live Configuration Dump](https://gixy.io/nginx-config-dump)). NGINX can print that with `nginx -T`.
 
 On the machine that has NGINX (or inside your NGINX container):
 
 ```bash
-# Dump the full rendered NGINX config to a single file
+# Dump the full rendered/live NGINX config to a single file
 nginx -T > nginx-dump.conf
 ```
 

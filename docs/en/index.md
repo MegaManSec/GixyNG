@@ -2,7 +2,7 @@
 
 ## Overview
 
-<a href="https://gixy.io/"><img width="192" height="192" alt="Gixy-Next Mascot Logo" style="float: right;" align="right" src="https://gixy.io/imgs/gixy.jpg" /></a>
+<a href="https://gixy.io/"><img width="192" height="192" alt="Gixy-Next Mascot Logo" style="float: right; margin: 0;" align="right" src="https://gixy.io/imgs/gixy.jpg" /></a>
 
 Gixy-Next is an open source NGINX configuration security scanner and hardening tool that performs static analysis of your nginx.conf to detect security misconfigurations, hardening gaps, and common performance pitfalls before they reach production. It is an actively maintained fork of Yandex's [Gixy](https://github.com/yandex/gixy).
 
@@ -18,6 +18,9 @@ pip3 install gixy-next
 uv pip install gixy-next
 ```
 
+!!! note "In-Browser Scanner"
+    Gixy-Next also comes as an in-browser scanner [here](https://gixy.io/scanner/). No download is needed, you can scan your configurations on the website (locally, using WebAssembly).
+
 You can then run it:
 
 ```shell-session
@@ -28,7 +31,7 @@ gixy
 gixy /opt/nginx.conf
 ```
 
-You can also export your NGINX configuration to a single dump file:
+You can also export your NGINX configuration to a single dump file (see [nginx -T Live Configuration Dump](https://gixy.io/nginx-config-dump)):
 
 ```shell-session
 # Dumps the full NGINX configuration into a single file (including all includes)

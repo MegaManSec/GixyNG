@@ -12,9 +12,24 @@ theme:
   favicon: favicon.ico
   logo: imgs/gixy.png
   palette:
-    scheme: slate
-    primary: teal
-    accent: purple
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/link
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to system preference
   features:
     - content.code.copy
 plugins:
@@ -39,14 +54,14 @@ plugins:
           - en/configuration.md: Configuration and CLI usage
           - en/variables-dropins.md: Variables and drop-in files
           - en/contributing.md: Contributing Guide
+          - en/nginx-configuration-checker.md: "NGINX Config Checker: gixy-next vs nginx -t"
         Built-in plugins:
           - en/plugins/*.md: Scanning plugin
 nav:
   - "Gixy-Next Overview": index.md
   - "Usage Guide": usage.md
-  - "Configuration Guide": configuration.md
-  - "Custom Variables & Drop-ins": variables-dropins.md
   - "In-Browser Scanner": scanner.md
+  - "Live Config Dump: nginx -T": nginx-config-dump.md
   - Plugins:
     - plugins/add_header_content_type.md
     - plugins/add_header_multiline.md
@@ -73,6 +88,8 @@ nav:
     - plugins/valid_referers.md
     - plugins/version_disclosure.md
     - plugins/worker_rlimit_nofile_vs_connections.md
+  - "Configuration Guide": configuration.md
+  - "Custom Variables & Drop-ins": variables-dropins.md
   - "Contributing to Gixy-Next": contributing.md
 
 markdown_extensions:
