@@ -136,7 +136,7 @@
       const d = document.createElement("details");
 
       const file = f.path || f.file || "";
-      const line = f.line != null ? `:${f.line}` : "";
+      const line = f.line != null ? `${f.line}` : "";
       const sev = f.__severity;
 
       const s = document.createElement("summary");
@@ -144,8 +144,7 @@
         <div class="gixy-row1">
           ${severityBadgeHtml(sev)}
           <strong>${escapeHtml(f.summary || "(no summary)")}</strong>
-          <span class="gixy-meta">[${escapeHtml(f.plugin || "")}]</span>
-          <span class="gixy-meta">(line:${escapeHtml(line)})</span>
+          <span class="gixy-meta">Line ${escapeHtml(line)}.</span>
         </div>
         <div class="gixy-meta">${escapeHtml(f.reason || "")}</div>
       `;
@@ -155,7 +154,7 @@
         ${f.description ? `<p>${escapeHtml(f.description)}</p>` : ""}
         ${f.config ? `<pre class="gixy-code"><code>${escapeHtml(f.config)}</code></pre>` : ""}
         <div class="gixy-actions2">
-          ${f.reference ? `<a class="gixy-link" href="${escapeHtml(f.reference)}" target="_blank" rel="noopener">Reference</a>` : ""}
+          ${f.reference ? `Reference: <a class="gixy-link" href="${escapeHtml(f.reference)}" target="_blank" rel="noopener">[${escapeHtml(f.plugin || "")}]</a>` : ""}
         </div>
       `;
 
