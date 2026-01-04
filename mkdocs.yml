@@ -10,7 +10,7 @@ theme:
   language: en
   custom_dir: docs/overrides
   favicon: favicon.ico
-  logo: imgs/gixy.png
+  logo: /favicon.svg
   palette:
     - media: "(prefers-color-scheme)"
       toggle:

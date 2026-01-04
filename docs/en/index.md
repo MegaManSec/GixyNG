@@ -177,9 +177,16 @@ The source code can be found at [https://github.com/MegaManSec/Gixy-Next](https:
 
 ## What is Gixy? (Background)
 
-_Gixy_ is an NGINX configuration analyzer that was [originally](https://github.com/yandex/gixy) developed by Yandex's Andrew Krasichkov. It was first released in 2017, and has since become unmaintained, and does not support modern versions of Python3, contains numerous bugs, and is limited in its functionality and ability to detect vulnerable NGINX configurations.
+_Gixy_ is an NGINX configuration analyzer that was [originally](https://github.com/yandex/gixy) developed by Yandex's Andrew Krasichkov. It was first released in 2017, and has since become unmaintained, and does not support modern versions of Python3, contains numerous bugs, and is limited in its functionality and ability to detect vulnerable NGINX configurations. Running the original Gixy today on a modern system will result in the following error:
 
-Gixy-Next, therefore, is a fork, that adds new checks, performance improvements, hardening suggestions, and support for modern Python and NGINX versions.
+```
+  File "gixy/core/sre_parse/sre_parse.py", line 61, in <module>
+    "t": SRE_FLAG_TEMPLATE,
+         ^^^^^^^^^^^^^^^^^
+NameError: name 'SRE_FLAG_TEMPLATE' is not defined. Did you mean: 'SRE_FLAG_VERBOSE'?
+```
+
+Gixy-Next, therefore, is a fork that adds support for modern systems, adds new checks, performance improvements, hardening suggestions, and support for modern Python and NGINX versions.
 
 ### Why not `gixy-ng`?
 
@@ -187,6 +194,6 @@ Gixy-Next is actually a fork of `gixy-ng`, which itself was a fork of the origin
 
 After some time, the maintainer of `gixy-ng` began to commit AI-generated changes to the codebase which introduced obvious regressions, broke critical behavior of the tool (which anybody using the tool would have picked up), added random AI-tooling artefacts, and introduced code which simply did not do what it was supposed to do. Most importantly, the maintainer also **added marketing for their business to all documentation, all output, and all source code** of `gixy-ng`.
 
-In other words, the `gixy-ng` maintainer took the original `gixy`, asked AI to make changes, introduced a bunch of bugs (and other AI slop), and then added advertising to the code. They also accepted contributions in the form of merge requests, but stripped the author's information (see [this](https://joshua.hu/gixy-ng-new-version-gixy-updated-checks#quality-degradation) post).
+In other words, the `gixy-ng` maintainer took the original `gixy`, asked AI to make changes, introduced a bunch of bugs (and other AI slop), and then added advertising to the code. They also accepted contributions in the form of merge requests, but stripped the author's information (see [this](https://joshua.hu/gixy-ng-new-version-gixy-updated-checks#quality-degradation) post and [this](https://joshua.hu/gixy-ng-ai-slop-gixy-next-maintained) post).
 
 Gixy-Next focuses on restoring quality, and has been battle-tests on NGINX configurations which are nearly 100,000-lines long. It fixes bugs and mis-detections introduced by changes introduced in `gixy-ng`, removes AI tool artifacts/junk, and tries to keep the codebase reviewable and maintainable. This fork is for those interested in clean code and long-term maintainability.
