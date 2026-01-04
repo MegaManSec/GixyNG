@@ -50,6 +50,14 @@ class NginxParser(object):
             )
             # Strip line number from error message (errors are not standardized)
             base_msg = re.sub(r":\d+$", "", base_msg)
+            base_msg = re.sub(r":\d+$", "", base_msg)
+            base_msg = re.sub(
+                r"^(\s*)(\S)",
+                lambda m: m.group(1) + m.group(2).upper(),
+                base_msg,
+                count=1,
+            )
+
             # Add line number back to error message
             line = f" (line:{e.line})"
             error_msg = "{msg}{line}.".format(msg=base_msg, line=line)
@@ -69,7 +77,7 @@ class NginxParser(object):
                     msg=base_msg, filename=real_path, line=line
                 )
 
-            LOG.error("{error}".format(error=error_msg).capitalize())
+            LOG.error("{error}".format(error=error_msg))
             raise InvalidConfiguration(error_msg) from e
 
         current_path = display_path if display_path else path
