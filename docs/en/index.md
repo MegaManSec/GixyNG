@@ -2,9 +2,13 @@
 
 ## Overview
 
-<a href="https://gixy.io/"><img width="192" height="192" alt="Gixy-Next Mascot Logo" style="float: right; margin: 0;" align="right" src="https://gixy.io/imgs/gixy.jpg" /></a>
+<a href="https://gixy.io/"><img width="192" height="192" alt="Gixy-Next Mascot Logo" style="float: right;" align="right" src="https://gixy.io/imgs/gixy.jpg" /></a>
 
 Gixy-Next is an open source NGINX configuration security scanner and hardening tool that performs static analysis of your nginx.conf to detect security misconfigurations, hardening gaps, and common performance pitfalls before they reach production. It is an actively maintained fork of Yandex's [Gixy](https://github.com/yandex/gixy).
+
+!!! note "In-Browser Scanner"
+
+     Gixy-Next can also be run in the browser on [this page](https://gixy.io/scanner/). No download is needed, you can just scan your configurations on the website (locally, using WebAssembly).
 
 ### Quick start
 
@@ -17,10 +21,6 @@ pip3 install gixy-next
 # uv
 uv pip install gixy-next
 ```
-
-!!! note "In-Browser Scanner"
-
-    Gixy-Next also comes as an in-browser scanner [here](https://gixy.io/scanner/). No download is needed, you can just scan your configurations on the website (locally, using WebAssembly).
 
 You can then run it:
 
@@ -37,17 +37,16 @@ You can also export your NGINX configuration to a single dump file (see [nginx -
 ```shell-session
 # Dumps the full NGINX configuration into a single file (including all includes)
 nginx -T > ./nginx-dump.conf
-```
 
-And then scan the dump file elsewhere (or via stdin):
-
-```shell-session
-# Equivalent to scanning the full rendered configuration output.
+# Scan the dump elsewhere (or via stdin):
 gixy ./nginx-dump.conf
-
-# Equivalent to above
+# or
 cat ./nginx-dump.conf | gixy -
 ```
+
+### Web-based scanner
+
+Instead of downloading and running Gixy-Next locally, you can use [this webpage](https://gixy.io/scanner/) and scan a configuration from your web browser (locally, using WebAssembly).
 
 ## What it can do
 

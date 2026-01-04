@@ -7,6 +7,10 @@ description: "How to run Gixy-Next locally or in CI, scan rendered configs, filt
 
 Gixy-Next ships as the `gixy` CLI. It statically analyzes NGINX configuration (your `nginx.conf` plus any files it includes) and reports security and hardening issues, along with a few common performance footguns.
 
+!!! note "In-Browser Scanner"
+
+     Gixy-Next can also be used in the browser on [this webpage](https://gixy.io/scanner/). No download is needed, you can just scan your configurations on the website (locally, using WebAssembly).
+
 ## Basic scan
 
 If you have a standard NGINX install, this is usually enough:
