@@ -35,8 +35,10 @@ plugins:
       sections:
         Overview and usage:
           - en/index.md: Overview and quickstart
+          - en/usage.md: Usage Guide
           - en/configuration.md: Configuration and CLI usage
           - en/variables-dropins.md: Variables and drop-in files
+          - en/contributing.md: Contributing Guide
         Built-in plugins:
           - en/plugins/*.md: Scanning plugin
 nav:
@@ -44,6 +46,7 @@ nav:
   - "Usage Guide": usage.md
   - "Configuration Guide": configuration.md
   - "Custom Variables & Drop-ins": variables-dropins.md
+  - "In-Browser Scanner": scanner.md
   - Plugins:
     - plugins/add_header_content_type.md
     - plugins/add_header_multiline.md
@@ -74,6 +77,7 @@ nav:
 
 markdown_extensions:
   - admonition
+  - pymdownx.details
   - pymdownx.highlight
   - pymdownx.magiclink
   - pymdownx.superfences
