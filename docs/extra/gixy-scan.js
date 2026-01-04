@@ -12,7 +12,7 @@
   const PYODIDE_BASE = "https://cdn.jsdelivr.net/pyodide/v0.29.0/full/";
   const PYODIDE_MOD = PYODIDE_BASE + "pyodide.mjs";
 
-  const WHEEL_URL = new URL("/extra/gixy_next.whl", window.location.origin).href;
+  const WHEEL_URL = new URL("/extra/gixy_next-0.0.0-py3-none-any.whl", window.location.origin).href;
 
   const severityOrder = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO", "UNKNOWN"];
 

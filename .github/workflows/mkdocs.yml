@@ -21,19 +21,38 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install mkdocs and so
+      - name: Install mkdocs deps + build tool
         run: |
           python -m pip install --upgrade pip
           pip install -r docs/requirements.txt
           pip install build
 
-      - name: Build wheel and copy into site assets
+      - name: Build wheel and place into docs/extra/
+        shell: bash
         run: |
-          pip install -r requirements.txt
           python -m build --wheel
-          mkdir -p docs/dist
-          # Rename to a stable filename so JS can always fetch /dist/gixy_next.whl
-          cp -f dist/*.whl docs/extra/gixy_next.whl
+
+          wheel="$(ls -1 dist/*.whl | head -n 1)"
+          fname="$(basename "$wheel" .whl)"
+          parts=(${fname//-/ })
+
+          if [ "${#parts[@]}" -eq 5 ]; then
+            distname="${parts[0]}"
+            pytag="${parts[2]}"
+            abit="${parts[3]}"
+            plat="${parts[4]}"
+            stable="${distname}-0.0.0-${pytag}-${abit}-${plat}.whl"
+          else
+            distname="${parts[0]}"
+            buildtag="${parts[2]}"
+            pytag="${parts[3]}"
+            abit="${parts[4]}"
+            plat="${parts[5]}"
+            stable="${distname}-0.0.0-${buildtag}-${pytag}-${abit}-${plat}.whl"
+          fi
+
+          cp -f "$wheel" "docs/extra/$stable"
+          echo "Wrote docs/extra/$stable"
 
       - name: Deploy with MkDocs
         run: mkdocs gh-deploy --force
