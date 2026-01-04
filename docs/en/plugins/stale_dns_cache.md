@@ -120,6 +120,14 @@ http {
 
 Since NGINX 1.27.3, it has also been possible to specify an upstream server to use the resolver, like above. As with the other example, a `resolver` MUST be set for it to work.
 
+## How severity is determined
+
+This plugin uses different severities depending on what it finds. Concretely:
+
+- If the flagged `proxy_pass` target (or `upstream server`) is a hostname without a registrable suffix (for example, internal names like `backend` or `service.namespace`), the issue is reported as LOW.
+- If the flagged target is a hostname with a registrable suffix (for example, `api.example.com`), the issue is reported as MEDIUM, because these names are commonly backed by load balancers / CDNs and are more likely to change over time.
+- If the configuration is attempting runtime re-resolution (`proxy_pass` with variables, or `upstream ... resolve`) but no `resolver` is configured, the proxying will not work at all, and the issue is reported as MEDIUM.
+
 ## Additional notes
 
 For more information about this issue, read [this post](https://joshua.hu/nginx-dns-caching).
