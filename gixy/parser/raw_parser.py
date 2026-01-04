@@ -20,8 +20,13 @@ def _tokenize_lua_content(content):
     Treat Lua content as opaque for security analysis.
     Gixy's security plugins don't analyze Lua syntax, so we just preserve the content as-is.
     """
-    if not content or not isinstance(content, str):
+    if content is None:
         return []
+
+    if isinstance(content, bytes):
+        content = content.decode("utf-8", errors="replace")
+    elif not isinstance(content, str):
+        content = str(content)
 
     # Return the content as a single opaque token
     # This preserves the Lua code but doesn't try to parse its internal structure
@@ -95,14 +100,15 @@ class RawParser(object):
             import os
             import tempfile
 
-            # Create a temporary file with the content
-            with tempfile.NamedTemporaryFile(
-                mode="w", suffix=".conf", delete=False
-            ) as temp_file:
-                temp_file.write(content)
-                temp_filename = temp_file.name
-
+            temp_filename = None
             try:
+                # Create a temporary file with the content
+                with tempfile.NamedTemporaryFile(
+                    mode="w", suffix=".conf", delete=False
+                ) as temp_file:
+                    temp_filename = temp_file.name
+                    temp_file.write(content)
+
                 # Parse using crossplane with relaxed context checking for standalone configs
                 parsed = crossplane.parse(
                     temp_filename,
@@ -117,7 +123,11 @@ class RawParser(object):
                 return self._normalize_crossplane(parsed)
             finally:
                 # Clean up temporary file
-                os.unlink(temp_filename)
+                if temp_filename:
+                    try:
+                        os.unlink(temp_filename)
+                    except FileNotFoundError:
+                        pass
 
         except NgxParserBaseException as e:
             # Convert crossplane exception to ParseException format
@@ -126,7 +136,7 @@ class RawParser(object):
         except ParseException:
             raise
         except Exception as e:
-            raise ParseException(str(e), line=1)
+            raise ParseException(str(e), line=1) from e
 
     def parse_path(self, path):
         """Parse nginx configuration by file path and return normalized nodes (list[dict])."""
@@ -148,7 +158,7 @@ class RawParser(object):
         except ParseException:
             raise
         except Exception as e:
-            raise ParseException(str(e), line=1)
+            raise ParseException(str(e), line=1) from e
 
     def _normalize_crossplane(self, crossplane_data):
         """Convert crossplane JSON output to a normalized list[dict] node structure.
@@ -177,6 +187,7 @@ class RawParser(object):
                         {
                             "kind": "file_delimiter",
                             "file": file_data.get("file", "unknown"),
+                            "line": None,
                         }
                     )
                 result.extend(self._normalize_blocks(file_data["parsed"]))
@@ -191,7 +202,9 @@ class RawParser(object):
         line_numbers_with_directives = set()
         for item in blocks:
             if isinstance(item, dict) and item.get("directive") != "#":
-                line_numbers_with_directives.add(item.get("line"))
+                line = item.get("line")
+                if line is not None:
+                    line_numbers_with_directives.add(line)
 
         filtered_blocks = []
         for item in blocks:
@@ -231,7 +244,7 @@ class RawParser(object):
                         "configuration file "
                     ) and comment_text.endswith(":"):
                         file_path = comment_text[len("configuration file "):-1]
-                        result.append({"kind": "file_delimiter", "file": file_path})
+                        result.append({"kind": "file_delimiter", "file": file_path, "line": node.get("line")})
                     else:
                         result.append({"kind": "comment", "text": comment_text})
                     continue
@@ -278,6 +291,4 @@ class RawParser(object):
 
     def _parse_if_condition(self, args):
         """Normalize if-condition arguments as a flat list of tokens."""
-        if not args:
-            return []
-        return list(args)
+        return list(args or [])

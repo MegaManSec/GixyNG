@@ -2,6 +2,7 @@ import fnmatch
 import glob
 import logging
 import os
+import re
 
 from gixy.core.exceptions import InvalidConfiguration
 from gixy.directives import block, directive
@@ -42,16 +43,24 @@ class NginxParser(object):
         root = self._ensure_root(root)
         try:
             parsed = self.parser.parse_path(path)
-        except InvalidConfiguration:
-            raise
         except ParseException as e:
             # Preserve the underlying parser message and line info.
             base_msg = getattr(e, "msg", None) or str(e) or "Failed to parse nginx config"
-            error_msg = "{msg} (line:{line}).".format(msg=base_msg, line=e.line)
+            # Strip line number from error message (errors are not standardized)
+            base_msg = re.sub(r":\d+$", "", base_msg)
+            # Add line number back to error message
+            line = f" (line:{e.line})"
+            error_msg = "{msg}{line}.".format(msg=base_msg, line=line)
+
+            escaped_path = re.escape(path)
+            ends_with_in_path_line = re.search(rf"in {escaped_path} \(line:\d+\)\.$", error_msg)
+            if ends_with_in_path_line:
+                    error_msg = re.sub(rf"in {escaped_path} \(line:(\d+)\)\.$", rf"in {real_path} (line:\1).", error_msg)
+            if not ends_with_in_path_line:
+                error_msg = "{msg} in {filename}{line}.".format(msg=base_msg, filename=real_path, line=line)
+
             LOG.error(
-                'Failed to parse config "{file}" {error}'.format(
-                    file=real_path, error=error_msg
-                )
+                '{error}'.format(error=error_msg).capitalize()
             )
             raise InvalidConfiguration(error_msg) from e
 
@@ -162,8 +171,8 @@ class NginxParser(object):
                 path_info = self.path_info
                 try:
                     self._resolve_include(node["args"], parent)
-                except Exception as exc:
-                    LOG.warn('Skipping include "%s"', node["args"][0])
+                except InvalidConfiguration:  # We can continue after error in parsed include file, I guess.
+                    pass
                 finally:
                     self._path_stack = path_info
 
