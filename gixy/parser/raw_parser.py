@@ -3,6 +3,9 @@ import re
 import crossplane
 from crossplane.errors import NgxParserBaseException
 
+import os
+import tempfile
+
 
 def _process_nginx_string(value):
     """
@@ -96,18 +99,15 @@ class RawParser(object):
             return []
 
         try:
-            # Since crossplane expects a filename, we need to create a temporary file
-            import os
-            import tempfile
-
             temp_filename = None
             try:
                 # Create a temporary file with the content
                 with tempfile.NamedTemporaryFile(
-                    mode="w", suffix=".conf", delete=False
+                    mode="w", suffix=".conf", delete=False, encoding="utf-8", newline=""
                 ) as temp_file:
                     temp_filename = temp_file.name
                     temp_file.write(content)
+                    temp_file.flush()
 
                 # Parse using crossplane with relaxed context checking for standalone configs
                 parsed = crossplane.parse(
@@ -243,10 +243,22 @@ class RawParser(object):
                     if comment_text.startswith(
                         "configuration file "
                     ) and comment_text.endswith(":"):
-                        file_path = comment_text[len("configuration file "):-1]
-                        result.append({"kind": "file_delimiter", "file": file_path, "line": node.get("line")})
+                        file_path = comment_text[len("configuration file ") : -1]
+                        result.append(
+                            {
+                                "kind": "file_delimiter",
+                                "file": file_path,
+                                "line": node.get("line"),
+                            }
+                        )
                     else:
-                        result.append({"kind": "comment", "text": comment_text})
+                        result.append(
+                            {
+                                "kind": "comment",
+                                "text": comment_text,
+                                "line": node.get("line"),
+                            }
+                        )
                     continue
 
                 if directive_name == "include":

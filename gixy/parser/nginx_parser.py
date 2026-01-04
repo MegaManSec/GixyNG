@@ -45,7 +45,9 @@ class NginxParser(object):
             parsed = self.parser.parse_path(path)
         except ParseException as e:
             # Preserve the underlying parser message and line info.
-            base_msg = getattr(e, "msg", None) or str(e) or "Failed to parse nginx config"
+            base_msg = (
+                getattr(e, "msg", None) or str(e) or "Failed to parse nginx config"
+            )
             # Strip line number from error message (errors are not standardized)
             base_msg = re.sub(r":\d+$", "", base_msg)
             # Add line number back to error message
@@ -53,15 +55,21 @@ class NginxParser(object):
             error_msg = "{msg}{line}.".format(msg=base_msg, line=line)
 
             escaped_path = re.escape(path)
-            ends_with_in_path_line = re.search(rf"in {escaped_path} \(line:\d+\)\.$", error_msg)
-            if ends_with_in_path_line:
-                    error_msg = re.sub(rf"in {escaped_path} \(line:(\d+)\)\.$", rf"in {real_path} (line:\1).", error_msg)
-            if not ends_with_in_path_line:
-                error_msg = "{msg} in {filename}{line}.".format(msg=base_msg, filename=real_path, line=line)
-
-            LOG.error(
-                '{error}'.format(error=error_msg).capitalize()
+            ends_with_in_path_line = re.search(
+                rf"in {escaped_path} \(line:\d+\)\.$", error_msg
             )
+            if ends_with_in_path_line:
+                error_msg = re.sub(
+                    rf"in {escaped_path} \(line:(\d+)\)\.$",
+                    rf"in {real_path} (line:\1).",
+                    error_msg,
+                )
+            if not ends_with_in_path_line:
+                error_msg = "{msg} in {filename}{line}.".format(
+                    msg=base_msg, filename=real_path, line=line
+                )
+
+            LOG.error("{error}".format(error=error_msg).capitalize())
             raise InvalidConfiguration(error_msg) from e
 
         current_path = display_path if display_path else path
@@ -171,7 +179,9 @@ class NginxParser(object):
                 path_info = self.path_info
                 try:
                     self._resolve_include(node["args"], parent)
-                except InvalidConfiguration:  # We can continue after error in parsed include file, I guess.
+                except (
+                    InvalidConfiguration
+                ):  # We can continue after error in parsed include file, I guess.
                     pass
                 finally:
                     self._path_stack = path_info
