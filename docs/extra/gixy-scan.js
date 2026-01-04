@@ -6,8 +6,9 @@
   const runBtn = document.getElementById("gixyRun");
   const statusEl = document.getElementById("gixyStatus");
   const summaryEl = document.getElementById("gixySummary");
-  const filtersEl = document.getElementById("gixyFilters"); // kept for compatibility; we hide it
+  const filtersEl = document.getElementById("gixyFilters");
   const findingsEl = document.getElementById("gixyFindings");
+  const exampleBtn = document.getElementById("gixyExample");
 
   const PYODIDE_BASE = "https://cdn.jsdelivr.net/pyodide/v0.29.0/full/";
   const PYODIDE_MOD = PYODIDE_BASE + "pyodide.mjs";
@@ -24,6 +25,72 @@
       severities: new Set(), // empty = all
     },
   };
+
+  const EXAMPLE_CONF = `# configuration file /etc/nginx/nginx.conf:
+user  nginx;
+worker_processes auto;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    access_log /var/log/nginx/access.log;
+    error_log  off warn;
+
+    sendfile on;
+    keepalive_timeout 65;
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+
+# configuration file /etc/nginx/mime.types:
+types {
+    text/html                             html htm shtml;
+    text/css                              css;
+    application/javascript                js;
+}
+
+# configuration file /etc/nginx/conf.d/gzip.conf:
+gzip on;
+gzip_comp_level 5;
+gzip_types text/plain text/css application/json application/javascript;
+
+# configuration file /etc/nginx/sites-enabled/example.conf:
+upstream app_backend {
+    server example.com:3000;
+}
+
+server {
+    listen 80;
+    server_name example.test;
+
+    location /healthz {
+        return 200 "ok\n";
+        add_header Content-Type text/plain;
+    }
+
+    location / {
+        if ($url = "/loc") {
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://app_backend/;
+        }
+    }
+}
+`;
+
+  if (exampleBtn && ta) {
+    exampleBtn.addEventListener("click", () => {
+      ta.value = EXAMPLE_CONF;
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = ta.value.length;
+    });
+  }
 
   function setStatus(text) {
     statusEl.textContent = text || "";
@@ -208,6 +275,8 @@ await micropip.install("${WHEEL_URL}")
     findingsEl.replaceChildren();
     summaryEl.hidden = true;
     if (filtersEl) filtersEl.hidden = true;
+
+    if (exampleBtn) exampleBtn.remove();
 
     runBtn.disabled = true;
 

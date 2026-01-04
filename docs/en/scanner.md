@@ -21,6 +21,7 @@ description: "In-browser gixy-next scanner for Nginx configs, powered by WebAsse
 
     <div class="gixy-actions">
       <button id="gixyRun" class="md-button md-button--primary" type="button">Run</button>
+      <button id="gixyExample" class="md-button" type="button">Use example</button>
       <span id="gixyStatus" class="gixy-status"></span>
     </div>
   </div>

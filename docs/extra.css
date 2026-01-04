@@ -83,8 +83,6 @@ html, body { overscroll-behavior: none; }
   box-shadow: 0 0.4rem 0.6rem 0 var(--md-default-bg-color);
 }
 
-/* --- Gixy web scanner UI --- */
-
 .gixy-scan__controls {
   display: grid;
   gap: 0.6rem;
@@ -100,7 +98,7 @@ html, body { overscroll-behavior: none; }
   background: var(--md-default-bg-color);
   color: var(--md-default-fg-color);
   font-family: var(--md-code-font-family);
-  font-size: 0.85rem;
+  font-size: 0.5rem;
   line-height: 1.35;
   resize: vertical;
 }
@@ -239,7 +237,6 @@ html, body { overscroll-behavior: none; }
 }
 
 .md-typeset .gixy-findings details > summary {
-  background: color-mix(in srgb, var(--md-default-bg-color) 85%, var(--md-primary-fg-color) 15%) !important;
   box-shadow: none !important;
   margin: -0.55rem -0.7rem 0 -0.7rem;
 }
