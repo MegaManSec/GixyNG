@@ -18,7 +18,7 @@ class JsonFormatter(BaseFormatter):
                     "description": issue["description"],
                     "reference": issue["help_url"],
                     "reason": issue["reason"],
-                    "config": issue["config"],
+                    "config": issue["config"].strip("\n"),
                 }
                 location = issue.get("location")
                 if location:
