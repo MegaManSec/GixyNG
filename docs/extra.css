@@ -242,6 +242,13 @@ html, body { overscroll-behavior: none; }
 }
 
 .md-typeset a {
-  text-decoration: underline;
+  text-decoration-line: underline;
   text-underline-offset: 0.15em;
+
+  text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
+}
+
+.md-typeset a:hover,
+.md-typeset a:focus-visible {
+  text-decoration-color: currentColor;
 }
