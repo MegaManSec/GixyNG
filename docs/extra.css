@@ -240,3 +240,8 @@ html, body { overscroll-behavior: none; }
   box-shadow: none !important;
   margin: -0.55rem -0.7rem 0 -0.7rem;
 }
+
+.md-typeset a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}

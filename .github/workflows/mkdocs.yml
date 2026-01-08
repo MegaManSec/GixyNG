@@ -54,6 +54,13 @@ jobs:
           cp -f "$wheel" "docs/extra/$stable"
           echo "Wrote docs/extra/$stable"
 
+      - name: Download image processing tools
+        run: |
+          sudo apt update
+          sudo apt-get -y install pngquant
+          sudo apt-get -y install libcairo2-dev libfreetype6-dev libffi-dev libjpeg-dev libpng-dev libz-dev
+          pip install "mkdocs-material[imaging]"
+
       - name: Deploy with MkDocs
         run: mkdocs gh-deploy --force
         env:

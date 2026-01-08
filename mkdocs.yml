@@ -33,6 +33,8 @@ theme:
   features:
     - content.code.copy
 plugins:
+  - privacy
+  - optimize
   - search:
       separator: '[\s\-,:!=\[\]()"/_]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
   - i18n:
