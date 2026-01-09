@@ -1,6 +1,6 @@
 site_name: "Gixy-Next: NGINX Configuration Security Scanner"
 site_long_name: "Gixy-Next: NGINX Configuration Security & Hardening Scanner"
-site_description: "Gixy-Next is an open source NGINX security, hardening, and configuration compliance scanner. Run automated NGINX configuration security audits and compliance checks, find performance misconfigurations in nginx.conf, and harden your NGINX servers."
+site_description: "Gixy-Next (Gixy) is an open source NGINX security, hardening, and configuration compliance scanner. Run automated NGINX configuration security audits and compliance checks, find performance misconfigurations in nginx.conf, and harden your NGINX servers."
 site_url: https://gixy.io/
 repo_url: https://github.com/MegaManSec/Gixy-Next
 repo_name: MegaManSec/Gixy-Next

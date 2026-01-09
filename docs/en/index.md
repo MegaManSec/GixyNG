@@ -4,7 +4,7 @@
 
 <a href="https://gixy.io/"><img width="192" height="192" alt="Gixy-Next Mascot Logo" style="float: right;" align="right" src="https://gixy.io/imgs/gixy.jpg" /></a>
 
-Gixy-Next is an open source NGINX configuration security scanner and hardening tool that performs static analysis of your nginx.conf to detect security misconfigurations, hardening gaps, and common performance pitfalls before they reach production. It is an actively maintained fork of Yandex's [Gixy](https://github.com/yandex/gixy).
+Gixy-Next (Gixy) is an open source NGINX configuration security scanner and hardening tool that performs static analysis of your nginx.conf to detect security misconfigurations, hardening gaps, and common performance pitfalls before they reach production. It is an actively maintained fork of Yandex's [Gixy](https://github.com/yandex/gixy).
 
 !!! note "In-Browser Scanner"
 
