@@ -78,7 +78,9 @@ nav:
     - plugins/if_is_evil.md
     - plugins/invalid_regex.md
     - plugins/low_keepalive_requests.md
+    - plugins/merge_slashes_on.md
     - plugins/origins.md
+    - plugins/proxy_buffering_off.md
     - plugins/proxy_pass_normalized.md
     - plugins/regex_redos.md
     - plugins/resolver_external.md

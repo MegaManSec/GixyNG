@@ -104,7 +104,7 @@ gixy --add-header-redefinition-merge-reported-headers false
 merge_reported_headers = false
 ```
 
-## Additional information
+## Additional notes
 
 ### add_header_inherit
 

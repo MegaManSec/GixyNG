@@ -53,7 +53,7 @@ location = /i.gif {
 }
 ```
 
-## Additional information
+## Additional notes
 
 This plugin may report either as HIGH or MEDIUM severity, depending on what is detected, and the impact of the configuration:
 
