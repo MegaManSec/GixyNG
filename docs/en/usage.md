@@ -5,7 +5,7 @@ description: "How to run Gixy-Next locally or in CI, scan rendered configs, filt
 
 # Usage Guide
 
-Gixy-Next ships as the `gixy` CLI. It statically analyzes NGINX configuration (your `nginx.conf` plus any files it includes) and reports security and hardening issues, along with a few common performance footguns.
+Gixy-Next ships as the `gixy` and `gixy-next` CLI. It statically analyzes NGINX configuration (your `nginx.conf` plus any files it includes) and reports security and hardening issues, along with a few common performance footguns.
 
 !!! note "In-Browser Scanner"
 
