@@ -133,6 +133,7 @@ setup(
     entry_points={
         "console_scripts": [
             "gixy=gixy.cli.main:main",
+            "gixy-next=gixy.cli.main:main",
         ],
     },
 

@@ -12,7 +12,7 @@ Gixy-Next (Gixy) is an open-source NGINX configuration security scanner and hard
 
 ### Quick start
 
-Gixy-Next (the `gixy` CLI) is distributed on [PyPI](https://pypi.python.org/pypi/Gixy-Next). You can install it with pip or uv:
+Gixy-Next (the `gixy` or `gixy-next` CLI) is distributed on [PyPI](https://pypi.python.org/pypi/Gixy-Next). You can install it with pip or uv:
 
 ```shell-session
 # pip
