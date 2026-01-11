@@ -9,6 +9,10 @@ description: "Detects worker_rlimit_nofile values that are too low relative to w
 
 This plugin checks the relationship between `worker_connections` and `worker_rlimit_nofile` and warns when the file descriptor limit is too low.
 
+If `worker_connections` is unset, the default is used: 512.
+
+If `worker_rlimit_nofile` is unset, an estimate of the default (most likely for major Linux distributions) is used: 512.
+
 ## Why this is a problem
 
 NGINX needs file descriptors (FDs) for more than just client connections.
@@ -50,4 +54,8 @@ Adjust upward if you are proxying heavily, caching, or serving lots of static as
 
 ## Additional notes
 
-Also check the OS-level limits (ulimit, systemd unit limits, container limits). Setting `worker_rlimit_nofile` higher than the process is allowed to use will not help.
+Also check the OS-level limits (ulimit, systemd unit limits, container limits). Setting `worker_rlimit_nofile` higher than the process is allowed to use will not help. The common idiom is:
+
+```nginx
+max clients = worker_processes * worker_connections
+```
